@@ -1,50 +1,48 @@
-module views {
 
+import * as views from './view'
 
-  export interface TemplateFunction {
-    (locals:Object): string
+export interface TemplateFunction {
+  (locals:Object): string
+}
+
+export interface TemplateViewOptions extends views.ViewOptions {
+  template?: string|TemplateFunction
+}
+
+export class TemplateView<T extends HTMLElement> extends views.View<T> {
+  template: string|TemplateFunction
+
+  constructor (options?: TemplateViewOptions) {
+    super(options)
+
+    if (options && options.template) {
+      this.template = options.template
+    }
   }
 
-  export interface TemplateViewOptions extends views.ViewOptions {
-    template?: string|TemplateFunction
+  getTemplateData (): any {
+    return {}
   }
 
-  export class TemplateView<T extends HTMLElement> extends views.View<T> {
-    template: string|TemplateFunction
+  render (options:any): any {
+    //super.render(options)
+    this.undelegateEvents()
 
-    constructor (options?: TemplateViewOptions) {
-      super(options)
-
-      if (options && options.template) {
-        this.template = options.template
-      }
+    let template: string
+    if ( typeof this.template == 'function') {
+      template = (<TemplateFunction>this.template).call(this, this.getTemplateData())
+    } else if (typeof this.template == 'string') {
+      template = <string>this.template
     }
 
-    getTemplateData (): any {
-      return {}
+    if (template) {
+      this.el.innerHTML = template;
     }
 
-    render (options:any): any {
-      //super.render(options)
-      this.undelegateEvents()
+    this.delegateEvents()
 
-      let template: string
-      if ( typeof this.template == 'function') {
-        template = (<TemplateFunction>this.template).call(this, this.getTemplateData())
-      } else if (typeof this.template == 'string') {
-        template = <string>this.template
-      }
-
-      if (template) {
-        this.el.innerHTML = template;
-      }
-
-      this.delegateEvents()
-
-      return this
-    }
-
-
+    return this
   }
+
 
 }

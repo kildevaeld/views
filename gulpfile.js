@@ -5,16 +5,15 @@ const gulp = require('gulp'),
       tsc = require('gulp-typescript'),
       wrap = require('gulp-wrap-umd'),
       merge = require('merge2'),
-      del = require('del');
+      del = require('del'),
+      webpack = require('gulp-webpack');
 
 
 gulp.task('build', function () {
 
-  let result = gulp.src('./src/index.ts')
+  let result = gulp.src('./src/*.ts')
   .pipe(tsc({
-    out: 'views.js',
-    declarationFiles: true,
-    "target": "es5",
+    "target": "ES5",
     "module": "commonjs",
     "isolatedModules": false,
     "experimentalDecorators": true,
@@ -25,27 +24,49 @@ gulp.task('build', function () {
     "noLib": false,
     "preserveConstEnums": true,
     "suppressImplicitAnyIndexErrors": true,
+    declarationFiles: true
   }));
 
   let js = result.js
-  .pipe(wrap({
-      namespace: 'views',
-      exports: 'views'
-  }))
   .pipe(gulp.dest('./lib'));
 
-  let dts = result.dts.pipe(gulp.dest('./'));
+  let dts = result.dts.pipe(gulp.dest('./lib'));
 
   return merge([js,dts]);
 
 });
 
-gulp.task('default', ['build']);
+gulp.task('build:bower', ['build'], function () {
+  return gulp.src('./lib/index.js')
+  .pipe(webpack({
+    resolve: {
+        extensions: ['', '.webpack.js', '.web.js', '.ts', '.js']
+    },
+    module: {
+        loaders: [
+            { test: /\.ts$/, loader: 'ts-loader' }
+        ]
+    },
+    output: {
+      library: "views",
+      libraryTarget: "umd",
+      filename: 'views.js'
+    }
+  }))
+  .pipe(gulp.dest('./dist'));
+});
+
+gulp.task('definition', ['build', 'build:bower'], function () {
+  return gulp.src('./templates/views.d.ts')
+  .pipe(gulp.dest('./'));
+});
+
+gulp.task('default', ['build', 'build:bower', 'definition']);
 
 gulp.task('watch', function () {
   gulp.watch('./src/**/*.ts', ['build']);
 });
 
 gulp.task('clean', function (done) {
-  del(['./tmp'], done);
+  del(['./lib','./dist'], done);
 });

@@ -1,0 +1,5 @@
+src/
+templates/
+example/
+gulpfile.js
+tsconfig.json

@@ -1,6 +1,6 @@
 
-/// <reference path="./utils.ts"/>
-/// <reference path="./baseview.ts"/>
+import * as base from './baseview'
+import {utils} from './utils'
 
 const kUIRegExp = /@ui.([a-zA-Z_\-\$#]+)/i
 
@@ -21,74 +21,75 @@ function normalizeUIKeys (obj:any): any {
 
     return o;
 }
+export type UIMap = { [key:string]: string|HTMLElement }
+
+export interface ViewOptions extends base.BaseViewOptions {
+  ui?: {[key:string]: string}|Function
+}
+
+export class View<T extends HTMLElement> extends base.BaseView<T> {
+
+  ui: UIMap = {}
+  options: ViewOptions
+  private _ui: {[key:string]: string}|Function
+
+  delegateEvents (events?:any) {
+
+    this.bindUIElements()
+
+    events = events || this.events;
+    events = normalizeUIKeys.call(this, events)
+
+    super.delegateEvents(events)
+
+    return this
+
+  }
+
+  /*constructor (options?: ViewOptions) {
+    super(options)
+  }*/
+
+  undelegateEvents (): any {
+    this.unbindUIElements()
+    super.undelegateEvents()
+    return this
+  }
+
+  /* UI Elements */
+  bindUIElements() {
+
+    let ui = this.options.ui||this.ui
+    if (!ui) return;
+
+    if (!this._ui) {
+      this._ui = <any>ui;
+    }
+
+    ui = utils.result(this, '_ui');
+
+    this.ui = {};
+
+    Object.keys(ui).forEach( (k) => {
+      let elm: any = this.$(ui[k]);
+      if (elm && elm.length) {
+        // unwrap if it's a nodelist.
+        if (elm instanceof NodeList) {
+          elm = elm[0]
+        }
+        this.ui[k] = elm;
+      }
+    });
+
+  }
+
+  unbindUIElements () {
+    this.ui = {}
+  }
+}
 
 module views {
 
-  export type UIMap = { [key:string]: string|HTMLElement }
 
-  export interface ViewOptions extends views.BaseViewOptions {
-    ui?: {[key:string]: string}|Function
-  }
-
-  export class View<T extends HTMLElement> extends views.BaseView<T> {
-
-    ui: UIMap = {}
-    options: ViewOptions
-    private _ui: {[key:string]: string}|Function
-
-    delegateEvents (events?:any) {
-
-      this.bindUIElements()
-
-      events = events || this.events;
-      events = normalizeUIKeys.call(this, events)
-
-      super.delegateEvents(events)
-
-      return this
-
-    }
-
-    /*constructor (options?: ViewOptions) {
-      super(options)
-    }*/
-
-    undelegateEvents (): any {
-      this.unbindUIElements()
-      super.undelegateEvents()
-      return this
-    }
-
-    /* UI Elements */
-    bindUIElements() {
-
-      let ui = this.options.ui||this.ui
-      if (!ui) return;
-
-      if (!this._ui) {
-        this._ui = <any>ui;
-      }
-
-      ui = utils.result(this, '_ui');
-
-      this.ui = {};
-
-      Object.keys(ui).forEach( (k) => {
-        let elm: any = this.$(ui[k]);
-        if (elm && elm.length) {
-          // unwrap if it's a nodelist.
-          if (elm instanceof NodeList) {
-            elm = elm[0]
-          }
-          this.ui[k] = elm;
-        }
-      });
-
-    }
-
-    unbindUIElements () {
-      this.ui = {}
-    }
-  }
 
 }
