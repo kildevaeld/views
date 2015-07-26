@@ -13,7 +13,7 @@
     "gulp": "^3.9.0",
     "gulp-typescript": "^2.8.0",
     "gulp-wrap-umd": "^0.2.1",
-    "merge2": "^0.3.6",
+    "merge2": "^0.3.6"
   },
   "typescript": {
     "definition": "views.d.ts"
