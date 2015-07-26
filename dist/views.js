@@ -54,19 +54,15 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var view_1 = __webpack_require__(2);
-	exports.View = view_1.View;
-	var templateview_1 = __webpack_require__(6);
-	exports.TemplateView = templateview_1.TemplateView;
-	var utils_1 = __webpack_require__(5);
-	exports.utils = utils_1.utils;
-	exports.html = utils_1.html;
-	var events_1 = __webpack_require__(1);
-	exports.EventEmitter = events_1.EventEmitter;
-	var object_1 = __webpack_require__(4);
-	exports.BaseObject = object_1.BaseObject;
-	var baseview_1 = __webpack_require__(3);
-	exports.BaseView = baseview_1.BaseView;
+	function __export(m) {
+	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+	}
+	__export(__webpack_require__(2));
+	__export(__webpack_require__(6));
+	__export(__webpack_require__(5));
+	__export(__webpack_require__(1));
+	__export(__webpack_require__(4));
+	__export(__webpack_require__(3));
 
 
 /***/ },
