@@ -1,0 +1,21 @@
+{
+  "name": "views",
+  "version": "0.0.1",
+  "description": "",
+  "main": "lib/views.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "del": "^1.2.0",
+    "gulp": "^3.9.0",
+    "gulp-typescript": "^2.8.0",
+    "gulp-wrap-umd": "^0.2.1",
+    "merge2": "^0.3.6",
+  },
+  "typescript": {
+    "definition": "views.d.ts"
+  }
+}

@@ -1,0 +1,31 @@
+{
+    "version": "1.5.0-beta",
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "isolatedModules": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "declaration": true,
+        "noImplicitAny": false,
+        "removeComments": false,
+        "noLib": false,
+        "preserveConstEnums": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "outDir": "./tmp"
+    },
+    "filesGlob": [
+        "./src/*.ts",
+        "./**/*.tsx",
+        "!./node_modules/**/*"
+    ],
+    "files": [
+        "./src/baseview.ts",
+        "./src/events.ts",
+        "./src/index.ts",
+        "./src/object.ts",
+        "./src/templateview.ts",
+        "./src/utils.ts",
+        "./src/view.ts"
+    ]
+}

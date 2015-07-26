@@ -1,0 +1,17 @@
+{
+  "name": "views",
+  "version": "0.0.1",
+  "main": "./lib/views.js",
+  "private": true,
+  "authors": [
+    "Softshag & Me <admin@softshag.dk>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
