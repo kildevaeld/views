@@ -12,6 +12,7 @@ export interface BaseViewOptions {
     };
 }
 export declare class BaseView<T extends HTMLElement> extends BaseObject {
+    static find(selector: string, context: HTMLElement): NodeList;
     tagName: string;
     className: string;
     id: string;
@@ -34,7 +35,7 @@ export declare class BaseView<T extends HTMLElement> extends BaseObject {
     render(options: any): any;
     appendTo(elm: HTMLElement): any;
     append(elm: HTMLElement, toSelector?: string): any;
-    $(selector: string): NodeList;
+    $(selector: string | HTMLElement): NodeList | HTMLElement;
     setElement(elm: T): void;
     remove(): BaseView<T>;
     private _createElement(tagName);

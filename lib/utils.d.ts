@@ -17,4 +17,5 @@ export declare module utils {
     function call(fn: Function, ctx: any, args: any[]): any;
     function slice(array: any): any;
     function uniqueId(prefix?: string): string;
+    function equal(a: any, b: any): boolean;
 }

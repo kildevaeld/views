@@ -14,7 +14,7 @@ export class TemplateView<T extends HTMLElement> extends views.View<T> {
 
   constructor (options?: TemplateViewOptions) {
     super(options)
-
+    
     if (options && options.template) {
       this.template = options.template
     }

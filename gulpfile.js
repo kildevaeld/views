@@ -6,7 +6,9 @@ const gulp = require('gulp'),
       wrap = require('gulp-wrap-umd'),
       merge = require('merge2'),
       del = require('del'),
-      webpack = require('gulp-webpack');
+      webpack = require('gulp-webpack'),
+      uglify = require('gulp-uglify'),
+      rename = require('gulp-rename');
 
 
 gulp.task('build', function () {
@@ -59,6 +61,14 @@ gulp.task('build:bower', ['build'], function () {
 gulp.task('definition', ['build', 'build:bower'], function () {
   return gulp.src('./templates/views.d.ts')
   .pipe(gulp.dest('./'));
+});
+
+gulp.task('uglify', ['build:bower'], function () {
+  return gulp.src('./dist/views.js')
+  .pipe(uglify())
+  .pipe(rename('views.min.js'))
+  .pipe(gulp.dest('dist'));
+
 });
 
 gulp.task('default', ['build', 'build:bower', 'definition']);

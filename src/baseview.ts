@@ -20,6 +20,9 @@ export interface BaseViewOptions {
 let viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events'];
 
 export class BaseView<T extends HTMLElement> extends BaseObject {
+  static find(selector: string, context: HTMLElement): NodeList {
+    return context.querySelectorAll(selector)
+  }
   tagName: string
   className: string
 
@@ -165,8 +168,10 @@ export class BaseView<T extends HTMLElement> extends BaseObject {
   append (elm: HTMLElement, toSelector?:string): any {
     if (toSelector != null) {
       let ret = this.$(toSelector)
-      if (ret.length) {
+      if (ret instanceof NodeList && ret.length > 0) {
         ret[0].appendChild(elm)
+      } else if (ret instanceof HTMLElement) {
+        ret.appendChild(elm)
       }
     } else {
       this.el.appendChild(elm)
@@ -174,8 +179,12 @@ export class BaseView<T extends HTMLElement> extends BaseObject {
     return this
   }
 
-  $ (selector: string): NodeList {
-    return this.el.querySelectorAll(selector)
+  $ (selector: string|HTMLElement): NodeList|HTMLElement {
+    if (selector instanceof HTMLElement) {
+      return selector
+    } else {
+        return BaseView.find(<string>selector, this.el)
+    }
   }
 
   setElement (elm: T) {
