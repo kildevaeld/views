@@ -4,7 +4,7 @@ export interface EventHandler {
   (...args: any[])
 }
 
-interface Events {
+export interface Events {
   name: string
   once: boolean
   handler: EventHandler
@@ -12,6 +12,7 @@ interface Events {
 }
 
 export interface IEventEmitter {
+  listeners: {[key: string]: Events[]}
   listenId: string
   on (event: string, fn:EventHandler, ctx?:any): any
   once(event: string, fn:EventHandler, ctx?:any): any
@@ -27,11 +28,13 @@ function getID (): string {
 
 export class EventEmitter implements IEventEmitter {
   listenId: string
-  private _events: { [key: string]: Events[] } = {}
+  private _listeners: { [key: string]: Events[] } = {}
   private _listeningTo: { [key: string]: any } = {}
-
+  public get listeners (): {[key: string]: Events[]} {
+    return this._listeners
+  }
   on (event: string, fn:EventHandler, ctx?:any, once:boolean = false): any {
-    let events = this._events[event]||(this._events[event]=[])
+    let events = this._listeners[event]||(this._listeners[event]=[])
     events.push({
       name: event,
       once: once,
@@ -47,16 +50,16 @@ export class EventEmitter implements IEventEmitter {
 
   off (eventName?: string, fn?:EventHandler): any {
     if (eventName == null) {
-      this._events = {}
-    } else if (this._events[eventName]){
-      let events = this._events[eventName]
+      this._listeners = {}
+    } else if (this._listeners[eventName]){
+      let events = this._listeners[eventName]
       if (fn == null) {
-        this._events[eventName] = []
+        this._listeners[eventName] = []
       } else {
         for (let i=0;i<events.length;i++) {
           let event = events[i]
           if (events[i].handler == fn) {
-            this._events[eventName].splice(i,1)
+            this._listeners[eventName].splice(i,1)
           }
         }
       }
@@ -66,7 +69,7 @@ export class EventEmitter implements IEventEmitter {
   }
 
   trigger (eventName: string, ...args:any[]): any {
-    let events = (this._events[eventName]||[]).concat(this._events["all"]||[])
+    let events = (this._listeners[eventName]||[]).concat(this._listeners["all"]||[])
 
     for (let i=0;i<events.length;i++) {
       let event = events[i]
@@ -74,8 +77,8 @@ export class EventEmitter implements IEventEmitter {
       event.handler.apply(event.ctx, args)
 
       if (event.once === true) {
-        let index = this._events[event.name].indexOf(event)
-        this._events[event.name].splice(index,1)
+        let index = this._listeners[event.name].indexOf(event)
+        this._listeners[event.name].splice(index,1)
       }
     }
 
@@ -100,16 +103,16 @@ export class EventEmitter implements IEventEmitter {
   }
 
   stopListening (obj?: IEventEmitter, event?:string, callback?:EventHandler) {
-      let listeningTo = this._listeningTo;
+      let listeningTo = this._listeningTo||{};
 
       var remove = !event && !callback;
-      //if (obj) (listeningTo = {})[obj.listenId] = obj;
+      if (obj) listeningTo[obj.listenId] = obj;
 
       for (var id in listeningTo) {
         obj = listeningTo[id];
         obj.off(event, callback, this);
 
-        //if (remove || !Object.keys(obj._listeners).length) delete this._listeningTo[id];
+        if (remove || !Object.keys(obj.listeners).length) delete this._listeningTo[id];
       }
       return this;
   }

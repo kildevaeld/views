@@ -75,12 +75,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	var EventEmitter = (function () {
 	    function EventEmitter() {
-	        this._events = {};
+	        this._listeners = {};
 	        this._listeningTo = {};
 	    }
+	    Object.defineProperty(EventEmitter.prototype, "listeners", {
+	        get: function () {
+	            return this._listeners;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
 	    EventEmitter.prototype.on = function (event, fn, ctx, once) {
 	        if (once === void 0) { once = false; }
-	        var events = this._events[event] || (this._events[event] = []);
+	        var events = this._listeners[event] || (this._listeners[event] = []);
 	        events.push({
 	            name: event,
 	            once: once,
@@ -94,18 +101,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    EventEmitter.prototype.off = function (eventName, fn) {
 	        if (eventName == null) {
-	            this._events = {};
+	            this._listeners = {};
 	        }
-	        else if (this._events[eventName]) {
-	            var events = this._events[eventName];
+	        else if (this._listeners[eventName]) {
+	            var events = this._listeners[eventName];
 	            if (fn == null) {
-	                this._events[eventName] = [];
+	                this._listeners[eventName] = [];
 	            }
 	            else {
 	                for (var i = 0; i < events.length; i++) {
 	                    var event_1 = events[i];
 	                    if (events[i].handler == fn) {
-	                        this._events[eventName].splice(i, 1);
+	                        this._listeners[eventName].splice(i, 1);
 	                    }
 	                }
 	            }
@@ -116,13 +123,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var _i = 1; _i < arguments.length; _i++) {
 	            args[_i - 1] = arguments[_i];
 	        }
-	        var events = (this._events[eventName] || []).concat(this._events["all"] || []);
+	        var events = (this._listeners[eventName] || []).concat(this._listeners["all"] || []);
 	        for (var i = 0; i < events.length; i++) {
 	            var event_2 = events[i];
 	            event_2.handler.apply(event_2.ctx, args);
 	            if (event_2.once === true) {
-	                var index = this._events[event_2.name].indexOf(event_2);
-	                this._events[event_2.name].splice(index, 1);
+	                var index = this._listeners[event_2.name].indexOf(event_2);
+	                this._listeners[event_2.name].splice(index, 1);
 	            }
 	        }
 	        return this;
@@ -140,12 +147,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return this.listenTo(obj, event, fn, ctx, true);
 	    };
 	    EventEmitter.prototype.stopListening = function (obj, event, callback) {
-	        var listeningTo = this._listeningTo;
+	        var listeningTo = this._listeningTo || {};
 	        var remove = !event && !callback;
-	        //if (obj) (listeningTo = {})[obj.listenId] = obj;
+	        if (obj)
+	            listeningTo[obj.listenId] = obj;
 	        for (var id in listeningTo) {
 	            obj = listeningTo[id];
 	            obj.off(event, callback, this);
+	            if (remove || !Object.keys(obj.listeners).length)
+	                delete this._listeningTo[id];
 	        }
 	        return this;
 	    };
