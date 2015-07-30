@@ -1,4 +1,9 @@
 import { BaseObject } from './object';
+export interface IView {
+    el: HTMLElement;
+    render(options: any): any;
+    destroy(): any;
+}
 export interface BaseViewOptions {
     el?: HTMLElement;
     id?: string;
@@ -11,7 +16,7 @@ export interface BaseViewOptions {
         [key: string]: Function | string;
     };
 }
-export declare class BaseView<T extends HTMLElement> extends BaseObject {
+export declare class BaseView<T extends HTMLElement> extends BaseObject implements IView {
     static find(selector: string, context: HTMLElement): NodeList;
     tagName: string;
     className: string;

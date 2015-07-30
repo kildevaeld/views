@@ -6,7 +6,12 @@ import {html, utils} from './utils'
 const paddedLt = /^\s*</;
 const unbubblebles = 'focus blur change'.split(' ');
 
-//const utils = views.utils
+
+export interface IView {
+  el: HTMLElement
+  render(options:any)
+  destroy(): any
+}
 
 export interface BaseViewOptions {
   el?: HTMLElement
@@ -19,7 +24,7 @@ export interface BaseViewOptions {
 
 let viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events'];
 
-export class BaseView<T extends HTMLElement> extends BaseObject {
+export class BaseView<T extends HTMLElement> extends BaseObject implements IView {
   static find(selector: string, context: HTMLElement): NodeList {
     return context.querySelectorAll(selector)
   }
