@@ -73,15 +73,20 @@ export class EventEmitter implements IEventEmitter {
 
     for (let i=0;i<events.length;i++) {
       let event = events[i]
+      let a = args
+      
+      if (event.name == 'all') {
+        a = [eventName].concat(args)
+      }
 
-      event.handler.apply(event.ctx, args)
+      event.handler.apply(event.ctx, a)
 
       if (event.once === true) {
         let index = this._listeners[event.name].indexOf(event)
         this._listeners[event.name].splice(index,1)
       }
     }
-
+    
     return this
 
 

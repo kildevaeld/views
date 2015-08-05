@@ -86,6 +86,8 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
   unbindUIElements () {
     this.ui = {}
   }
+  
+  
 }
 
 module views {

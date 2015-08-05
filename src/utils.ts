@@ -78,6 +78,10 @@ const noop = function () {}
 let idCounter = 0
 
 export module utils {
+  export function uniqueId (prefix=''): string {
+    return prefix + (++idCounter)
+  }
+  
   export function isObject (obj:any): boolean {
     return obj === Object(obj);
   }
@@ -115,6 +119,25 @@ export module utils {
     return (typeof ret === 'function') ? utils.call(ret,ctx,args||[]) : ret
 
   }
+  
+  export function values<T> (obj:Object): T[] {
+  	let output = []
+  
+  	for (let k in obj) if (utils.has(obj, k)) {
+  		output.push(obj[k])
+  	}
+  	return output
+  }
+  
+  export function find<T>(array:T[], callback:(item: T, index?:number) => boolean, ctx?:any): T {
+  	let i, v
+  	for (i=0;i<array.length;i++) {
+  		v = array[i]
+  		if (callback.call(ctx,v)) return v
+  	}
+  	return null
+  }
+  
   export function bind(method: Function, context: any, ...args:any[]): Function   {
     if (typeof method !== 'function') throw new Error('method not at function')
 
@@ -158,9 +181,7 @@ export module utils {
     return Array.prototype.slice.call(array)
   }
 
-  export function uniqueId (prefix=''): string {
-    return prefix + (++idCounter)
-  }
+  
 
   export function equal (a: any, b: any): boolean {
     return eq(a, b, [], [])
@@ -179,12 +200,16 @@ export module utils {
   }
   
   export function getOption(option: string, objs:any[]): any {
-    //let self = <any>this
+ 
     for (let o of objs) {
       if (isObject(o) && has(o, option)) return o[option]
     }
     
     return null
+  }
+  
+  export function deepFreeze (obj) {
+    if (!isObject(obj)) return
   }
 }
 

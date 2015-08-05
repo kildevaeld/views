@@ -1,7 +1,6 @@
 
 declare module 'views' {
-  import tmp = require('lib/index')
-  export = tmp
+  export * from 'views/lib/index'
 }
 
 declare module 'views/lib/index' {

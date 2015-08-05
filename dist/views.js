@@ -126,7 +126,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var events = (this._listeners[eventName] || []).concat(this._listeners["all"] || []);
 	        for (var i = 0; i < events.length; i++) {
 	            var event_2 = events[i];
-	            event_2.handler.apply(event_2.ctx, args);
+	            var a = args;
+	            if (event_2.name == 'all') {
+	                a = [eventName].concat(args);
+	            }
+	            event_2.handler.apply(event_2.ctx, a);
 	            if (event_2.once === true) {
 	                var index = this._listeners[event_2.name].indexOf(event_2);
 	                this._listeners[event_2.name].splice(index, 1);
@@ -471,12 +475,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    __extends(BaseObject, _super);
 	    function BaseObject() {
 	        _super.call(this);
-	        Object.defineProperty(this, '_isDestroyed', {
-	            enumerable: false,
-	            writable: true,
-	            configurable: false,
-	            value: false
-	        });
+	        this._isDestroyed = false;
 	    }
 	    Object.defineProperty(BaseObject.prototype, "isDestroyed", {
 	        get: function () {
@@ -491,8 +490,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.triggerMethod('before:destroy');
 	        this.stopListening();
 	        this.off();
-	        this._isDestroyed = false;
+	        this._isDestroyed = true;
 	        this.triggerMethod('destroy');
+	        if (typeof Object.freeze) {
+	            Object.freeze(this);
+	        }
 	        return this;
 	    };
 	    BaseObject.prototype.triggerMethod = function (eventName) {
@@ -508,15 +510,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var _i = 1; _i < arguments.length; _i++) {
 	            args[_i - 1] = arguments[_i];
 	        }
-	        /*let self = <any>this
-	        for (let o of args) {
-	          if (utils.has(o, prop)) return o[prop]
-	        }
-	        let options = self.options
-	        if (options && utils.isObject(options) && utils.has(options, prop)) {
-	          return options[prop]
-	        }
-	        return self[prop]*/
 	        if (this.options) {
 	            args.push(this.options);
 	        }
@@ -606,6 +599,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	var idCounter = 0;
 	var utils;
 	(function (utils) {
+	    function uniqueId(prefix) {
+	        if (prefix === void 0) { prefix = ''; }
+	        return prefix + (++idCounter);
+	    }
+	    utils.uniqueId = uniqueId;
 	    function isObject(obj) {
 	        return obj === Object(obj);
 	    }
@@ -656,6 +654,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return (typeof ret === 'function') ? utils.call(ret, ctx, args || []) : ret;
 	    }
 	    utils.result = result;
+	    function values(obj) {
+	        var output = [];
+	        for (var k in obj)
+	            if (utils.has(obj, k)) {
+	                output.push(obj[k]);
+	            }
+	        return output;
+	    }
+	    utils.values = values;
+	    function find(array, callback, ctx) {
+	        var i, v;
+	        for (i = 0; i < array.length; i++) {
+	            v = array[i];
+	            if (callback.call(ctx, v))
+	                return v;
+	        }
+	        return null;
+	    }
+	    utils.find = find;
 	    function bind(method, context) {
 	        var args = [];
 	        for (var _i = 2; _i < arguments.length; _i++) {
@@ -699,11 +716,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return Array.prototype.slice.call(array);
 	    }
 	    utils.slice = slice;
-	    function uniqueId(prefix) {
-	        if (prefix === void 0) { prefix = ''; }
-	        return prefix + (++idCounter);
-	    }
-	    utils.uniqueId = uniqueId;
 	    function equal(a, b) {
 	        return eq(a, b, [], []);
 	    }
@@ -719,7 +731,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    utils.triggerMethodOn = triggerMethodOn;
 	    function getOption(option, objs) {
-	        //let self = <any>this
 	        for (var _i = 0; _i < objs.length; _i++) {
 	            var o = objs[_i];
 	            if (isObject(o) && has(o, option))
@@ -728,6 +739,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return null;
 	    }
 	    utils.getOption = getOption;
+	    function deepFreeze(obj) {
+	        if (!isObject(obj))
+	            return;
+	    }
+	    utils.deepFreeze = deepFreeze;
 	})(utils = exports.utils || (exports.utils = {}));
 	function eq(a, b, aStack, bStack) {
 	    // Identical objects are equal. `0 === -0`, but they aren't identical.

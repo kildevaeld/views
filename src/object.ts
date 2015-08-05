@@ -6,18 +6,11 @@ export class BaseObject extends EventEmitter {
 
   static extend = extend
 
-  private _isDestroyed: boolean
+  private _isDestroyed: boolean = false
 
   constructor () {
     super()
-    Object.defineProperty(this, '_isDestroyed', {
-      enumerable: false,
-      writable: true,
-      configurable: false,
-      value: false
-    })
-    
-    
+   
   }
 
   get isDestroyed () {
@@ -31,9 +24,13 @@ export class BaseObject extends EventEmitter {
 
     this.stopListening()
     this.off()
-    this._isDestroyed = false
+    this._isDestroyed = true
 
     this.triggerMethod('destroy')
+
+    if (typeof Object.freeze) {
+      Object.freeze(this)
+    }
 
     return this
   }
@@ -44,15 +41,7 @@ export class BaseObject extends EventEmitter {
   }
 
   getOption (prop: string, ...args: Object[]): any {
-    /*let self = <any>this
-    for (let o of args) {
-      if (utils.has(o, prop)) return o[prop]
-    }
-    let options = self.options
-    if (options && utils.isObject(options) && utils.has(options, prop)) {
-      return options[prop]
-    }
-    return self[prop]*/
+   
     if ((<any>this).options) {
       args.push((<any>this).options)
     }
