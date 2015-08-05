@@ -18,4 +18,6 @@ export declare module utils {
     function slice(array: any): any;
     function uniqueId(prefix?: string): string;
     function equal(a: any, b: any): boolean;
+    function triggerMethodOn(obj: any, eventName: string, args: any[]): void;
+    function getOption(option: string, objs: any[]): any;
 }

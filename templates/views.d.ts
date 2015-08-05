@@ -1,11 +1,11 @@
 
 declare module 'views' {
-  export * from 'views/lib/view'
-  export * from 'views/lib/templateview'
-  export * from 'views/lib/baseview'
-  export * from 'views/lib/utils'
-  export * from 'views/lib/events'
-  export * from 'views/lib/object'
+  import tmp = require('lib/index')
+  export = tmp
+}
+
+declare module 'views/lib/index' {
+  export * from 'views/lib/index'
 }
 
 declare module 'views/lib/view' {

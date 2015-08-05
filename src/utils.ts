@@ -165,6 +165,27 @@ export module utils {
   export function equal (a: any, b: any): boolean {
     return eq(a, b, [], [])
   }
+  
+  export function triggerMethodOn (obj:any, eventName:string, args: any[]) {
+    
+    let ev = "on" + eventName
+    if (obj[ev] && typeof obj[ev] === 'function') {
+      utils.call(obj[ev], obj, args)
+    }
+    
+    if (typeof obj.trigger === 'function') {
+       utils.call(obj.trigger, obj, args)
+    }
+  }
+  
+  export function getOption(option: string, objs:any[]): any {
+    //let self = <any>this
+    for (let o of objs) {
+      if (isObject(o) && has(o, option)) return o[option]
+    }
+    
+    return null
+  }
 }
 
 

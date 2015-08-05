@@ -470,8 +470,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var BaseObject = (function (_super) {
 	    __extends(BaseObject, _super);
 	    function BaseObject() {
-	        _super.apply(this, arguments);
-	        this._isDestroyed = false;
+	        _super.call(this);
+	        Object.defineProperty(this, '_isDestroyed', {
+	            enumerable: false,
+	            writable: true,
+	            configurable: false,
+	            value: false
+	        });
 	    }
 	    Object.defineProperty(BaseObject.prototype, "isDestroyed", {
 	        get: function () {
@@ -495,12 +500,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var _i = 1; _i < arguments.length; _i++) {
 	            args[_i - 1] = arguments[_i];
 	        }
-	        var ev = "on" + eventName;
-	        utils_1.utils;
-	        if (this[ev]) {
-	            utils_1.utils.call(this[ev], this, args);
-	        }
-	        utils_1.utils.call(this.trigger, this, args);
+	        utils_1.utils.triggerMethodOn(this, eventName, args);
 	        return this;
 	    };
 	    BaseObject.prototype.getOption = function (prop) {
@@ -508,17 +508,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var _i = 1; _i < arguments.length; _i++) {
 	            args[_i - 1] = arguments[_i];
 	        }
-	        var self = this;
-	        for (var _a = 0; _a < args.length; _a++) {
-	            var o = args[_a];
-	            if (utils_1.utils.has(o, prop))
-	                return o[prop];
+	        /*let self = <any>this
+	        for (let o of args) {
+	          if (utils.has(o, prop)) return o[prop]
 	        }
-	        var options = self.options;
-	        if (options && utils_1.utils.isObject(options) && utils_1.utils.has(options, prop)) {
-	            return options[prop];
+	        let options = self.options
+	        if (options && utils.isObject(options) && utils.has(options, prop)) {
+	          return options[prop]
 	        }
-	        return self[prop];
+	        return self[prop]*/
+	        if (this.options) {
+	            args.push(this.options);
+	        }
+	        args.push(this);
+	        return utils_1.utils.getOption(prop, args);
 	    };
 	    BaseObject.extend = utils_1.extend;
 	    return BaseObject;
@@ -705,6 +708,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return eq(a, b, [], []);
 	    }
 	    utils.equal = equal;
+	    function triggerMethodOn(obj, eventName, args) {
+	        var ev = "on" + eventName;
+	        if (obj[ev] && typeof obj[ev] === 'function') {
+	            utils.call(obj[ev], obj, args);
+	        }
+	        if (typeof obj.trigger === 'function') {
+	            utils.call(obj.trigger, obj, args);
+	        }
+	    }
+	    utils.triggerMethodOn = triggerMethodOn;
+	    function getOption(option, objs) {
+	        //let self = <any>this
+	        for (var _i = 0; _i < objs.length; _i++) {
+	            var o = objs[_i];
+	            if (isObject(o) && has(o, option))
+	                return o[option];
+	        }
+	        return null;
+	    }
+	    utils.getOption = getOption;
 	})(utils = exports.utils || (exports.utils = {}));
 	function eq(a, b, aStack, bStack) {
 	    // Identical objects are equal. `0 === -0`, but they aren't identical.
