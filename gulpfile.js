@@ -8,12 +8,13 @@ const gulp = require('gulp'),
       del = require('del'),
       webpack = require('gulp-webpack'),
       uglify = require('gulp-uglify'),
-      rename = require('gulp-rename');
+      rename = require('gulp-rename'),
+      jasmine = require('gulp-jasmine-phantom');
 
 
 gulp.task('build', function () {
 
-  let result = gulp.src('./src/*.ts')
+  let result = gulp.src('./src/**/*.ts')
   .pipe(tsc({
     "target": "ES5",
     "module": "commonjs",
@@ -41,6 +42,7 @@ gulp.task('build', function () {
 gulp.task('build:bower', ['build'], function () {
   return gulp.src('./lib/index.js')
   .pipe(webpack({
+    devtool: "source-map",
     resolve: {
         extensions: ['', '.webpack.js', '.web.js', '.ts', '.js']
     },
@@ -79,12 +81,48 @@ gulp.task('uglify', ['build:bower'], function () {
 
 });
 
-gulp.task('default', ['build', 'build:bower', 'definition']);
 
-gulp.task('watch', function () {
-  gulp.watch('./src/**/*.ts', ['build']);
+
+gulp.task('watch', ['build:bower'],function () {
+  gulp.watch('./src/**/*.ts', ['build:bower']);
 });
 
 gulp.task('clean', function (done) {
-  del(['./lib','./dist'], done);
+  del(['./lib','./dist', './docs'], done);
 });
+
+
+gulp.task('test', ['build'], function () {
+  return gulp.src('./spec/*.js')
+  .pipe(jasmine({
+    integration: false
+  }))
+})
+
+gulp.task('docs', function (done) {
+  let exec = require('child_process').exec
+ 
+  exec('./node_modules/.bin/tsc --outDir ./tmp', function (err) {
+    if (err) return done(err)
+    
+    exec('./node_modules/.bin/jsdoc -R README.md -r -d ./docs tmp/*.js', function (err) {
+      exec('rm -r tmp', done)
+    })
+    
+  })
+})
+
+gulp.task('test:integration', ['build:bower'], function () {
+  return gulp.src('./spec/integration/*.js')
+  .pipe(jasmine({
+    integration: true,
+    keepRunner: './',
+    vendor: [
+      './dist/views.js',
+      './node_modules/jquery/dist/jquery.js',
+      './node_modules/jasmine-jquery/lib/jasmine-jquery.js' 
+     ]
+  }))
+})
+
+gulp.task('default', ['clean','build', 'build:bower', 'definition', 'test','test:integration', 'docs']);

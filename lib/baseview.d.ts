@@ -40,7 +40,6 @@ export declare class BaseView<T extends HTMLElement> extends BaseObject implemen
      * @extends BaseObject
      */
     constructor(options?: BaseViewOptions);
-    initialize(): void;
     /**
      * Delegate events
      * @param {EventsMap} events

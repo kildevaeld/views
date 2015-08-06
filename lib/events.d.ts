@@ -25,7 +25,7 @@ export declare class EventEmitter implements IEventEmitter {
         [key: string]: Events[];
     };
     on(event: string, fn: EventHandler, ctx?: any, once?: boolean): any;
-    once(event: string, fn: EventHandler): any;
+    once(event: string, fn: EventHandler, ctx?: any): any;
     off(eventName?: string, fn?: EventHandler): any;
     trigger(eventName: string, ...args: any[]): any;
     listenTo(obj: IEventEmitter, event: string, fn: EventHandler, ctx?: any, once?: boolean): any;

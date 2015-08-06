@@ -9,6 +9,7 @@ export declare class Region extends BaseObject {
     private _view;
     options: RegionOptions;
     view: IView;
+    el: HTMLElement;
     /**
      * Build region from a definition
      * @param {Object|String|Region} def The description of the region

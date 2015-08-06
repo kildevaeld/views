@@ -44,8 +44,8 @@ export class EventEmitter implements IEventEmitter {
     return this
   }
 
-  once (event: string, fn:EventHandler): any {
-    return this.on(event, fn, true)
+  once (event: string, fn:EventHandler, ctx?:any): any {
+    return this.on(event, fn, ctx, true)
   }
 
   off (eventName?: string, fn?:EventHandler): any {
@@ -80,8 +80,9 @@ export class EventEmitter implements IEventEmitter {
       }
 
       event.handler.apply(event.ctx, a)
-
+      
       if (event.once === true) {
+       
         let index = this._listeners[event.name].indexOf(event)
         this._listeners[event.name].splice(index,1)
       }

@@ -11,41 +11,41 @@
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-
+/******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-
+/******/
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-
+/******/
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			exports: {},
 /******/ 			id: moduleId,
 /******/ 			loaded: false
 /******/ 		};
-
+/******/
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
+/******/
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
-
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-
-
+/******/
+/******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-
+/******/
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-
+/******/
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-
+/******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
 /******/ })
@@ -66,8 +66,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	__export(__webpack_require__(7));
 	__export(__webpack_require__(8));
 	__export(__webpack_require__(9));
-	__export(__webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./extensions/data-view\""); e.code = 'MODULE_NOT_FOUND'; throw e; }())));
-	__export(__webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./extensions/collection-view\""); e.code = 'MODULE_NOT_FOUND'; throw e; }())));
+	__export(__webpack_require__(10));
+	__export(__webpack_require__(11));
 
 
 /***/ },
@@ -186,7 +186,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else {
 	            this.delegateEvents();
 	        }
-	        this.initialize();
 	    }
 	    BaseView.find = function (selector, context) {
 	        return context.querySelectorAll(selector);
@@ -198,8 +197,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        enumerable: true,
 	        configurable: true
 	    });
-	    BaseView.prototype.initialize = function () {
-	    };
 	    /**
 	     * Delegate events
 	     * @param {EventsMap} events
@@ -477,8 +474,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	        return this;
 	    };
-	    EventEmitter.prototype.once = function (event, fn) {
-	        return this.on(event, fn, true);
+	    EventEmitter.prototype.once = function (event, fn, ctx) {
+	        return this.on(event, fn, ctx, true);
 	    };
 	    EventEmitter.prototype.off = function (eventName, fn) {
 	        if (eventName == null) {
@@ -627,6 +624,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	/** @module utils */
 	var utils;
 	(function (utils) {
+	    function camelcase(input) {
+	        return input.toLowerCase().replace(/-(.)/g, function (match, group1) {
+	            return group1.toUpperCase();
+	        });
+	    }
+	    utils.camelcase = camelcase;
+	    ;
 	    /** Generate an unique id with an optional prefix
 	     * @param {string} prefix
 	     * @return {string}
@@ -736,6 +740,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    utils.bind = bind;
 	    function call(fn, ctx, args) {
+	        if (args === void 0) { args = []; }
 	        switch (args.length) {
 	            case 0:
 	                return fn.call(ctx);
@@ -763,11 +768,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    utils.equal = equal;
 	    function triggerMethodOn(obj, eventName, args) {
-	        var ev = "on" + eventName;
+	        var ev = camelcase("on-" + eventName.replace(':', '-'));
 	        if (obj[ev] && typeof obj[ev] === 'function') {
 	            utils.call(obj[ev], obj, args);
 	        }
 	        if (typeof obj.trigger === 'function') {
+	            args = [eventName].concat(args);
 	            utils.call(obj.trigger, obj, args);
 	        }
 	    }
@@ -976,6 +982,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        enumerable: true,
 	        configurable: true
 	    });
+	    Object.defineProperty(Region.prototype, "el", {
+	        get: function () {
+	            return this._el;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
 	    /**
 	     * Build region from a definition
 	     * @param {Object|String|Region} def The description of the region
@@ -1056,6 +1069,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        else if (view.remove && typeof view.remove === 'function') {
 	            view.remove();
 	        }
+	        this._el.innerHTML = '';
 	    };
 	    return Region;
 	})(object_1.BaseObject);
@@ -1069,7 +1083,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function buildBySelector(selector, Klass) {
 	    if (Klass === void 0) { Klass = Region; }
 	    var el = document.querySelector(selector);
-	    if (el)
+	    if (!el)
 	        throw new Error('selector must exist in the dom');
 	    return new Klass({
 	        el: el
@@ -1249,7 +1263,385 @@ return /******/ (function(modules) { // webpackBootstrap
 	})(templateview_1.TemplateView);
 
 
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    __.prototype = b.prototype;
+	    d.prototype = new __();
+	};
+	var templateview_1 = __webpack_require__(6);
+	var view_1 = __webpack_require__(1);
+	var utils_1 = __webpack_require__(5);
+	var DataView = (function (_super) {
+	    __extends(DataView, _super);
+	    /**
+	     * DataView
+	     * @param {DataViewOptions} options
+	     * @extends TemplateView
+	     */
+	    function DataView(options) {
+	        _super.call(this, options);
+	        if (options.model) {
+	            this._model = options.model;
+	        }
+	        if (options.collection) {
+	            this._collection = options.collection;
+	        }
+	    }
+	    Object.defineProperty(DataView.prototype, "model", {
+	        get: function () { return this._model; },
+	        set: function (model) {
+	            this.setModel(model);
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(DataView.prototype, "collection", {
+	        get: function () { return this._collection; },
+	        set: function (collection) {
+	            this.setCollection(collection);
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    DataView.prototype.setModel = function (model) {
+	        if (this._model === model)
+	            return;
+	        this.triggerMethod('before:model', this._model, model);
+	        if (this._model) {
+	            this.stopListening(this._model);
+	        }
+	        this._model = model;
+	        this.triggerMethod('model', model);
+	    };
+	    DataView.prototype.setCollection = function (collection) {
+	        if (this._collection === collection)
+	            return;
+	        this.triggerMethod('before:collection', this._collection, collection);
+	        if (this._collection) {
+	            this.stopListening(this._collection);
+	        }
+	        this._collection = collection;
+	        this.triggerMethod('collection', collection);
+	    };
+	    DataView.prototype.getTemplateData = function () {
+	        return this.model ? this.model.toJSON() : {};
+	    };
+	    DataView.prototype.delegateEvents = function (events) {
+	        events = events || this.events;
+	        events = view_1.normalizeUIKeys(events);
+	        var _a = this._filterEvents(events), c = _a.c, e = _a.e, m = _a.m;
+	        _super.prototype.delegateEvents.call(this, e);
+	        this._delegateDataEvents(m, c);
+	        return this;
+	    };
+	    DataView.prototype.undelegateEvents = function () {
+	        this._undelegateDataEvents();
+	        _super.prototype.undelegateEvents.call(this);
+	        return this;
+	    };
+	    DataView.prototype._delegateDataEvents = function (model, collection) {
+	        var _this = this;
+	        this._dataEvents = {};
+	        var fn = function (item, ev) {
+	            if (!_this[item])
+	                return {};
+	            var out = {}, k, f;
+	            for (k in ev) {
+	                f = utils_1.utils.bind(ev[k], _this);
+	                _this[item].on(k, f);
+	                out[item + ":" + k] = f;
+	            }
+	            return out;
+	        };
+	        utils_1.utils.extend(this._dataEvents, fn('model', model), fn('collection', collection));
+	    };
+	    DataView.prototype._undelegateDataEvents = function () {
+	        if (!this._dataEvents)
+	            return;
+	        var k, v;
+	        for (k in this._dataEvents) {
+	            v = this._dataEvents[k];
+	            var _a = k.split(':'), item = _a[0], ev = _a[1];
+	            if (!this[item])
+	                continue;
+	            this[item].off(ev, v);
+	        }
+	        delete this._dataEvents;
+	    };
+	    DataView.prototype._filterEvents = function (obj) {
+	        /*jshint -W030 */
+	        var c = {}, m = {}, e = {}, k, v;
+	        for (k in obj) {
+	            var _a = k.split(' '), ev = _a[0], t = _a[1];
+	            ev = ev.trim(), t = t ? t.trim() : "", v = obj[k];
+	            if (t === 'collection') {
+	                c[ev] = v;
+	            }
+	            else if (t === 'model') {
+	                m[ev] = v;
+	            }
+	            else {
+	                e[k] = v;
+	            }
+	        }
+	        return { c: c, m: m, e: e };
+	    };
+	    return DataView;
+	})(templateview_1.TemplateView);
+	exports.DataView = DataView;
+
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    __.prototype = b.prototype;
+	    d.prototype = new __();
+	};
+	var data_view_1 = __webpack_require__(10);
+	var utils_1 = __webpack_require__(5);
+	var Buffer = (function () {
+	    function Buffer() {
+	        this.children = [];
+	        this.buffer = document.createDocumentFragment();
+	    }
+	    Buffer.prototype.append = function (view) {
+	        this.children.push(view);
+	        this.buffer.appendChild(view.el);
+	    };
+	    return Buffer;
+	})();
+	var CollectionView = (function (_super) {
+	    __extends(CollectionView, _super);
+	    /** CollectionView
+	   * @extends DataView
+	   * @param {DataViewOptions} options
+	   */
+	    function CollectionView(options) {
+	        _super.call(this, options);
+	    }
+	    /**
+	   * Render the collection view and alle of the children
+	   * @return {CollectionView}
+	   *
+	   */
+	    CollectionView.prototype.render = function (options) {
+	        this.destroyChildren();
+	        this._destroyContainer();
+	        _super.prototype.render.call(this, options);
+	        this._initContainer();
+	        if (this.collection && this.collection.length) {
+	            this.renderCollection();
+	        }
+	        return this;
+	    };
+	    CollectionView.prototype.setCollection = function (collection) {
+	        this._delegateCollectionEvents();
+	    };
+	    CollectionView.prototype.renderCollection = function () {
+	        this.destroyChildren();
+	        if (this.collection.length != 0) {
+	            this.hideEmptyView();
+	            this._startBuffering();
+	            this._renderCollection();
+	            this._stopBuffering();
+	        }
+	        else {
+	            this.showEmptyView();
+	        }
+	    };
+	    /**
+	   * Returns a new instance of this.childView with attached model.
+	   *
+	   * @param {IModel} model
+	   * @protected
+	   */
+	    CollectionView.prototype.getChildView = function (model) {
+	        var View = this.getOption('childView') || data_view_1.DataView, options = this.getOption('childViewOptions') || {};
+	        return new View(utils_1.utils.extend({
+	            model: model
+	        }, options));
+	    };
+	    CollectionView.prototype.renderChildView = function (view, index) {
+	        this.triggerMethod('before:render:child', view);
+	        view.render();
+	        this._attachHTML(view, index);
+	        this.triggerMethod('render:child', view);
+	    };
+	    CollectionView.prototype.showEmptyView = function () {
+	    };
+	    CollectionView.prototype.hideEmptyView = function () {
+	    };
+	    CollectionView.prototype.destroyChildren = function () {
+	        if (this._container) {
+	            this._container.innerHTML = '';
+	        }
+	        if (this.children.length === 0)
+	            return;
+	        this.children.forEach(this.removeChildView, this);
+	        this.children = [];
+	    };
+	    CollectionView.prototype.removeChildView = function (view) {
+	        if (!view)
+	            return;
+	        if (typeof view.destroy === 'function') {
+	            view.destroy();
+	        }
+	        else if (typeof view.remove === 'function') {
+	            view.remove();
+	        }
+	        this.stopListening(view);
+	        //this.children.delete(view);
+	        this.children.splice(this.children.indexOf(view), 1);
+	        if (this.children.length === 0) {
+	            this.showEmptyView();
+	        }
+	        this._updateIndexes(view, false);
+	    };
+	    /**
+	   * Destroy the collection view and all of it's children
+	   * @see JaffaMVC.View
+	   * @return {JaffaMVC.View}
+	   */
+	    CollectionView.prototype.destroy = function () {
+	        this.triggerMethod('before:destroy:children');
+	        this.destroyChildren();
+	        this.triggerMethod('destroy:children');
+	        this.hideEmptyView();
+	        //if (this._emptyView) this.hideEmptyView();
+	        return _super.prototype.destroy.call(this);
+	    };
+	    CollectionView.prototype._renderCollection = function () {
+	        var _this = this;
+	        this.triggerMethod('before:render:collection');
+	        this.collection.forEach(function (model) {
+	            var view = _this.getChildView(model);
+	            _this._appendChild(view);
+	        });
+	        this.triggerMethod('render:collection');
+	    };
+	    CollectionView.prototype._appendChild = function (view, index) {
+	        this._updateIndexes(view, true, index);
+	        this._proxyChildViewEvents(view);
+	        this.children.push(view);
+	        this.hideEmptyView();
+	        this.renderChildView(view, index);
+	        this.triggerMethod('add:child', view);
+	    };
+	    /**
+	   * Attach the childview's element to the CollectionView.
+	   * When in buffer mode, the view is added to a documentfragment to optimize performance
+	   * @param {View} view  A view
+	   * @param {Number} index The index in which to insert the view
+	   * @private
+	   */
+	    CollectionView.prototype._attachHTML = function (view, index) {
+	        if (this._buffer) {
+	            this._buffer.append(view);
+	        }
+	        else {
+	            //if (this._isShown) {
+	            //  utils.triggerMethodOn(view, 'before:show');
+	            //}
+	            if (!this._insertBefore(view, index)) {
+	                this._insertAfter(view);
+	            }
+	        }
+	    };
+	    /**
+	   * Proxy event froms childview to the collectionview
+	   * @param {JaffaMVC.View} view
+	   * @private
+	   * @method  _proxyChildViewEvents
+	   * @memberOf JaffaMVC.CollectionView#
+	   */
+	    CollectionView.prototype._proxyChildViewEvents = function (view) {
+	        var prefix = this.getOption('prefix') || 'childview';
+	        this.listenTo(view, 'all', function () {
+	            var args = utils_1.utils.slice(arguments);
+	            args[0] = prefix + ':' + args[0];
+	            args.splice(1, 0, view);
+	            utils_1.utils.call(this.triggerMethod, this, args);
+	        });
+	    };
+	    CollectionView.prototype._updateIndexes = function (view, increment, index) {
+	        if (!this.sort)
+	            return;
+	        if (increment) {
+	            view._index = index;
+	            this.children.forEach(function (lView, index) {
+	                if (lView._index >= view._index) {
+	                    lView._index++;
+	                }
+	            });
+	        }
+	        else {
+	            this.children.forEach(function (lView) {
+	                if (lView._index >= view._index) {
+	                    lView._index--;
+	                }
+	            });
+	        }
+	    };
+	    CollectionView.prototype._startBuffering = function () {
+	        this._buffer = new Buffer();
+	    };
+	    CollectionView.prototype._stopBuffering = function () {
+	        this._container.appendChild(this._buffer.buffer);
+	        delete this._buffer;
+	    };
+	    CollectionView.prototype._initContainer = function () {
+	        var container = this.getOption('childViewContainer');
+	        if (container) {
+	            container = this.$(container)[0];
+	        }
+	        else {
+	            container = this.el;
+	        }
+	        this._container = container;
+	    };
+	    CollectionView.prototype._destroyContainer = function () {
+	        if (this._container)
+	            delete this._container;
+	    };
+	    // Internal method. Check whether we need to insert the view into
+	    // the correct position.
+	    CollectionView.prototype._insertBefore = function (childView, index) {
+	        var currentView;
+	        var findPosition = this.sort && (index < this.children.length - 1);
+	        if (findPosition) {
+	            // Find the view after this one
+	            currentView = utils_1.utils.find(this.children, function (view) {
+	                return view._index === index + 1;
+	            });
+	        }
+	        if (currentView) {
+	            this._container.insertBefore(childView.el, currentView.el);
+	            return true;
+	        }
+	        return false;
+	    };
+	    // Internal method. Append a view to the end of the $el
+	    CollectionView.prototype._insertAfter = function (childView) {
+	        this._container.appendChild(childView.el);
+	    };
+	    CollectionView.prototype._delegateCollectionEvents = function () {
+	    };
+	    return CollectionView;
+	})(data_view_1.DataView);
+	exports.CollectionView = CollectionView;
+
+
 /***/ }
 /******/ ])
 });
 ;
+//# sourceMappingURL=views.js.map

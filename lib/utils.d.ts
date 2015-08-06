@@ -8,6 +8,7 @@ export declare module html {
 }
 /** @module utils */
 export declare module utils {
+    function camelcase(input: any): any;
     /** Generate an unique id with an optional prefix
      * @param {string} prefix
      * @return {string}
@@ -23,7 +24,7 @@ export declare module utils {
     function find<T>(array: T[], callback: (item: T, index?: number) => boolean, ctx?: any): T;
     function proxy(from: any, to: any, fns: any): void;
     function bind(method: Function, context: any, ...args: any[]): Function;
-    function call(fn: Function, ctx: any, args: any[]): any;
+    function call(fn: Function, ctx: any, args?: any[]): any;
     function slice(array: any): any;
     function equal(a: any, b: any): boolean;
     function triggerMethodOn(obj: any, eventName: string, args?: any[]): void;

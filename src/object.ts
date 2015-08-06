@@ -44,6 +44,7 @@ export class BaseObject extends EventEmitter {
   }
 
   triggerMethod (eventName: string, ...args: any[]): any {
+    
     utils.triggerMethodOn(this, eventName, args)
     return this
   }

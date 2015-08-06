@@ -7,7 +7,7 @@ export interface IModel extends IEventEmitter {
 }
 export interface ICollection extends IEventEmitter {
     length: number;
-    forEach(fn: (item: any) => any): any;
+    forEach(fn: (item: IModel) => any): any;
 }
 export interface IDataView extends IView {
     model: IModel;

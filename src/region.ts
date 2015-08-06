@@ -24,6 +24,10 @@ export class Region extends BaseObject {
     this.show(view)
   }
   
+  public get el (): HTMLElement {
+    return this._el
+  }
+  
   /**
    * Build region from a definition
    * @param {Object|String|Region} def The description of the region
@@ -137,6 +141,8 @@ export class Region extends BaseObject {
     } else if (view.remove && typeof view.remove === 'function') {
       view.remove();
     }
+    
+    this._el.innerHTML = ''
 
   }
 }
@@ -152,7 +158,7 @@ function buildBySelector(selector:string, Klass:any = Region) {
 
   var el = document.querySelector(selector)
 
-  if (el) throw new Error('selector must exist in the dom')
+  if (!el) throw new Error('selector must exist in the dom')
  
   return new Klass({
     el: el

@@ -78,6 +78,13 @@ const noop = function () {}
 let idCounter = 0
 /** @module utils */
 export module utils {
+  
+  export function camelcase(input) {
+	   return input.toLowerCase().replace(/-(.)/g, function(match, group1) {
+		    return group1.toUpperCase();
+	   });
+  };
+  
   /** Generate an unique id with an optional prefix
    * @param {string} prefix 
    * @return {string}
@@ -171,7 +178,7 @@ export module utils {
     return fBound
   }
 
-  export function call (fn: Function, ctx: any, args: any[]): any {
+  export function call (fn: Function, ctx: any, args: any[] = []): any {
     switch (args.length) {
       case 0:
         return fn.call(ctx);
@@ -201,13 +208,17 @@ export module utils {
   }
   
   export function triggerMethodOn (obj:any, eventName:string, args?: any[]) {
-    
-    let ev = "on" + eventName
+   
+    let ev = camelcase("on-" + eventName.replace(':','-'))
+   
+  
     if (obj[ev] && typeof obj[ev] === 'function') {
+      
       utils.call(obj[ev], obj, args)
     }
     
     if (typeof obj.trigger === 'function') {
+        args = [eventName].concat(args)
        utils.call(obj.trigger, obj, args)
     }
   }
