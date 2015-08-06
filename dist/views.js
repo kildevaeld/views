@@ -891,7 +891,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return {};
 	    };
 	    TemplateView.prototype.render = function (options) {
-	        //super.render(options)
+	        this.triggerMethod('before:render');
 	        this.undelegateEvents();
 	        var template;
 	        if (typeof this.template == 'function') {
@@ -904,6 +904,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.el.innerHTML = template;
 	        }
 	        this.delegateEvents();
+	        this.triggerMethod('render');
 	        return this;
 	    };
 	    return TemplateView;
@@ -1072,17 +1073,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    'removeRegion',
 	    'removeRegions',
 	];
-	/**
-	  Region manager
-	  @constructor
-	*/
 	var RegionManager = (function (_super) {
 	    __extends(RegionManager, _super);
+	    /** Region manager
+	     *
+	     */
 	    function RegionManager() {
 	        _super.call(this);
 	        this._regions = {};
 	    }
 	    Object.defineProperty(RegionManager.prototype, "regions", {
+	        /**
+	         * Regions
+	         * @type {string:Region}
+	         */
 	        get: function () {
 	            return this._regions;
 	        },
@@ -1092,7 +1096,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	      * Add one or more regions to the region manager
 	      * @param {Object} regions
-	      * @memberof JaffaMVC.RegionManager#
 	      */
 	    RegionManager.prototype.addRegions = function (regions) {
 	        var def, out = {}, keys = Object.keys(regions);
@@ -1105,8 +1108,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * Add a region to the RegionManager
 	     * @param {String} name   The name of the regions
-	     * @param {String|Object|JaffaMVC.Region|HTMLElement} def The region to associate with the name and the RegionManager
-	     * @memberof JaffaMVC.RegionManager#
+	     * @param {String|Object|Region|HTMLElement} def The region to associate with the name and the RegionManager
 	     */
 	    RegionManager.prototype.addRegion = function (name, def) {
 	        var region = region_1.Region.buildRegion(def);
@@ -1116,7 +1118,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /**
 	     * Remove one or more regions from the manager
 	     * @param {...name} name A array of region names
-	     * @memberof JaffaMVC.RegionManager#
 	     */
 	    RegionManager.prototype.removeRegion = function (names) {
 	        //let names = utils.slice(arguments)
@@ -1130,7 +1131,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    /**
 	     * Destroy the regionmanager
-	     * @memberof JaffaMVC.RegionManager#
 	     */
 	    RegionManager.prototype.destroy = function () {
 	        this.removeRegions();
@@ -1138,7 +1138,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    /**
 	     * Remove all regions from the manager
-	     * @memberof JaffaMVC.RegionManager#
 	     */
 	    RegionManager.prototype.removeRegions = function () {
 	        this.removeRegion.apply(this, Object.keys(this._regions));
