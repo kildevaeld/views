@@ -34,3 +34,11 @@ declare module 'views/lib/baseview' {
 declare module 'views/lib/templateview' {
   export * from 'views/lib/templateview'
 }
+
+declare module 'views/lib/extensions/collection-view' {
+  export * from 'views/lib/extensions/collection-view'
+}
+
+declare module 'views/lib/extensions/data-view' {
+  export * from 'views/lib/extensions/data-view'
+}
