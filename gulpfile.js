@@ -46,7 +46,15 @@ gulp.task('build:bower', ['build'], function () {
     },
     module: {
         loaders: [
-            { test: /\.ts$/, loader: 'ts-loader' }
+            
+            /*{ 
+              test: /\.js$/, 
+              loader: 'babel',
+              query: {
+                optional: ['runtime'],
+                loose: ['es6.classes']
+              } 
+            }*/
         ]
     },
     output: {

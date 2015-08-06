@@ -138,6 +138,15 @@ export module utils {
   	return null
   }
   
+  export function proxy (from, to, fns) {
+		if (!Array.isArray(fns)) fns = [fns];
+		fns.forEach(function(fn) {
+			if (typeof to[fn] === 'function') {
+				from[fn] =  utils.bind(to[fn],to);
+			}
+		});
+	}
+  
   export function bind(method: Function, context: any, ...args:any[]): Function   {
     if (typeof method !== 'function') throw new Error('method not at function')
 
@@ -187,7 +196,7 @@ export module utils {
     return eq(a, b, [], [])
   }
   
-  export function triggerMethodOn (obj:any, eventName:string, args: any[]) {
+  export function triggerMethodOn (obj:any, eventName:string, args?: any[]) {
     
     let ev = "on" + eventName
     if (obj[ev] && typeof obj[ev] === 'function') {
@@ -210,6 +219,9 @@ export module utils {
   
   export function deepFreeze (obj) {
     if (!isObject(obj)) return
+    
+    
+    
   }
 }
 

@@ -25,7 +25,9 @@ export class TemplateView<T extends HTMLElement> extends views.View<T> {
   }
 
   render (options:any): any {
-    //super.render(options)
+    
+    this.triggerMethod('before:render')
+    
     this.undelegateEvents()
 
     let template: string
@@ -40,7 +42,9 @@ export class TemplateView<T extends HTMLElement> extends views.View<T> {
     }
 
     this.delegateEvents()
-
+    
+    this.triggerMethod('render')
+    
     return this
   }
 

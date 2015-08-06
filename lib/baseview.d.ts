@@ -1,20 +1,27 @@
 import { BaseObject } from './object';
-export interface IView {
-    el: HTMLElement;
-    render(options: any): any;
+import * as events from './events';
+export declare type EventsMap = {
+    [key: string]: Function | string;
+};
+export declare type StringMap = {
+    [key: string]: string;
+};
+export interface Destroyable {
     destroy(): any;
+    isDestroyed: boolean;
+}
+export interface IView extends events.IEventEmitter, Destroyable {
+    el: HTMLElement;
+    render(options?: any): any;
+    remove(): any;
 }
 export interface BaseViewOptions {
     el?: HTMLElement;
     id?: string;
-    attributes?: {
-        [key: string]: any;
-    };
+    attributes?: StringMap;
     className?: string;
     tagName?: string;
-    events?: {
-        [key: string]: Function | string;
-    };
+    events?: EventsMap;
 }
 export declare class BaseView<T extends HTMLElement> extends BaseObject implements IView {
     static find(selector: string, context: HTMLElement): NodeList;
@@ -23,17 +30,13 @@ export declare class BaseView<T extends HTMLElement> extends BaseObject implemen
     id: string;
     private _cid;
     cid: string;
-    options: BaseViewOptions;
     el: T;
-    events: any;
-    attributes: {
-        [key: string]: any;
-    };
-    triggers: any;
+    events: EventsMap;
+    attributes: StringMap;
     private _domEvents;
     constructor(options?: BaseViewOptions);
     initialize(): void;
-    delegateEvents(events?: any): any;
+    delegateEvents(events?: EventsMap): any;
     undelegateEvents(): BaseView<T>;
     delegate(eventName: string, selector?: string | Function, listener?: Function): (e: any) => void;
     undelegate(eventName: string, selector?: string | Function, listener?: Function): BaseView<T>;

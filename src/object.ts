@@ -1,19 +1,27 @@
 import {EventEmitter} from './events'
 import {utils, extend} from './utils';
 
-
+/** Base object */
 export class BaseObject extends EventEmitter {
-
+  
   static extend = extend
 
   private _isDestroyed: boolean = false
-
+  
+  /** 
+   * Object 
+   * @extends EventEmitter
+   */
   constructor () {
     super()
    
   }
 
-  get isDestroyed () {
+  /**
+   * Whether the object is "destroyed" or not
+   * @type boolean
+   */
+  get isDestroyed (): boolean {
     return this._isDestroyed
   }
 

@@ -4,7 +4,7 @@ import {utils} from './utils'
 
 const kUIRegExp = /@ui.([a-zA-Z_\-\$#]+)/i
 
-function normalizeUIKeys (obj:any): any {
+export function normalizeUIKeys (obj:any): any {
   /*jshint -W030 */
     let o = {}, k, v, ms, sel, ui;
 
@@ -21,7 +21,7 @@ function normalizeUIKeys (obj:any): any {
 
     return o;
 }
-export type UIMap = { [key:string]: string|HTMLElement }
+export type UIMap = { [key:string]: HTMLElement }
 
 export interface ViewOptions extends base.BaseViewOptions {
   ui?: {[key:string]: string}|Function
@@ -30,8 +30,8 @@ export interface ViewOptions extends base.BaseViewOptions {
 export class View<T extends HTMLElement> extends base.BaseView<T> {
 
   ui: UIMap = {}
-  options: ViewOptions
-  private _ui: {[key:string]: string}|Function
+  
+  private _ui: {[key:string]: string}
 
   delegateEvents (events?:any) {
 
@@ -59,11 +59,11 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
   /* UI Elements */
   bindUIElements() {
 
-    let ui = this.options.ui||this.ui
+    let ui = this.getOption('ui') //this.options.ui||this.ui
     if (!ui) return;
 
     if (!this._ui) {
-      this._ui = <any>ui;
+      this._ui = ui;
     }
 
     ui = utils.result(this, '_ui');

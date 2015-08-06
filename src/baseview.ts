@@ -1,46 +1,56 @@
 
 import {BaseObject} from './object';
 import {html, utils} from './utils'
-
+import * as events from './events'
 
 const paddedLt = /^\s*</;
 const unbubblebles = 'focus blur change'.split(' ');
 
+export type EventsMap = {[key:string]: Function|string}
+export type StringMap = {[key: string]: string}
 
-export interface IView {
-  el: HTMLElement
-  render(options:any)
+export interface Destroyable {
   destroy(): any
+  isDestroyed: boolean
+}
+
+export interface IView extends events.IEventEmitter, Destroyable {
+  el: HTMLElement
+  render(options?:any)
+  remove()
 }
 
 export interface BaseViewOptions {
   el?: HTMLElement
   id?: string
-  attributes?: {[key:string]:any}
+  attributes?: StringMap
   className?:string
   tagName?:string
-  events?: {[key:string]:Function|string}
+  events?: EventsMap
 }
 
 let viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events'];
 
 export class BaseView<T extends HTMLElement> extends BaseObject implements IView {
+  
   static find(selector: string, context: HTMLElement): NodeList {
     return context.querySelectorAll(selector)
   }
+  
   tagName: string
   className: string
-
   id: string
+  
   private _cid: string
   get cid(): string  {
     return this._cid
   }
-  options: BaseViewOptions
+  
+  
   el: T
-  events: any //{[key:string]:Function|string}
-  attributes: {[key:string]:any}
-  triggers: any
+  events: EventsMap //{[key:string]:Function|string}
+  attributes: StringMap
+  //triggers: StringMap
   private _domEvents: any[]
 
   constructor (options: BaseViewOptions = {}) {
@@ -48,7 +58,7 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
     super()
 
     this._cid = utils.uniqueId('view')
-    this.options = options;
+    
 
     utils.extend(this, utils.pick(options, viewOptions))
 
@@ -68,7 +78,7 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
   }
 
   // Event Delegation
-  delegateEvents (events?: any): any {
+  delegateEvents (events?: EventsMap): any {
 
     if (!(events || (events = utils.result(this, 'events')))) return this;
     this.undelegateEvents();
@@ -76,12 +86,12 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
     let dels = []
     for (let key in events) {
       let method = events[key];
-      if (typeof method !== 'function') method = this[events[key]];
+      if (typeof method !== 'function') method = this[<string>method];
 
       let match = key.match(/^(\S+)\s*(.*)$/);
 
       // Set delegates immediately and defer event on this.el
-      let boundFn = utils.bind(method, this);
+      let boundFn = utils.bind(<Function>method, this);
       if (match[2]) {
         this.delegate(match[1], match[2], boundFn);
       } else {
