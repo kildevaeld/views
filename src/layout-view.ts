@@ -5,10 +5,10 @@ import {utils} from './utils'
 import {Region} from './region'
 
 class LayoutView<T extends HTMLElement> extends TemplateView<T> {
-  
+
 	private _regionManager: RegionManager
-	
-	public get regions (): RegionMap {
+
+	public get regions(): RegionMap {
 		return this._regionManager.regions
 	}
 	
@@ -18,7 +18,7 @@ class LayoutView<T extends HTMLElement> extends TemplateView<T> {
 	 * @constructor LayoutView
 	 * @extends TemplateView
 	 */
-	constructor (options) {
+	constructor(options) {
 		//this.options = options || {};
 		let regions = this.getOption('regions');
 
@@ -36,29 +36,34 @@ class LayoutView<T extends HTMLElement> extends TemplateView<T> {
 		super(options);
 
 	}
+	/**
+	 * Add one or more regions to the view
+	 * @param {string|RegionMap} name
+	 * @param {Object|string|HTMLElement} def
+	 */
+  addRegion(name: string|RegionMap, def?: any) {
+		let regions: RegionMap = {}
+		if (typeof name === 'string') {
+			if (def == null) throw new Error('add region')
+			regions[name] = def
+		} else { regions = name }
 
-  addRegion (name, def) {
-		if (typeof def === 'string') {
-			let elm = this.$(def);
-			if (!elm)
-				throw new Error('element must exists in dom');
-
-			def = new Region({
-				el: elm[0]
-			});
-
-	  }
-		this._regionManager.addRegion(name, def);
+		for (let k in regions) {
+			let region = Region.buildRegion(regions[k], this.el)
+			this._regionManager.addRegion(k, region)
+		}
 
 	}
 
-	addRegions (regions) {
-			for (var k in regions) {
-				this.addRegion(k, regions[k]);
-			}
+	/**
+	 * Delete one or more regions from the the layoutview
+	 * @param {string|Array<string>} name
+	 */
+	removeRegion(name:string[]|string) {
+		this._regionManager.removeRegion(name)
 	}
 
-  destroy () {
+  destroy() {
 		super.destroy();
 		this._regionManager.destroy();
 	}

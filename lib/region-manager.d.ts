@@ -31,7 +31,7 @@ export declare class RegionManager extends BaseObject {
      * Remove one or more regions from the manager
      * @param {...name} name A array of region names
      */
-    removeRegion(names: any[]): void;
+    removeRegion(names: string[] | string): void;
     /**
      * Destroy the regionmanager
      */

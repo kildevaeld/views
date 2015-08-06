@@ -999,15 +999,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {Object|String|Region} def The description of the region
 	     * @return {Region}
 	     */
-	    Region.buildRegion = function (def) {
+	    Region.buildRegion = function (def, context) {
+	        if (context === void 0) { context = null; }
 	        if (def instanceof Region) {
 	            return def;
 	        }
 	        else if (typeof def === 'string') {
-	            return buildBySelector(def, Region);
+	            return buildBySelector(def, Region, context);
 	        }
 	        else {
-	            return buildByObject(def);
+	            return buildByObject(def, context);
 	        }
 	    };
 	    /**
@@ -1079,15 +1080,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return Region;
 	})(object_1.BaseObject);
 	exports.Region = Region;
-	function buildByObject(object) {
+	function buildByObject(object, context) {
 	    if (object === void 0) { object = {}; }
 	    if (!object.selector)
 	        throw new Error('No selector specified: ' + object);
-	    return buildBySelector(object.selector, object.regionClass || Region);
+	    return buildBySelector(object.selector, object.regionClass || Region, context);
 	}
-	function buildBySelector(selector, Klass) {
+	function buildBySelector(selector, Klass, context) {
 	    if (Klass === void 0) { Klass = Region; }
-	    var el = document.querySelector(selector);
+	    context = context || document;
+	    var el = context.querySelector(selector);
 	    if (!el)
 	        throw new Error('selector must exist in the dom');
 	    return new Klass({
@@ -1164,6 +1166,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    RegionManager.prototype.removeRegion = function (names) {
 	        //let names = utils.slice(arguments)
+	        if (typeof names === 'string') {
+	            names = [names];
+	        }
 	        names.forEach(function (name) {
 	            if (utils_1.utils.has(this.regions, name)) {
 	                var region = this.regions[name];
@@ -1244,21 +1249,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	        enumerable: true,
 	        configurable: true
 	    });
+	    /**
+	     * Add one or more regions to the view
+	     * @param {string|RegionMap} name
+	     * @param {Object|string|HTMLElement} def
+	     */
 	    LayoutView.prototype.addRegion = function (name, def) {
-	        if (typeof def === 'string') {
-	            var elm = this.$(def);
-	            if (!elm)
-	                throw new Error('element must exists in dom');
-	            def = new region_1.Region({
-	                el: elm[0]
-	            });
+	        var regions = {};
+	        if (typeof name === 'string') {
+	            if (def == null)
+	                throw new Error('add region');
+	            regions[name] = def;
 	        }
-	        this._regionManager.addRegion(name, def);
-	    };
-	    LayoutView.prototype.addRegions = function (regions) {
+	        else {
+	            regions = name;
+	        }
 	        for (var k in regions) {
-	            this.addRegion(k, regions[k]);
+	            var region = region_1.Region.buildRegion(regions[k], this.el);
+	            this._regionManager.addRegion(k, region);
 	        }
+	    };
+	    /**
+	     * Delete one or more regions from the the layoutview
+	     * @param {string|Array<string>} name
+	     */
+	    LayoutView.prototype.removeRegion = function (name) {
+	        this._regionManager.removeRegion(name);
 	    };
 	    LayoutView.prototype.destroy = function () {
 	        _super.prototype.destroy.call(this);

@@ -33,13 +33,13 @@ export class Region extends BaseObject {
    * @param {Object|String|Region} def The description of the region
    * @return {Region}
    */
-  static buildRegion (def:any): Region {
+  static buildRegion (def:any, context: HTMLElement = null): Region {
     if (def instanceof Region) {
       return def;
     } else if (typeof def === 'string') {
-      return buildBySelector(def, Region);
+      return buildBySelector(def, Region, context);
     } else {
-      return buildByObject(def);
+      return buildByObject(def, context);
     }
   }
 
@@ -147,16 +147,16 @@ export class Region extends BaseObject {
   }
 }
 
-function buildByObject(object:any={}) {
+function buildByObject(object:any={}, context?: HTMLElement) {
   if (!object.selector)
     throw new Error('No selector specified: ' + object);
 
-  return buildBySelector(object.selector, object.regionClass || Region);
+  return buildBySelector(object.selector, object.regionClass || Region, context);
 }
 
-function buildBySelector(selector:string, Klass:any = Region) {
-
-  var el = document.querySelector(selector)
+function buildBySelector(selector:string, Klass:any = Region, context?:HTMLElement) {
+  context = context||<any>document
+  var el = context.querySelector(selector)
 
   if (!el) throw new Error('selector must exist in the dom')
  

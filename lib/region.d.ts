@@ -15,7 +15,7 @@ export declare class Region extends BaseObject {
      * @param {Object|String|Region} def The description of the region
      * @return {Region}
      */
-    static buildRegion(def: any): Region;
+    static buildRegion(def: any, context?: HTMLElement): Region;
     /**
      * Regions manage a view
      * @param {Object} options

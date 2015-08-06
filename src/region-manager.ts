@@ -39,6 +39,7 @@ export class RegionManager extends BaseObject {
     * @param {Object} regions
     */
   addRegions (regions:RegionMap) {
+    
     let def, out = {}, keys = Object.keys(regions);
     keys.forEach(function (k) {
       def = regions[k];
@@ -65,10 +66,10 @@ export class RegionManager extends BaseObject {
    * Remove one or more regions from the manager
    * @param {...name} name A array of region names
    */
-  removeRegion (names:any[]) {
+  removeRegion (names:string[]|string) {
     //let names = utils.slice(arguments)
-
-    names.forEach(function (name) {
+    if (typeof names === 'string') { names = [<string>names]}
+    (<Array<string>>names).forEach(function (name) {
       if (utils.has(this.regions, name)) {
         let region = this.regions[name];
         region.destroy();
