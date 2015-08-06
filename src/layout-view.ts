@@ -16,8 +16,7 @@ class LayoutView<T extends HTMLElement> extends TemplateView<T> {
 	 * LayoutView
 	 * @param {Object} options options
 	 * @constructor LayoutView
-	 * @memberof JaffaMVC
-	 * @augments JaffaMVC.View
+	 * @extends TemplateView
 	 */
 	constructor (options) {
 		//this.options = options || {};

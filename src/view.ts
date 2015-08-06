@@ -45,10 +45,15 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
     return this
 
   }
-
-  /*constructor (options?: ViewOptions) {
+  
+  /**
+   * View
+   * @param {ViewOptions} options
+   * @extends BaseView
+   */
+  constructor (options?: ViewOptions) {
     super(options)
-  }*/
+  }
 
   undelegateEvents (): any {
     this.unbindUIElements()

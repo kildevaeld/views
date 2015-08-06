@@ -12,6 +12,12 @@ export declare class View<T extends HTMLElement> extends base.BaseView<T> {
     ui: UIMap;
     private _ui;
     delegateEvents(events?: any): View<T>;
+    /**
+     * View
+     * @param {ViewOptions} options
+     * @extends BaseView
+     */
+    constructor(options?: ViewOptions);
     undelegateEvents(): any;
     bindUIElements(): void;
     unbindUIElements(): void;

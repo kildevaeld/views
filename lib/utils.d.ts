@@ -6,7 +6,12 @@ export declare module html {
     function addClass(elm: HTMLElement, className: string): void;
     function removeClass(elm: HTMLElement, className: string): void;
 }
+/** @module utils */
 export declare module utils {
+    /** Generate an unique id with an optional prefix
+     * @param {string} prefix
+     * @return {string}
+     */
     function uniqueId(prefix?: string): string;
     function isObject(obj: any): boolean;
     function extend(obj: Object, ...args: Object[]): any;

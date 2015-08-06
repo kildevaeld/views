@@ -1,4 +1,32 @@
-var ElementProto = (typeof Element !== 'undefined' && Element.prototype) || {};
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: utils.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: utils.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var ElementProto = (typeof Element !== 'undefined' &amp;&amp; Element.prototype) || {};
 var matchesSelector = ElementProto.matches ||
     ElementProto.webkitMatchesSelector ||
     ElementProto.mozMatchesSelector ||
@@ -13,13 +41,13 @@ var elementAddEventListener = ElementProto.addEventListener || function (eventNa
 var elementRemoveEventListener = ElementProto.removeEventListener || function (eventName, listener) {
     return this.detachEvent('on' + eventName, listener);
 };
-function extend(protoProps, staticProps) {
+export function extend(protoProps, staticProps) {
     var parent = this;
     var child;
     // The constructor function for the new subclass is either defined by you
     // (the "constructor" property in your `extend` definition), or defaulted
     // by us to simply call the parent's constructor.
-    if (protoProps && utils.has(protoProps, 'constructor')) {
+    if (protoProps &amp;&amp; utils.has(protoProps, 'constructor')) {
         child = protoProps.constructor;
     }
     else {
@@ -41,15 +69,13 @@ function extend(protoProps, staticProps) {
     child.__super__ = parent.prototype;
     return child;
 }
-exports.extend = extend;
-var html;
+export var html;
 (function (html) {
     function matches(elm, selector) {
         return matchesSelector.call(elm, selector);
     }
     html.matches = matches;
-    function addEventListener(elm, eventName, listener, useCap) {
-        if (useCap === void 0) { useCap = false; }
+    function addEventListener(elm, eventName, listener, useCap = false) {
         elementAddEventListener.call(elm, eventName, listener, useCap);
     }
     html.addEventListener = addEventListener;
@@ -65,19 +91,20 @@ var html;
         elm.classList.remove(className);
     }
     html.removeClass = removeClass;
-})(html = exports.html || (exports.html = {}));
-var nativeBind = Function.prototype.bind;
-var noop = function () { };
-var idCounter = 0;
+})(html || (html = {}));
+const nativeBind = Function.prototype.bind;
+const noop = function () { };
+let idCounter = 0;
 /** @module utils */
-var utils;
+export var utils;
 (function (utils) {
     /** Generate an unique id with an optional prefix
      * @param {string} prefix
      * @return {string}
+     * @memberof utils
+     * @method unqiueId
      */
-    function uniqueId(prefix) {
-        if (prefix === void 0) { prefix = ''; }
+    function uniqueId(prefix = '') {
         return prefix + (++idCounter);
     }
     utils.uniqueId = uniqueId;
@@ -85,16 +112,11 @@ var utils;
         return obj === Object(obj);
     }
     utils.isObject = isObject;
-    function extend(obj) {
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
+    function extend(obj, ...args) {
         if (!utils.isObject(obj))
             return obj;
-        var o, k;
-        for (var _a = 0; _a < args.length; _a++) {
-            o = args[_a];
+        let o, k;
+        for (o of args) {
             if (!utils.isObject(o))
                 continue;
             for (k in o) {
@@ -106,9 +128,8 @@ var utils;
     }
     utils.extend = extend;
     function pick(obj, props) {
-        var out = {}, prop;
-        for (var _i = 0; _i < props.length; _i++) {
-            prop = props[_i];
+        let out = {}, prop;
+        for (prop of props) {
             if (utils.has(obj, prop))
                 out[prop] = obj[prop];
         }
@@ -120,20 +141,20 @@ var utils;
     }
     utils.has = has;
     function indexOf(array, item) {
-        for (var i = 0, len = array.length; i < len; i++)
+        for (var i = 0, len = array.length; i &lt; len; i++)
             if (array[i] === item)
                 return i;
         return -1;
     }
     utils.indexOf = indexOf;
     function result(obj, prop, ctx, args) {
-        var ret = obj[prop];
+        let ret = obj[prop];
         return (typeof ret === 'function') ? utils.call(ret, ctx, args || []) : ret;
     }
     utils.result = result;
     function values(obj) {
-        var output = [];
-        for (var k in obj)
+        let output = [];
+        for (let k in obj)
             if (utils.has(obj, k)) {
                 output.push(obj[k]);
             }
@@ -141,8 +162,8 @@ var utils;
     }
     utils.values = values;
     function find(array, callback, ctx) {
-        var i, v;
-        for (i = 0; i < array.length; i++) {
+        let i, v;
+        for (i = 0; i &lt; array.length; i++) {
             v = array[i];
             if (callback.call(ctx, v))
                 return v;
@@ -160,19 +181,15 @@ var utils;
         });
     }
     utils.proxy = proxy;
-    function bind(method, context) {
-        var args = [];
-        for (var _i = 2; _i < arguments.length; _i++) {
-            args[_i - 2] = arguments[_i];
-        }
+    function bind(method, context, ...args) {
         if (typeof method !== 'function')
             throw new Error('method not at function');
         if (nativeBind != null)
-            return nativeBind.call.apply(nativeBind, [method, context].concat(args));
+            return nativeBind.call(method, context, ...args);
         args = args || [];
-        var fnoop = function () { };
-        var fBound = function () {
-            var ctx = this instanceof fnoop ? this : context;
+        let fnoop = function () { };
+        let fBound = function () {
+            let ctx = this instanceof fnoop ? this : context;
             return utils.call(method, ctx, args.concat(utils.slice(arguments)));
         };
         fnoop.prototype = this.prototype;
@@ -208,8 +225,8 @@ var utils;
     }
     utils.equal = equal;
     function triggerMethodOn(obj, eventName, args) {
-        var ev = "on" + eventName;
-        if (obj[ev] && typeof obj[ev] === 'function') {
+        let ev = "on" + eventName;
+        if (obj[ev] &amp;&amp; typeof obj[ev] === 'function') {
             utils.call(obj[ev], obj, args);
         }
         if (typeof obj.trigger === 'function') {
@@ -218,9 +235,8 @@ var utils;
     }
     utils.triggerMethodOn = triggerMethodOn;
     function getOption(option, objs) {
-        for (var _i = 0; _i < objs.length; _i++) {
-            var o = objs[_i];
-            if (isObject(o) && has(o, option))
+        for (let o of objs) {
+            if (isObject(o) &amp;&amp; has(o, option))
                 return o[option];
         }
         return null;
@@ -231,7 +247,7 @@ var utils;
             return;
     }
     utils.deepFreeze = deepFreeze;
-})(utils = exports.utils || (exports.utils = {}));
+})(utils || (utils = {}));
 function eq(a, b, aStack, bStack) {
     // Identical objects are equal. `0 === -0`, but they aren't identical.
     // See the [Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
@@ -265,9 +281,9 @@ function eq(a, b, aStack, bStack) {
             return +a == +b;
         // RegExps are compared by their source patterns and flags.
         case '[object RegExp]':
-            return a.source == b.source &&
-                a.global == b.global &&
-                a.multiline == b.multiline &&
+            return a.source == b.source &amp;&amp;
+                a.global == b.global &amp;&amp;
+                a.multiline == b.multiline &amp;&amp;
                 a.ignoreCase == b.ignoreCase;
     }
     if (typeof a != 'object' || typeof b != 'object')
@@ -284,8 +300,8 @@ function eq(a, b, aStack, bStack) {
     // Objects with different constructors are not equivalent, but `Object`s
     // from different frames are.
     var aCtor = a.constructor, bCtor = b.constructor;
-    if (aCtor !== bCtor && !(typeof aCtor === 'function' && (aCtor instanceof aCtor) &&
-        typeof bCtor === 'function' && (bCtor instanceof bCtor))) {
+    if (aCtor !== bCtor &amp;&amp; !(typeof aCtor === 'function' &amp;&amp; (aCtor instanceof aCtor) &amp;&amp;
+        typeof bCtor === 'function' &amp;&amp; (bCtor instanceof bCtor))) {
         return false;
     }
     // Add the first object to the stack of traversed objects.
@@ -312,14 +328,14 @@ function eq(a, b, aStack, bStack) {
                 // Count the expected number of properties.
                 size++;
                 // Deep compare each member.
-                if (!(result = utils.has(b, key) && eq(a[key], b[key], aStack, bStack)))
+                if (!(result = utils.has(b, key) &amp;&amp; eq(a[key], b[key], aStack, bStack)))
                     break;
             }
         }
         // Ensure that both objects contain the same number of properties.
         if (result) {
             for (key in b) {
-                if (utils.has(b, key) && !(size--))
+                if (utils.has(b, key) &amp;&amp; !(size--))
                     break;
             }
             result = !size;
@@ -331,3 +347,26 @@ function eq(a, b, aStack, bStack) {
     return result;
 }
 ;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-utils.html">utils</a></li></ul><h3>Classes</h3><ul><li><a href="-_.html"></a></li><li><a href="BaseObject.html">BaseObject</a></li><li><a href="BaseView.html">BaseView</a></li><li><a href="CollectionView.html">CollectionView</a></li><li><a href="DataView.html">DataView</a></li><li><a href="LayoutView.html">LayoutView</a></li><li><a href="Region.html">Region</a></li><li><a href="RegionManager.html">RegionManager</a></li><li><a href="TemplateView.html">TemplateView</a></li><li><a href="View.html">View</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0-dev</a> on Thu Aug 06 2015 03:59:49 GMT+0200 (CEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

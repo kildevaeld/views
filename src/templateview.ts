@@ -12,6 +12,10 @@ export interface TemplateViewOptions extends views.ViewOptions {
 export class TemplateView<T extends HTMLElement> extends views.View<T> {
   template: string|TemplateFunction
 
+  /** TemplateView
+   * @param {TemplateViewOptions} options
+   * @extends View
+   */
   constructor (options?: TemplateViewOptions) {
     super(options)
     

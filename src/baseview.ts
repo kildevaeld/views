@@ -53,6 +53,11 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
   //triggers: StringMap
   private _domEvents: any[]
 
+  /** 
+   * BaseView
+   * @param {BaseViewOptions} options
+   * @extends BaseObject
+   */
   constructor (options: BaseViewOptions = {}) {
 
     super()
@@ -69,15 +74,14 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
     } else {
       this.delegateEvents()
     }
-
-    this.initialize()
+    
   }
 
-  initialize () {
 
-  }
-
-  // Event Delegation
+  /**
+   * Delegate events
+   * @param {EventsMap} events
+   */
   delegateEvents (events?: EventsMap): any {
 
     if (!(events || (events = utils.result(this, 'events')))) return this;
@@ -104,6 +108,9 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
     return this;
   }
 
+  /**
+   * Undelegate events
+   */
   undelegateEvents () {
     if (this.el) {
       for (var i = 0, len = this._domEvents.length; i < len; i++) {
@@ -179,7 +186,7 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
     elm.appendChild(this.el)
     return this
   }
-
+  
   append (elm: HTMLElement, toSelector?:string): any {
     if (toSelector != null) {
       let ret = this.$(toSelector)

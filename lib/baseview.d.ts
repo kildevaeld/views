@@ -34,9 +34,21 @@ export declare class BaseView<T extends HTMLElement> extends BaseObject implemen
     events: EventsMap;
     attributes: StringMap;
     private _domEvents;
+    /**
+     * BaseView
+     * @param {BaseViewOptions} options
+     * @extends BaseObject
+     */
     constructor(options?: BaseViewOptions);
     initialize(): void;
+    /**
+     * Delegate events
+     * @param {EventsMap} events
+     */
     delegateEvents(events?: EventsMap): any;
+    /**
+     * Undelegate events
+     */
     undelegateEvents(): BaseView<T>;
     delegate(eventName: string, selector?: string | Function, listener?: Function): (e: any) => void;
     undelegate(eventName: string, selector?: string | Function, listener?: Function): BaseView<T>;

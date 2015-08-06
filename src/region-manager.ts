@@ -26,7 +26,7 @@ export class RegionManager extends BaseObject {
   } 
   
   /** Region manager 
-   * 
+   * @extends BaseObject
    */
   constructor () {
 		super();

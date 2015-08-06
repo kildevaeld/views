@@ -13,7 +13,7 @@ export declare class RegionManager extends BaseObject {
         [key: string]: Region;
     };
     /** Region manager
-     *
+     * @extends BaseObject
      */
     constructor();
     /**

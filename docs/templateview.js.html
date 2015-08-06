@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: layout-view.js</title>
+    <title>JSDoc: Source: templateview.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: layout-view.js</h1>
+    <h1 class="page-title">Source: templateview.js</h1>
 
     
 
@@ -26,51 +26,37 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import { TemplateView } from './templateview';
-import { RegionManager } from './region-manager';
-import { utils } from './utils';
-import { Region } from './region';
-class LayoutView extends TemplateView {
-    /**
-     * LayoutView
-     * @param {Object} options options
-     * @constructor LayoutView
-     * @extends TemplateView
+            <pre class="prettyprint source linenums"><code>import * as views from './view';
+export class TemplateView extends views.View {
+    /** TemplateView
+     * @param {TemplateViewOptions} options
+     * @extends View
      */
     constructor(options) {
-        //this.options = options || {};
-        let regions = this.getOption('regions');
-        // Set region manager
-        this._regionManager = new RegionManager();
-        utils.proxy(this, this._regionManager, ['removeRegion', 'removeRegions']);
-        //this.options = options || {};
-        this.listenTo(this, 'render', function () {
-            this.addRegions(regions);
-        });
         super(options);
-    }
-    get regions() {
-        return this._regionManager.regions;
-    }
-    addRegion(name, def) {
-        if (typeof def === 'string') {
-            let elm = this.$(def);
-            if (!elm)
-                throw new Error('element must exists in dom');
-            def = new Region({
-                el: elm[0]
-            });
-        }
-        this._regionManager.addRegion(name, def);
-    }
-    addRegions(regions) {
-        for (var k in regions) {
-            this.addRegion(k, regions[k]);
+        if (options &amp;&amp; options.template) {
+            this.template = options.template;
         }
     }
-    destroy() {
-        super.destroy();
-        this._regionManager.destroy();
+    getTemplateData() {
+        return {};
+    }
+    render(options) {
+        this.triggerMethod('before:render');
+        this.undelegateEvents();
+        let template;
+        if (typeof this.template == 'function') {
+            template = this.template.call(this, this.getTemplateData());
+        }
+        else if (typeof this.template == 'string') {
+            template = this.template;
+        }
+        if (template) {
+            this.el.innerHTML = template;
+        }
+        this.delegateEvents();
+        this.triggerMethod('render');
+        return this;
     }
 }
 </code></pre>

@@ -7,6 +7,10 @@ export interface TemplateViewOptions extends views.ViewOptions {
 }
 export declare class TemplateView<T extends HTMLElement> extends views.View<T> {
     template: string | TemplateFunction;
+    /** TemplateView
+     * @param {TemplateViewOptions} options
+     * @extends View
+     */
     constructor(options?: TemplateViewOptions);
     getTemplateData(): any;
     render(options: any): any;

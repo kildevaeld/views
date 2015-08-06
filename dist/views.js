@@ -66,6 +66,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	__export(__webpack_require__(7));
 	__export(__webpack_require__(8));
 	__export(__webpack_require__(9));
+	__export(__webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./extensions/data-view\""); e.code = 'MODULE_NOT_FOUND'; throw e; }())));
+	__export(__webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./extensions/collection-view\""); e.code = 'MODULE_NOT_FOUND'; throw e; }())));
 
 
 /***/ },
@@ -99,8 +101,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.normalizeUIKeys = normalizeUIKeys;
 	var View = (function (_super) {
 	    __extends(View, _super);
-	    function View() {
-	        _super.apply(this, arguments);
+	    /**
+	     * View
+	     * @param {ViewOptions} options
+	     * @extends BaseView
+	     */
+	    function View(options) {
+	        _super.call(this, options);
 	        this.ui = {};
 	    }
 	    View.prototype.delegateEvents = function (events) {
@@ -110,9 +117,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _super.prototype.delegateEvents.call(this, events);
 	        return this;
 	    };
-	    /*constructor (options?: ViewOptions) {
-	      super(options)
-	    }*/
 	    View.prototype.undelegateEvents = function () {
 	        this.unbindUIElements();
 	        _super.prototype.undelegateEvents.call(this);
@@ -165,6 +169,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	var viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events'];
 	var BaseView = (function (_super) {
 	    __extends(BaseView, _super);
+	    /**
+	     * BaseView
+	     * @param {BaseViewOptions} options
+	     * @extends BaseObject
+	     */
 	    function BaseView(options) {
 	        if (options === void 0) { options = {}; }
 	        _super.call(this);
@@ -191,7 +200,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	    BaseView.prototype.initialize = function () {
 	    };
-	    // Event Delegation
+	    /**
+	     * Delegate events
+	     * @param {EventsMap} events
+	     */
 	    BaseView.prototype.delegateEvents = function (events) {
 	        var _this = this;
 	        if (!(events || (events = utils_1.utils.result(this, 'events'))))
@@ -215,6 +227,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        dels.forEach(function (d) { _this.delegate(d[0], d[1]); });
 	        return this;
 	    };
+	    /**
+	     * Undelegate events
+	     */
 	    BaseView.prototype.undelegateEvents = function () {
 	        if (this.el) {
 	            for (var i = 0, len = this._domEvents.length; i < len; i++) {
@@ -609,8 +624,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var nativeBind = Function.prototype.bind;
 	var noop = function () { };
 	var idCounter = 0;
+	/** @module utils */
 	var utils;
 	(function (utils) {
+	    /** Generate an unique id with an optional prefix
+	     * @param {string} prefix
+	     * @return {string}
+	     */
 	    function uniqueId(prefix) {
 	        if (prefix === void 0) { prefix = ''; }
 	        return prefix + (++idCounter);
@@ -881,6 +901,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var views = __webpack_require__(1);
 	var TemplateView = (function (_super) {
 	    __extends(TemplateView, _super);
+	    /** TemplateView
+	     * @param {TemplateViewOptions} options
+	     * @extends View
+	     */
 	    function TemplateView(options) {
 	        _super.call(this, options);
 	        if (options && options.template) {
@@ -1076,7 +1100,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var RegionManager = (function (_super) {
 	    __extends(RegionManager, _super);
 	    /** Region manager
-	     *
+	     * @extends BaseObject
 	     */
 	    function RegionManager() {
 	        _super.call(this);
@@ -1180,8 +1204,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * LayoutView
 	     * @param {Object} options options
 	     * @constructor LayoutView
-	     * @memberof JaffaMVC
-	     * @augments JaffaMVC.View
+	     * @extends TemplateView
 	     */
 	    function LayoutView(options) {
 	        //this.options = options || {};

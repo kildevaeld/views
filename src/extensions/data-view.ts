@@ -1,19 +1,50 @@
-import {TemplateView} from '../templateview'
-import {IModel} from '../types'
+import {TemplateView, TemplateViewOptions} from '../templateview'
+import {IModel, ICollection, IDataView} from '../types'
 import {normalizeUIKeys} from '../view'
 import {utils} from '../utils'
 
-export class DataView<T extends HTMLElement> extends TemplateView<T> {
+export interface DataViewOptions extends TemplateViewOptions {
+  model?: IModel
+  collection?:ICollection
+}
+
+export class DataView<T extends HTMLElement> extends TemplateView<T> implements IDataView {
 	
 	private _model: IModel
+  private _collection: ICollection
 	private _dataEvents: any
-	public get model () { return this._model }
+	
+  public get model () { return this._model }
 	
 	public set model (model) {
 		this.setModel(model)
 	}
+  
+  public get collection () { return this._collection }
+  
+  public set collection (collection) {
+    this.setCollection(collection)
+  }
+ 
+  
+  /**
+   * DataView
+   * @param {DataViewOptions} options
+   * @extends TemplateView
+   */
+  constructor (options:DataViewOptions) {
+    super(options)
+    
+    if (options.model) {
+      this._model = options.model
+    }
+    if (options.collection) {
+      this._collection = options.collection
+    }
+    
+  }
 	
-	public setModel (model) {
+	public setModel (model:IModel) {
 		if (this._model === model) return
     
     this.triggerMethod('before:model', this._model, model)
@@ -25,6 +56,20 @@ export class DataView<T extends HTMLElement> extends TemplateView<T> {
 		this._model = model
 	  
     this.triggerMethod('model', model)
+  }
+  
+  public setCollection (collection:ICollection) {
+    if (this._collection === collection) return
+    
+    this.triggerMethod('before:collection', this._collection, collection)
+		
+    if (this._collection) {
+			this.stopListening(this._collection)
+		}
+		
+		this._collection = collection
+	  
+    this.triggerMethod('collection', collection)
   }
   
   public getTemplateData (): any {
