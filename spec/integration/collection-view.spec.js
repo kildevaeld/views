@@ -6,80 +6,96 @@
   title: 'title 3'
 }]);*/
 
-xdescribe('Collection View', function() {
+var collection = [{
+  title: 'title 1'
+}, {
+    title: 'title 2'
+  }, {
+    title: 'title 3'
+  }];
+
+var Region = views.region,
+  CollectionView = views.CollectionView,
+  TemplateView = views.TemplateView;
+
+
+describe('Collection View', function () {
   var region;
 
-  beforeEach(function() {
+  beforeEach(function () {
     if (region) region.destroy();
     body = document.getElementsByTagName('body')[0];
-    region = JaffaMVC.Region.buildRegion('body');
+    region = Region.buildRegion('body');
   });
 
-  afterEach(function() {
+  afterEach(function () {
     if (region) region.destroy();
   })
 
-  describe('Rendering', function() {
-    it('should render collection', function(done) {
+  describe('Rendering', function () {
+    it('should render collection', function (done) {
 
-      var view = new JaffaMVC.CollectionView({
+      var view = new CollectionView({
         collection: collection
       });
 
+     
 
-      view.on('render:children', function() {
-        expect(view.children.size).toEqual(3, 'list length');
-        setTimeout(function() {
-          expect(view.el.children.length).toEqual(3, 'liste size');
-          done();
+      view.on('render:collection', function () {
+
+        expect(view.children.length).toEqual(3, 'list length');
+        // Wait for children to render
+        setTimeout(function () {
+          expect(view.el.children.length).toEqual(3, 'list size');
+          
+          done()  
         })
-
+        
       });
-
-      view.render();
+      
+       view.render();
 
     });
 
-    it('should render childView', function(done) {
-      var view = new JaffaMVC.CollectionView({
+    it('should render childView', function (done) {
+      var view = new CollectionView({
         collection: collection,
-        childView: JaffaMVC.View.extend({
-          template: function(data) {
+        childView: TemplateView.extend({
+          template: function (data) {
             return data.title;
           }
         })
       });
 
+      view.on('render:collection', function () {
 
-      view.on('render:children', function() {
+        expect(view.children.length).toBe(3)
 
-        setTimeout(function() {
-          for (var i = 0; i < view.el.children.length; i++) {
-            var elm = view.el.children[i];
-            expect(elm.innerText).toEqual("title " + (i + 1));
-          }
-          done()
-        })
-
+        for (var i = 0; i < view.el.children.length; i++) {
+          var elm = view.el.children[i];
+          expect(elm.innerText).toEqual("title " + (i + 1));
+        }
+        done()
       });
 
       view.render();
+
     });
 
-    it('should pass options to childView', function(done) {
-      var view = new JaffaMVC.CollectionView({
+    it('should pass options to childView', function (done) {
+      var view = new CollectionView({
         collection: collection,
         childViewOptions: {
-          template: function(data) {
+          template: function (data) {
             return data.title;
           }
         }
       });
 
 
-      view.on('render:children', function() {
+      view.on('render:collection', function () {
 
-        setTimeout(function() {
+        setTimeout(function () {
           for (var i = 0; i < view.el.children.length; i++) {
             var elm = view.el.children[i];
             expect(elm.innerText).toEqual("title " + (i + 1));
@@ -92,13 +108,13 @@ xdescribe('Collection View', function() {
       view.render();
     });
 
-    it('should trigger show event on childviews', function(done) {
+    xit('should trigger show event on childviews', function (done) {
       var beforeSpy = jasmine.createSpy('onBeforeShow');
       var showSpy = jasmine.createSpy('beforeShow');
-      var view = new JaffaMVC.CollectionView({
+      var view = new CollectionView({
         collection: collection,
-        childView: JaffaMVC.View.extend({
-          template: function(data) {
+        childView: TemplateView.extend({
+          template: function (data) {
             return data.title;
           },
           onShow: showSpy,
@@ -108,9 +124,9 @@ xdescribe('Collection View', function() {
       });
 
 
-      view.on('render:children', function() {
+      view.on('render:children', function () {
 
-        setTimeout(function() {
+        setTimeout(function () {
           expect(showSpy.calls.count()).toEqual(view.collection.length, "show");
           expect(beforeSpy.calls.count()).toEqual(view.collection.length, "before:show");
           done()
@@ -122,12 +138,12 @@ xdescribe('Collection View', function() {
     });
   });
 
-  describe('events', function() {
-    it('should proxy childview events', function(done) {
-      var view = new JaffaMVC.CollectionView({
+  describe('events', function () {
+    xit('should proxy childview events', function (done) {
+      var view = new CollectionView({
         collection: collection,
-        childView: JaffaMVC.View.extend({
-          template: function(data) {
+        childView: TemplateView.extend({
+          template: function (data) {
             return data.title;
           },
           triggers: {
@@ -137,13 +153,13 @@ xdescribe('Collection View', function() {
 
       });
 
-      view.on('render:children', function() {
+      view.on('render:collection', function () {
         var spy = jasmine.createSpy('trigger');
         view.on('childview:click', spy)
 
-        setTimeout(function() {
+        setTimeout(function () {
 
-          view.children.forEach(function(item) {
+          view.children.forEach(function (item) {
             $(item.el).click();
 
           })

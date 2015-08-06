@@ -73,7 +73,9 @@ export class DataView<T extends HTMLElement> extends TemplateView<T> implements 
   }
   
   public getTemplateData (): any {
-    return this.model ? this.model.toJSON() : {}
+    return this.model ? 
+      typeof this.model.toJSON === 'function' ? 
+      this.model.toJSON() : this.model  : {}
   }
 	
 	public delegateEvents (events?:any): any {

@@ -34,14 +34,23 @@ export class TemplateView<T extends HTMLElement> extends views.View<T> {
     
     this.undelegateEvents()
 
-    let template: string
+    /*let template: string
     if ( typeof this.template == 'function') {
       template = (<TemplateFunction>this.template).call(this, this.getTemplateData())
     } else if (typeof this.template == 'string') {
       template = <string>this.template
+    }*/
+    
+    let template = this.getOption('template');
+    
+    if (typeof template === 'function') {
+      template = template.call(this, this.getTemplateData())
     }
-
-    if (template) {
+    
+  
+    
+    
+    if (template && typeof template === 'string') {
       this.el.innerHTML = template;
     }
 

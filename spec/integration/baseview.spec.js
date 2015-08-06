@@ -1,4 +1,4 @@
-let BaseView = views.BaseView
+var BaseView = views.BaseView
 
 describe('BaseView', function () {
 	

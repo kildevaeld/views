@@ -184,7 +184,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._ensureElement();
 	        }
 	        else {
-	            this.delegateEvents();
 	        }
 	    }
 	    BaseView.find = function (selector, context) {
@@ -433,6 +432,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        if (this.options) {
 	            args.push(this.options);
+	        }
+	        if (this._options) {
+	            args.push(this._options);
 	        }
 	        args.push(this);
 	        return utils_1.utils.getOption(prop, args);
@@ -781,7 +783,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function getOption(option, objs) {
 	        for (var _i = 0; _i < objs.length; _i++) {
 	            var o = objs[_i];
-	            if (isObject(o) && has(o, option))
+	            if (isObject(o) && o[option])
 	                return o[option];
 	        }
 	        return null;
@@ -923,14 +925,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    TemplateView.prototype.render = function (options) {
 	        this.triggerMethod('before:render');
 	        this.undelegateEvents();
-	        var template;
-	        if (typeof this.template == 'function') {
-	            template = this.template.call(this, this.getTemplateData());
+	        /*let template: string
+	        if ( typeof this.template == 'function') {
+	          template = (<TemplateFunction>this.template).call(this, this.getTemplateData())
+	        } else if (typeof this.template == 'string') {
+	          template = <string>this.template
+	        }*/
+	        var template = this.getOption('template');
+	        if (typeof template === 'function') {
+	            template = template.call(this, this.getTemplateData());
 	        }
-	        else if (typeof this.template == 'string') {
-	            template = this.template;
-	        }
-	        if (template) {
+	        if (template && typeof template === 'string') {
 	            this.el.innerHTML = template;
 	        }
 	        this.delegateEvents();
@@ -1329,7 +1334,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.triggerMethod('collection', collection);
 	    };
 	    DataView.prototype.getTemplateData = function () {
-	        return this.model ? this.model.toJSON() : {};
+	        return this.model ?
+	            typeof this.model.toJSON === 'function' ?
+	                this.model.toJSON() : this.model : {};
 	    };
 	    DataView.prototype.delegateEvents = function (events) {
 	        events = events || this.events;
@@ -1427,6 +1434,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 	    function CollectionView(options) {
 	        _super.call(this, options);
+	        /** Child views associated with the view
+	         * @property {Array<IDataView>} children
+	         */
+	        this.children = [];
+	        this._options = options || {};
 	    }
 	    /**
 	   * Render the collection view and alle of the children
@@ -1443,6 +1455,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        return this;
 	    };
+	    /**
+	     * @protected
+	     */
 	    CollectionView.prototype.setCollection = function (collection) {
 	        this._delegateCollectionEvents();
 	    };

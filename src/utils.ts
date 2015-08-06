@@ -226,7 +226,7 @@ export module utils {
   export function getOption(option: string, objs:any[]): any {
  
     for (let o of objs) {
-      if (isObject(o) && has(o, option)) return o[option]
+      if (isObject(o) && o[option]) return o[option]
     }
     
     return null

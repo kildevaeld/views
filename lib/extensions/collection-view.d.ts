@@ -2,25 +2,36 @@ import { DataView, DataViewOptions } from './data-view';
 import { IDataView, IModel } from '../types';
 export interface CollectionViewOptions extends DataViewOptions {
     childView?: IDataView;
-    childViewContainer: string;
+    childViewContainer?: string;
+    childViewOptions?: DataViewOptions;
 }
 export declare class CollectionView<T extends HTMLElement> extends DataView<T> {
     childView: IDataView;
     private _container;
     private _buffer;
+    private _options;
+    /** Child views associated with the view
+     * @property {Array<IDataView>} children
+     */
     children: IDataView[];
+    /** Whether the collection sould be sorted
+     * @property {boolean} sort
+     */
     sort: boolean;
     /** CollectionView
    * @extends DataView
    * @param {DataViewOptions} options
    */
-    constructor(options?: DataViewOptions);
+    constructor(options?: CollectionViewOptions);
     /**
    * Render the collection view and alle of the children
    * @return {CollectionView}
    *
    */
     render(options?: any): any;
+    /**
+     * @protected
+     */
     setCollection(collection: any): void;
     renderCollection(): void;
     /**

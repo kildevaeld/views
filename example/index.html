@@ -1,14 +1,42 @@
 <html>
 	<head>
 		<script src="../dist/views.js"></script>
-		<script>
-			console.log(views.View)
-			
-		</script>
+		
 	</head>
 	
 	<body>
+		<ul id="list"></ul>
 		
+		<script>
+			'use strict';
+			
+			console.log(views.View)
+			
+			var View = views.CollectionView.extend({
+				el: document.getElementById('list'),
+				childViewOptions: {
+					template: function (data) {
+						return '<li>' + data.title + '</li>'
+					}
+				},
+				onRenderCollection: function () {
+					console.log('also render on collection')
+				}
+			});
+			console.log(View)
+			let collection =  [{title:1},{title:2},{title:3}]
+			
+			let view = new View({
+				collection:collection
+			});
+			view.on('render:collection', function () {
+				console.log('render collection')
+			})
+			
+			view.render();
+			
+			
+		</script>
 	</body>
 	
 </html>

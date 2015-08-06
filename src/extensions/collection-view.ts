@@ -1,10 +1,11 @@
 import {DataView,DataViewOptions} from './data-view'
 import {IDataView, IModel,ICollection} from '../types'
-import {utils} from '../utils'
+import {utils,extend} from '../utils'
 
 export interface CollectionViewOptions extends DataViewOptions {
 	childView?: IDataView
-	childViewContainer: string
+	childViewContainer?: string
+  childViewOptions?: DataViewOptions
 }
 
 class Buffer {
@@ -17,20 +18,33 @@ class Buffer {
 }
 
 export class CollectionView<T extends HTMLElement> extends DataView<T> {
+  
+  
 	public childView: IDataView
 
 	private _container: HTMLElement
 	private _buffer: Buffer
-	
-	public children: IDataView[]
+	private _options: CollectionViewOptions
+  
+  
+  /** Child views associated with the view
+   * @property {Array<IDataView>} children
+   */
+	public children: IDataView[] = []
+  
+  /** Whether the collection sould be sorted 
+   * @property {boolean} sort 
+   */
 	public sort: boolean
 	
 	/** CollectionView 
    * @extends DataView
    * @param {DataViewOptions} options 
    */
-	constructor (options?:DataViewOptions) {
+	constructor (options?:CollectionViewOptions) {
 		super(options)	
+    
+    this._options = options||{}
 	}
 	
 	/**
@@ -48,6 +62,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 		this._initContainer()
 		
 		if (this.collection && this.collection.length) {
+      
 			this.renderCollection()
 		}
 		
@@ -55,6 +70,9 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 		return this
 	} 
 	
+  /**
+   * @protected
+   */
 	setCollection (collection) {
 		this._delegateCollectionEvents()			
 	}
@@ -67,6 +85,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 			this._startBuffering()
 			this._renderCollection()
 			this._stopBuffering()
+      
 		} else {
 			this.showEmptyView()
 		}
@@ -81,7 +100,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 	getChildView(model:IModel):IDataView {
 		let View = this.getOption('childView') || DataView,
       options = this.getOption('childViewOptions') || {};
-
+   
     return new View(utils.extend({
       model: model
     }, options));
@@ -92,6 +111,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 		this.triggerMethod('before:render:child', view);
 
     view.render();
+    
     this._attachHTML(view, index);
 
     this.triggerMethod('render:child', view);
@@ -154,7 +174,9 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 	private _renderCollection () {
 		this.triggerMethod('before:render:collection')
 		this.collection.forEach((model) => {
+      
 			let view = this.getChildView(model)
+      
 			this._appendChild(view)
 		})
 		this.triggerMethod('render:collection')

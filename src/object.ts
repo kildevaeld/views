@@ -54,6 +54,10 @@ export class BaseObject extends EventEmitter {
     if ((<any>this).options) {
       args.push((<any>this).options)
     }
+    
+    if ((<any>this)._options) {
+      args.push((<any>this)._options)
+    }
    
     args.push(this)
     
