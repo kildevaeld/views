@@ -4,7 +4,7 @@ import {RegionManager, RegionMap} from './region-manager'
 import {utils} from './utils'
 import {Region} from './region'
 
-class LayoutView<T extends HTMLElement> extends TemplateView<T> {
+export class LayoutView<T extends HTMLElement> extends TemplateView<T> {
 
 	private _regionManager: RegionManager
 

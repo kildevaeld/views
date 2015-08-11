@@ -27,6 +27,9 @@ function getID (): string {
 }
 
 export class EventEmitter implements IEventEmitter {
+  static debugCallback: (className:string, name:string, event:string, args:any[]) => void
+  
+  
   listenId: string
   private _listeners: { [key: string]: Events[] } = {}
   private _listeningTo: { [key: string]: any } = {}
@@ -70,7 +73,8 @@ export class EventEmitter implements IEventEmitter {
 
   trigger (eventName: string, ...args:any[]): any {
     let events = (this._listeners[eventName]||[]).concat(this._listeners["all"]||[])
-
+    if (EventEmitter.debugCallback) 
+      EventEmitter.debugCallback((<any>this.constructor).name, (<any>this).name, eventName, args)
     for (let i=0;i<events.length;i++) {
       let event = events[i]
       let a = args

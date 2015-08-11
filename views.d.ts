@@ -35,6 +35,23 @@ declare module 'views/lib/templateview' {
   export * from 'views/lib/templateview'
 }
 
+declare module 'views/lib/layout-view' {
+  export * from 'views/lib/layout-view'
+}
+
+declare module 'views/lib/region' {
+  export * from 'views/lib/region'
+}
+
+declare module 'views/lib/region-manager' {
+  export * from 'views/lib/region-manager'
+}
+
+declare module 'views/lib/types' {
+  export * from 'views/lib/types'
+}
+
+
 declare module 'views/lib/extensions/collection-view' {
   export * from 'views/lib/extensions/collection-view'
 }

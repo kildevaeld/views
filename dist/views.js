@@ -504,6 +504,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            args[_i - 1] = arguments[_i];
 	        }
 	        var events = (this._listeners[eventName] || []).concat(this._listeners["all"] || []);
+	        if (EventEmitter.debugCallback)
+	            EventEmitter.debugCallback(this.constructor.name, this.name, eventName, args);
 	        for (var i = 0; i < events.length; i++) {
 	            var event_2 = events[i];
 	            var a = args;
@@ -1282,6 +1284,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    return LayoutView;
 	})(templateview_1.TemplateView);
+	exports.LayoutView = LayoutView;
 
 
 /***/ },

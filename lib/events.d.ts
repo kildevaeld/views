@@ -18,6 +18,7 @@ export interface IEventEmitter {
     trigger(event: string, ...args: any[]): any;
 }
 export declare class EventEmitter implements IEventEmitter {
+    static debugCallback: (className: string, name: string, event: string, args: any[]) => void;
     listenId: string;
     private _listeners;
     private _listeningTo;

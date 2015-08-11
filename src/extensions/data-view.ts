@@ -14,7 +14,7 @@ export class DataView<T extends HTMLElement> extends TemplateView<T> implements 
   private _collection: ICollection
 	private _dataEvents: any
 	
-  public get model () { return this._model }
+  public get model (): IModel { return this._model }
 	
 	public set model (model) {
 		this.setModel(model)
