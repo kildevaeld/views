@@ -68,13 +68,13 @@ xdescribe('Properties', function () {
   });
 });
 
-xdescribe('Triggers', function () {
+describe('Triggers', function () {
 
-  it('should trigger events', function (done) {
-    var view = new (JaffaMVC.View.extend({
-      template: '<button class="button">OK</button>',
+  it('should trigger events', function () {
+    var view = new (View.extend({
+      //template: '<button class="button">OK</button>',
       triggers: {
-        'click .button': 'click'
+        'click': 'click'
       },
       ui: {
         button: '.button'
@@ -83,24 +83,21 @@ xdescribe('Triggers', function () {
 
     var spy = jasmine.createSpy('click');
 
-    view.on('render', function () {
-
-      view.on('click', spy);
-
-      $(view.ui.button).click();
-
-      expect(spy.calls.count()).toEqual(1);
-      view.destroy();
-      done();
-
-    });
+    
     var body = document.getElementsByTagName('body')[0];
     body.appendChild(view.render().el)
+    
+    view.on('click', spy);
+
+    $(view.el).click();
+
+    expect(spy.calls.count()).toEqual(1);
+    view.destroy();
 
   });
 
-  it('should use @ui in triggers', function (done) {
-    var view = new (JaffaMVC.View.extend({
+  xit('should use @ui in triggers', function (done) {
+    var view = new (View.extend({
       template: '<button class="button">OK</button>',
       triggers: {
         'click @ui.button': 'click'

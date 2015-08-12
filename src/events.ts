@@ -31,13 +31,14 @@ export class EventEmitter implements IEventEmitter {
   
   
   listenId: string
-  private _listeners: { [key: string]: Events[] } = {}
-  private _listeningTo: { [key: string]: any } = {}
+  private _listeners: { [key: string]: Events[] } // = {}
+  private _listeningTo: { [key: string]: any } // = {}
   public get listeners (): {[key: string]: Events[]} {
     return this._listeners
   }
   on (event: string, fn:EventHandler, ctx?:any, once:boolean = false): any {
-    let events = this._listeners[event]||(this._listeners[event]=[])
+    let events = (this._listeners|| (this._listeners = {}))[event]||(this._listeners[event]=[])
+    //let events = this._listeners[event]||(this._listeners[event]=[])
     events.push({
       name: event,
       once: once,
@@ -72,12 +73,17 @@ export class EventEmitter implements IEventEmitter {
   }
 
   trigger (eventName: string, ...args:any[]): any {
-    let events = (this._listeners[eventName]||[]).concat(this._listeners["all"]||[])
+    let events = (this._listeners|| (this._listeners = {}))[eventName]||(this._listeners[eventName]=[])
+    .concat(this._listeners['all']||[])
+
     if (EventEmitter.debugCallback) 
       EventEmitter.debugCallback((<any>this.constructor).name, (<any>this).name, eventName, args)
-    for (let i=0;i<events.length;i++) {
-      let event = events[i]
-      let a = args
+    
+    let event, a, len = events.length, index, i
+    
+    for (i=0;i<events.length;i++) {
+      event = events[i]
+      a = args
       
       if (event.name == 'all') {
         a = [eventName].concat(args)
@@ -87,21 +93,21 @@ export class EventEmitter implements IEventEmitter {
       
       if (event.once === true) {
        
-        let index = this._listeners[event.name].indexOf(event)
+        index = this._listeners[event.name].indexOf(event)
         this._listeners[event.name].splice(index,1)
       }
     }
     
     return this
-
-
+    
   }
 
   listenTo (obj: IEventEmitter, event: string, fn:EventHandler, ctx?:any, once:boolean = false): any {
-      let listeningTo = this._listeningTo|| (this._listeningTo = {});
-      let id = obj.listenId || (obj.listenId = getID())
+      let listeningTo, id, meth
+      listeningTo = this._listeningTo|| (this._listeningTo = {});
+      id = obj.listenId || (obj.listenId = getID())
       listeningTo[id] = obj;
-      let meth = once ? 'once' : 'on';
+      meth = once ? 'once' : 'on';
 
       obj[meth](event, fn, this);
 

@@ -12,66 +12,8 @@ const gulp = require('gulp'),
       jasmine = require('gulp-jasmine-phantom');
 
 
-gulp.task('build', function () {
+require('requiredir')('./gulp/tasks', { recurse: true });
 
-  let result = gulp.src('./src/**/*.ts')
-  .pipe(tsc({
-    "target": "ES5",
-    "module": "commonjs",
-    "isolatedModules": false,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "declaration": true,
-    "noImplicitAny": false,
-    "removeComments": false,
-    "noLib": false,
-    "preserveConstEnums": true,
-    "suppressImplicitAnyIndexErrors": true,
-    declarationFiles: true
-  }));
-
-  let js = result.js
-  .pipe(gulp.dest('./lib'));
-
-  let dts = result.dts.pipe(gulp.dest('./lib'));
-
-  return merge([js,dts]);
-
-});
-
-gulp.task('build:bower', ['build'], function () {
-  return gulp.src('./lib/index.js')
-  .pipe(webpack({
-    devtool: "source-map",
-    resolve: {
-        extensions: ['', '.webpack.js', '.web.js', '.ts', '.js']
-    },
-    module: {
-        loaders: [
-            
-            /*{ 
-              test: /\.js$/, 
-              loader: 'babel',
-              query: {
-                optional: ['runtime'],
-                loose: ['es6.classes']
-              } 
-            }*/
-        ]
-    },
-    output: {
-      library: "views",
-      libraryTarget: "umd",
-      filename: 'views.js'
-    }
-  }))
-  .pipe(gulp.dest('./dist'));
-});
-
-gulp.task('definition', ['build', 'build:bower'], function () {
-  return gulp.src('./templates/views.d.ts')
-  .pipe(gulp.dest('./'));
-});
 
 gulp.task('uglify', ['build:bower'], function () {
   return gulp.src('./dist/views.js')
@@ -83,21 +25,12 @@ gulp.task('uglify', ['build:bower'], function () {
 
 
 
-gulp.task('watch', ['build:bower'],function () {
-  gulp.watch('./src/**/*.ts', ['build:bower']);
-});
+
 
 gulp.task('clean', function (done) {
   del(['./lib','./dist', './docs'], done);
 });
 
-
-gulp.task('test', ['build'], function () {
-  return gulp.src('./spec/*.js')
-  .pipe(jasmine({
-    integration: false
-  }))
-})
 
 gulp.task('docs', function (done) {
   let exec = require('child_process').exec
@@ -112,17 +45,6 @@ gulp.task('docs', function (done) {
   })
 })
 
-gulp.task('test:integration', ['build:bower'], function () {
-  return gulp.src('./spec/integration/*.js')
-  .pipe(jasmine({
-    integration: true,
-    keepRunner: './',
-    vendor: [
-      './dist/views.js',
-      './node_modules/jquery/dist/jquery.js',
-      './node_modules/jasmine-jquery/lib/jasmine-jquery.js' 
-     ]
-  }))
-})
+
 
 gulp.task('default', ['clean','build', 'build:bower', 'definition', 'test','test:integration', 'docs']);

@@ -33,7 +33,7 @@ export class DataView<T extends HTMLElement> extends TemplateView<T> implements 
    * @extends TemplateView
    */
   constructor (options:DataViewOptions) {
-    super(options)
+    
     
     if (options.model) {
       this._model = options.model
@@ -41,6 +41,8 @@ export class DataView<T extends HTMLElement> extends TemplateView<T> implements 
     if (options.collection) {
       this._collection = options.collection
     }
+    
+    super(options)
     
   }
 	
@@ -80,7 +82,7 @@ export class DataView<T extends HTMLElement> extends TemplateView<T> implements 
 	
 	public delegateEvents (events?:any): any {
 		events = events||this.events
-		events = normalizeUIKeys(events)
+		//events = normalizeUIKeys(events)
 	
 		let {c,e,m} = this._filterEvents(events)
 		

@@ -12,8 +12,12 @@ export class BaseObject extends EventEmitter {
    * Object 
    * @extends EventEmitter
    */
-  constructor () {
+  constructor (args?:any) {
     super()
+   
+    if (typeof (<any>this).initialize === 'function') {
+      utils.call((<any>this).initialize, this, utils.slice(arguments))
+    }
    
   }
 

@@ -83,13 +83,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var base = __webpack_require__(2);
 	var utils_1 = __webpack_require__(5);
 	var kUIRegExp = /@ui.([a-zA-Z_\-\$#]+)/i;
-	function normalizeUIKeys(obj) {
+	function normalizeUIKeys(obj, uimap) {
 	    /*jshint -W030 */
 	    var o = {}, k, v, ms, sel, ui;
 	    for (k in obj) {
 	        v = obj[k];
 	        if ((ms = kUIRegExp.exec(k)) !== null) {
-	            ui = ms[1], sel = this._ui[ui];
+	            ui = ms[1], sel = uimap[ui];
 	            if (sel != null) {
 	                k = k.replace(ms[0], sel);
 	            }
@@ -108,12 +108,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    function View(options) {
 	        _super.call(this, options);
-	        this.ui = {};
 	    }
 	    View.prototype.delegateEvents = function (events) {
 	        this.bindUIElements();
 	        events = events || this.events;
-	        events = normalizeUIKeys.call(this, events);
+	        events = normalizeUIKeys(events, this._ui);
+	        var triggers = this._configureTriggers();
+	        events = utils_1.utils.extend({}, events, triggers);
 	        _super.prototype.delegateEvents.call(this, events);
 	        return this;
 	    };
@@ -147,6 +148,59 @@ return /******/ (function(modules) { // webpackBootstrap
 	    View.prototype.unbindUIElements = function () {
 	        this.ui = {};
 	    };
+	    /**
+	     * Configure triggers
+	     * @return {Object} events object
+	     * @private
+	     */
+	    View.prototype._configureTriggers = function () {
+	        if (!this.triggers) {
+	            return {};
+	        }
+	        var triggers = this.getOption('triggers') || {};
+	        if (typeof triggers === 'function') {
+	            triggers = triggers.call(this);
+	        }
+	        // Allow `triggers` to be configured as a function
+	        triggers = normalizeUIKeys(utils_1.utils.result(this, 'triggers', this), this._ui);
+	        // Configure the triggers, prevent default
+	        // action and stop propagation of DOM events
+	        var events = {}, val, key;
+	        for (key in triggers) {
+	            val = triggers[key];
+	            events[key] = this._buildViewTrigger(val);
+	        }
+	        return events;
+	    };
+	    /**
+	     * builder trigger function
+	     * @param  {Object|String} triggerDef Trigger definition
+	     * @return {Function}
+	     * @private
+	     */
+	    View.prototype._buildViewTrigger = function (triggerDef) {
+	        if (typeof triggerDef === 'string')
+	            triggerDef = { event: triggerDef };
+	        var options = utils_1.utils.extend({
+	            preventDefault: true,
+	            stopPropagation: true
+	        }, triggerDef);
+	        return function (e) {
+	            if (e) {
+	                if (e.preventDefault && options.preventDefault) {
+	                    e.preventDefault();
+	                }
+	                if (e.stopPropagation && options.stopPropagation) {
+	                    e.stopPropagation();
+	                }
+	            }
+	            this.triggerMethod(options.event, {
+	                view: this,
+	                model: this.model,
+	                collection: this.collection
+	            });
+	        };
+	    };
 	    return View;
 	})(base.BaseView);
 	exports.View = View;
@@ -176,7 +230,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    function BaseView(options) {
 	        if (options === void 0) { options = {}; }
-	        _super.call(this);
 	        this._cid = utils_1.utils.uniqueId('view');
 	        utils_1.utils.extend(this, utils_1.utils.pick(options, viewOptions));
 	        this._domEvents = [];
@@ -185,6 +238,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        else {
 	        }
+	        _super.call(this, options);
 	    }
 	    BaseView.find = function (selector, context) {
 	        return context.querySelectorAll(selector);
@@ -389,9 +443,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Object
 	     * @extends EventEmitter
 	     */
-	    function BaseObject() {
+	    function BaseObject(args) {
 	        _super.call(this);
 	        this._isDestroyed = false;
+	        if (typeof this.initialize === 'function') {
+	            utils_1.utils.call(this.initialize, this, utils_1.utils.slice(arguments));
+	        }
 	    }
 	    Object.defineProperty(BaseObject.prototype, "isDestroyed", {
 	        /**
@@ -455,8 +512,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	var EventEmitter = (function () {
 	    function EventEmitter() {
-	        this._listeners = {};
-	        this._listeningTo = {};
 	    }
 	    Object.defineProperty(EventEmitter.prototype, "listeners", {
 	        get: function () {
@@ -467,7 +522,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	    EventEmitter.prototype.on = function (event, fn, ctx, once) {
 	        if (once === void 0) { once = false; }
-	        var events = this._listeners[event] || (this._listeners[event] = []);
+	        var events = (this._listeners || (this._listeners = {}))[event] || (this._listeners[event] = []);
+	        //let events = this._listeners[event]||(this._listeners[event]=[])
 	        events.push({
 	            name: event,
 	            once: once,
@@ -503,29 +559,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var _i = 1; _i < arguments.length; _i++) {
 	            args[_i - 1] = arguments[_i];
 	        }
-	        var events = (this._listeners[eventName] || []).concat(this._listeners["all"] || []);
+	        var events = (this._listeners || (this._listeners = {}))[eventName] || (this._listeners[eventName] = [])
+	            .concat(this._listeners['all'] || []);
 	        if (EventEmitter.debugCallback)
 	            EventEmitter.debugCallback(this.constructor.name, this.name, eventName, args);
-	        for (var i = 0; i < events.length; i++) {
-	            var event_2 = events[i];
-	            var a = args;
-	            if (event_2.name == 'all') {
+	        var event, a, len = events.length, index, i;
+	        for (i = 0; i < events.length; i++) {
+	            event = events[i];
+	            a = args;
+	            if (event.name == 'all') {
 	                a = [eventName].concat(args);
 	            }
-	            event_2.handler.apply(event_2.ctx, a);
-	            if (event_2.once === true) {
-	                var index = this._listeners[event_2.name].indexOf(event_2);
-	                this._listeners[event_2.name].splice(index, 1);
+	            event.handler.apply(event.ctx, a);
+	            if (event.once === true) {
+	                index = this._listeners[event.name].indexOf(event);
+	                this._listeners[event.name].splice(index, 1);
 	            }
 	        }
 	        return this;
 	    };
 	    EventEmitter.prototype.listenTo = function (obj, event, fn, ctx, once) {
 	        if (once === void 0) { once = false; }
-	        var listeningTo = this._listeningTo || (this._listeningTo = {});
-	        var id = obj.listenId || (obj.listenId = getID());
+	        var listeningTo, id, meth;
+	        listeningTo = this._listeningTo || (this._listeningTo = {});
+	        id = obj.listenId || (obj.listenId = getID());
 	        listeningTo[id] = obj;
-	        var meth = once ? 'once' : 'on';
+	        meth = once ? 'once' : 'on';
 	        obj[meth](event, fn, this);
 	        return this;
 	    };
@@ -916,10 +975,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @extends View
 	     */
 	    function TemplateView(options) {
-	        _super.call(this, options);
 	        if (options && options.template) {
 	            this.template = options.template;
 	        }
+	        _super.call(this, options);
 	    }
 	    TemplateView.prototype.getTemplateData = function () {
 	        return {};
@@ -975,9 +1034,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @inheritdoc
 	     */
 	    function Region(options) {
-	        _super.call(this);
 	        this.options = options;
 	        this._el = this.getOption('el');
+	        _super.call(this);
 	    }
 	    Object.defineProperty(Region.prototype, "view", {
 	        get: function () {
@@ -1234,13 +1293,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    function LayoutView(options) {
 	        //this.options = options || {};
-	        var regions = this.getOption('regions');
 	        // Set region manager
 	        this._regionManager = new region_manager_1.RegionManager();
 	        utils_1.utils.proxy(this, this._regionManager, ['removeRegion', 'removeRegions']);
+	        var regions = this.getOption('regions');
 	        //this.options = options || {};
 	        this.listenTo(this, 'render', function () {
-	            this.addRegions(regions);
+	            this.addRegion(regions);
 	        });
 	        _super.call(this, options);
 	    }
@@ -1298,7 +1357,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    d.prototype = new __();
 	};
 	var templateview_1 = __webpack_require__(6);
-	var view_1 = __webpack_require__(1);
 	var utils_1 = __webpack_require__(5);
 	var DataView = (function (_super) {
 	    __extends(DataView, _super);
@@ -1308,13 +1366,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @extends TemplateView
 	     */
 	    function DataView(options) {
-	        _super.call(this, options);
 	        if (options.model) {
 	            this._model = options.model;
 	        }
 	        if (options.collection) {
 	            this._collection = options.collection;
 	        }
+	        _super.call(this, options);
 	    }
 	    Object.defineProperty(DataView.prototype, "model", {
 	        get: function () { return this._model; },
@@ -1359,7 +1417,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    DataView.prototype.delegateEvents = function (events) {
 	        events = events || this.events;
-	        events = view_1.normalizeUIKeys(events);
+	        //events = normalizeUIKeys(events)
 	        var _a = this._filterEvents(events), c = _a.c, e = _a.e, m = _a.m;
 	        _super.prototype.delegateEvents.call(this, e);
 	        this._delegateDataEvents(m, c);
@@ -1452,12 +1510,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * @param {DataViewOptions} options
 	   */
 	    function CollectionView(options) {
-	        _super.call(this, options);
-	        /** Child views associated with the view
-	         * @property {Array<IDataView>} children
-	         */
-	        this.children = [];
 	        this._options = options || {};
+	        this.children = [];
+	        _super.call(this, options);
 	    }
 	    /**
 	   * Render the collection view and alle of the children
@@ -1562,6 +1617,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	        this.triggerMethod('render:collection');
 	    };
+	    /**
+	   * Append childview to the container
+	   * @private
+	   * @param {IDataView} view
+	   * @param {Number} index
+	   */
 	    CollectionView.prototype._appendChild = function (view, index) {
 	        this._updateIndexes(view, true, index);
 	        this._proxyChildViewEvents(view);

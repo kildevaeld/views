@@ -60,8 +60,6 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
    */
   constructor (options: BaseViewOptions = {}) {
 
-    super()
-
     this._cid = utils.uniqueId('view')
     
 
@@ -74,6 +72,8 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
     } else {
       //this.delegateEvents()
     }
+    
+    super(options)
     
   }
 

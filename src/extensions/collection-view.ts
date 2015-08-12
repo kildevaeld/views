@@ -30,7 +30,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
   /** Child views associated with the view
    * @property {Array<IDataView>} children
    */
-	public children: IDataView[] = []
+	public children: IDataView[]
   
   /** Whether the collection sould be sorted 
    * @property {boolean} sort 
@@ -42,9 +42,10 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
    * @param {DataViewOptions} options 
    */
 	constructor (options?:CollectionViewOptions) {
-		super(options)	
-    
     this._options = options||{}
+    this.children = []
+    
+    super(options)	
 	}
 	
 	/**
@@ -181,7 +182,13 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 		})
 		this.triggerMethod('render:collection')
 	}
-	
+  
+	/**
+   * Append childview to the container
+   * @private
+   * @param {IDataView} view
+   * @param {Number} index
+   */
 	private _appendChild (view: IDataView, index?: number) {
 		this._updateIndexes(view, true, index);
 

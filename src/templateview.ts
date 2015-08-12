@@ -17,11 +17,13 @@ export class TemplateView<T extends HTMLElement> extends views.View<T> {
    * @extends View
    */
   constructor (options?: TemplateViewOptions) {
-    super(options)
+    
     
     if (options && options.template) {
       this.template = options.template
     }
+    
+    super(options)
   }
 
   getTemplateData (): any {

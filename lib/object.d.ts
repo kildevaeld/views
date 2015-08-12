@@ -8,7 +8,7 @@ export declare class BaseObject extends EventEmitter {
      * Object
      * @extends EventEmitter
      */
-    constructor();
+    constructor(args?: any);
     /**
      * Whether the object is "destroyed" or not
      * @type boolean

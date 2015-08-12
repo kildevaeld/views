@@ -52,9 +52,10 @@ export class Region extends BaseObject {
      * @inheritdoc
      */
 	constructor(options:RegionOptions) {
-		super();
     this.options = options
     this._el = this.getOption('el');
+    
+    super();
     
 	}
 

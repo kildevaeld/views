@@ -53,6 +53,12 @@ export declare class CollectionView<T extends HTMLElement> extends DataView<T> {
    */
     destroy(): any;
     private _renderCollection();
+    /**
+   * Append childview to the container
+   * @private
+   * @param {IDataView} view
+   * @param {Number} index
+   */
     private _appendChild(view, index?);
     /**
    * Attach the childview's element to the CollectionView.
