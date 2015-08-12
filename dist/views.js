@@ -313,7 +313,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            listener(e);
 	        };
 	        /*jshint bitwise: false*/
-	        var useCap = !!~unbubblebles.indexOf(eventName);
+	        var useCap = !!~unbubblebles.indexOf(eventName) && selector != null;
 	        utils_1.html.addEventListener(this.el, eventName, handler, useCap);
 	        this._domEvents.push({ eventName: eventName, handler: handler, listener: listener, selector: selector });
 	        return handler;
