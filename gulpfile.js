@@ -9,7 +9,8 @@ const gulp = require('gulp'),
       webpack = require('gulp-webpack'),
       uglify = require('gulp-uglify'),
       rename = require('gulp-rename'),
-      jasmine = require('gulp-jasmine-phantom');
+      jasmine = require('gulp-jasmine-phantom'),
+      size = require('gulp-size');
 
 
 require('requiredir')('./gulp/tasks', { recurse: true });
@@ -19,6 +20,7 @@ gulp.task('uglify', ['build:bower'], function () {
   return gulp.src('./dist/views.js')
   .pipe(uglify())
   .pipe(rename('views.min.js'))
+  .pipe(size())
   .pipe(gulp.dest('dist'));
 
 });
@@ -47,4 +49,12 @@ gulp.task('docs', function (done) {
 
 
 
-gulp.task('default', ['clean','build', 'build:bower', 'definition', 'test','test:integration', 'docs']);
+gulp.task('default', [
+  'clean',
+  'build', 
+  'build:bower', 
+  'definition', 
+  'test',
+  'test:integration', 
+  'docs', 
+ 'uglify']);
