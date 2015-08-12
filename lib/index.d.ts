@@ -10,3 +10,4 @@ export * from './layout-view';
 export * from './data-view';
 export * from './collection-view';
 export * from './model';
+export * from './collection';

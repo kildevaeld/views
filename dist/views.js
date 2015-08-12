@@ -57,169 +57,156 @@ return /******/ (function(modules) { // webpackBootstrap
 	function __export(m) {
 	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 	}
+	__export(__webpack_require__(1));
+	__export(__webpack_require__(6));
 	__export(__webpack_require__(5));
-	__export(__webpack_require__(7));
 	__export(__webpack_require__(4));
 	__export(__webpack_require__(3));
 	__export(__webpack_require__(2));
-	__export(__webpack_require__(6));
-	__export(__webpack_require__(1));
+	__export(__webpack_require__(7));
 	__export(__webpack_require__(8));
 	__export(__webpack_require__(9));
 	__export(__webpack_require__(10));
 	__export(__webpack_require__(11));
 	__export(__webpack_require__(12));
+	__export(__webpack_require__(13));
 
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* global BaseClass */
-	/* jshint latedef:nofunc */
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
 	    function __() { this.constructor = d; }
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var object_1 = __webpack_require__(2);
-	var utils_1 = __webpack_require__(4);
-	/** Region  */
-	var Region = (function (_super) {
-	    __extends(Region, _super);
-	    /**
-	     * Regions manage a view
-	     * @param {Object} options
-	     * @param {HTMLElement} options.el  A Html element
-	     * @constructor Region
-	     * @extends BaseObject
-	     * @inheritdoc
-	     */
-	    function Region(options) {
-	        this.options = options;
-	        this._el = this.getOption('el');
-	        _super.call(this);
+	var base = __webpack_require__(2);
+	var utils_1 = __webpack_require__(5);
+	var kUIRegExp = /@ui.([a-zA-Z_\-\$#]+)/i;
+	function normalizeUIKeys(obj, uimap) {
+	    /*jshint -W030 */
+	    var o = {}, k, v, ms, sel, ui;
+	    for (k in obj) {
+	        v = obj[k];
+	        if ((ms = kUIRegExp.exec(k)) !== null) {
+	            ui = ms[1], sel = uimap[ui];
+	            if (sel != null) {
+	                k = k.replace(ms[0], sel);
+	            }
+	        }
+	        o[k] = v;
 	    }
-	    Object.defineProperty(Region.prototype, "view", {
-	        get: function () {
-	            return this._view;
-	        },
-	        set: function (view) {
-	            this.show(view);
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(Region.prototype, "el", {
-	        get: function () {
-	            return this._el;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
+	    return o;
+	}
+	exports.normalizeUIKeys = normalizeUIKeys;
+	var View = (function (_super) {
+	    __extends(View, _super);
 	    /**
-	     * Build region from a definition
-	     * @param {Object|String|Region} def The description of the region
-	     * @return {Region}
+	     * View
+	     * @param {ViewOptions} options
+	     * @extends BaseView
 	     */
-	    Region.buildRegion = function (def, context) {
-	        if (context === void 0) { context = null; }
-	        if (def instanceof Region) {
-	            return def;
-	        }
-	        else if (typeof def === 'string') {
-	            return buildBySelector(def, Region, context);
-	        }
-	        else {
-	            return buildByObject(def, context);
-	        }
-	    };
-	    /**
-	   * Show a view in the region.
-	   * This will destroy or remove any existing views.
-	   * @param  {View} view    The view to Show
-	   * @return {Region}       this for chaining.
-	   */
-	    Region.prototype.show = function (view, options) {
-	        var diff = view !== this._view;
-	        if (diff) {
-	            // Remove any containing views
-	            this.empty();
-	            // If the view is destroyed be others
-	            view.once('destroy', this.empty, this);
-	            view.once('render', function () {
-	                utils_1.utils.triggerMethodOn(view, 'show');
-	            });
-	            view.render();
-	            utils_1.utils.triggerMethodOn(view, 'before:show');
-	            this._attachHtml(view);
-	            this._view = view;
-	        }
+	    function View(options) {
+	        this._options = options;
+	        _super.call(this, options);
+	    }
+	    View.prototype.delegateEvents = function (events) {
+	        this.bindUIElements();
+	        events = events || this.events;
+	        events = normalizeUIKeys(events, this._ui);
+	        var triggers = this._configureTriggers();
+	        events = utils_1.utils.extend({}, events, triggers);
+	        _super.prototype.delegateEvents.call(this, events);
 	        return this;
 	    };
-	    /**
-	     * Destroy the region, this will remove any views, but not the containing element
-	     * @return {Region} this for chaining
-	     */
-	    Region.prototype.destroy = function () {
-	        this.empty();
-	        _super.prototype.destroy.call(this);
+	    View.prototype.undelegateEvents = function () {
+	        this.unbindUIElements();
+	        _super.prototype.undelegateEvents.call(this);
+	        return this;
 	    };
-	    /**
-	     * Empty the region. This will destroy any existing view.
-	     * @return {Region} this for chaining;
-	     */
-	    Region.prototype.empty = function () {
-	        if (!this._view)
+	    /* UI Elements */
+	    View.prototype.bindUIElements = function () {
+	        var _this = this;
+	        var ui = this.getOption('ui'); //this.options.ui||this.ui
+	        if (!ui)
 	            return;
-	        var view = this._view;
-	        view.off('destroy', this.empty, this);
-	        this.trigger('before:empty', view);
-	        this._destroyView();
-	        this.trigger('empty', view);
-	        delete this._view;
-	        return this;
+	        if (!this._ui) {
+	            this._ui = ui;
+	        }
+	        ui = utils_1.utils.result(this, '_ui');
+	        this.ui = {};
+	        Object.keys(ui).forEach(function (k) {
+	            var elm = _this.$(ui[k]);
+	            if (elm && elm.length) {
+	                // unwrap if it's a nodelist.
+	                if (elm instanceof NodeList) {
+	                    elm = elm[0];
+	                }
+	                _this.ui[k] = elm;
+	            }
+	        });
+	    };
+	    View.prototype.unbindUIElements = function () {
+	        this.ui = {};
 	    };
 	    /**
-	     * Attach the view element to the regions element
-	     * @param {View} view
+	     * Configure triggers
+	     * @return {Object} events object
 	     * @private
-	     *
 	     */
-	    Region.prototype._attachHtml = function (view) {
-	        this._el.innerHTML = '';
-	        this._el.appendChild(view.el);
-	    };
-	    Region.prototype._destroyView = function () {
-	        var view = this._view;
-	        if ((view.destroy && typeof view.destroy === 'function') && !view.isDestroyed) {
-	            view.destroy();
+	    View.prototype._configureTriggers = function () {
+	        /*if (!this.triggers) {
+	          return {};
+	        }*/
+	        var triggers = this.getOption('triggers') || {};
+	        if (typeof triggers === 'function') {
+	            triggers = triggers.call(this);
 	        }
-	        else if (view.remove && typeof view.remove === 'function') {
-	            view.remove();
+	        // Allow `triggers` to be configured as a function
+	        triggers = normalizeUIKeys(triggers, this._ui);
+	        // Configure the triggers, prevent default
+	        // action and stop propagation of DOM events
+	        var events = {}, val, key;
+	        for (key in triggers) {
+	            val = triggers[key];
+	            events[key] = this._buildViewTrigger(val);
 	        }
-	        this._el.innerHTML = '';
+	        return events;
 	    };
-	    return Region;
-	})(object_1.BaseObject);
-	exports.Region = Region;
-	function buildByObject(object, context) {
-	    if (object === void 0) { object = {}; }
-	    if (!object.selector)
-	        throw new Error('No selector specified: ' + object);
-	    return buildBySelector(object.selector, object.regionClass || Region, context);
-	}
-	function buildBySelector(selector, Klass, context) {
-	    if (Klass === void 0) { Klass = Region; }
-	    context = context || document;
-	    var el = context.querySelector(selector);
-	    if (!el)
-	        throw new Error('selector must exist in the dom');
-	    return new Klass({
-	        el: el
-	    });
-	}
+	    /**
+	     * builder trigger function
+	     * @param  {Object|String} triggerDef Trigger definition
+	     * @return {Function}
+	     * @private
+	     */
+	    View.prototype._buildViewTrigger = function (triggerDef) {
+	        if (typeof triggerDef === 'string')
+	            triggerDef = { event: triggerDef };
+	        var options = utils_1.utils.extend({
+	            preventDefault: true,
+	            stopPropagation: true
+	        }, triggerDef);
+	        return function (e) {
+	            if (e) {
+	                if (e.preventDefault && options.preventDefault) {
+	                    e.preventDefault();
+	                }
+	                if (e.stopPropagation && options.stopPropagation) {
+	                    e.stopPropagation();
+	                }
+	            }
+	            this.triggerMethod(options.event, {
+	                view: this,
+	                model: this.model,
+	                collection: this.collection
+	            });
+	        };
+	    };
+	    return View;
+	})(base.BaseView);
+	exports.View = View;
 
 
 /***/ },
@@ -232,8 +219,226 @@ return /******/ (function(modules) { // webpackBootstrap
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var events_1 = __webpack_require__(3);
-	var utils_1 = __webpack_require__(4);
+	var object_1 = __webpack_require__(3);
+	var utils_1 = __webpack_require__(5);
+	var paddedLt = /^\s*</;
+	var unbubblebles = 'focus blur change'.split(' ');
+	var viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events'];
+	var BaseView = (function (_super) {
+	    __extends(BaseView, _super);
+	    /**
+	     * BaseView
+	     * @param {BaseViewOptions} options
+	     * @extends BaseObject
+	     */
+	    function BaseView(options) {
+	        if (options === void 0) { options = {}; }
+	        this._cid = utils_1.utils.uniqueId('view');
+	        utils_1.utils.extend(this, utils_1.utils.pick(options, viewOptions));
+	        this._domEvents = [];
+	        if (this.el == null) {
+	            this._ensureElement();
+	        }
+	        else {
+	        }
+	        _super.call(this, options);
+	    }
+	    BaseView.find = function (selector, context) {
+	        return context.querySelectorAll(selector);
+	    };
+	    Object.defineProperty(BaseView.prototype, "cid", {
+	        get: function () {
+	            return this._cid;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    /**
+	     * Delegate events
+	     * @param {EventsMap} events
+	     */
+	    BaseView.prototype.delegateEvents = function (events) {
+	        var _this = this;
+	        if (!(events || (events = utils_1.utils.result(this, 'events'))))
+	            return this;
+	        this.undelegateEvents();
+	        var dels = [];
+	        for (var key in events) {
+	            var method = events[key];
+	            if (typeof method !== 'function')
+	                method = this[method];
+	            var match = key.match(/^(\S+)\s*(.*)$/);
+	            // Set delegates immediately and defer event on this.el
+	            var boundFn = utils_1.utils.bind(method, this);
+	            if (match[2]) {
+	                this.delegate(match[1], match[2], boundFn);
+	            }
+	            else {
+	                dels.push([match[1], boundFn]);
+	            }
+	        }
+	        dels.forEach(function (d) { _this.delegate(d[0], d[1]); });
+	        return this;
+	    };
+	    /**
+	     * Undelegate events
+	     */
+	    BaseView.prototype.undelegateEvents = function () {
+	        if (this.el) {
+	            for (var i = 0, len = this._domEvents.length; i < len; i++) {
+	                var item = this._domEvents[i];
+	                utils_1.html.removeEventListener(this.el, item.eventName, item.handler);
+	            }
+	            this._domEvents.length = 0;
+	        }
+	        return this;
+	    };
+	    BaseView.prototype.delegate = function (eventName, selector, listener) {
+	        if (typeof selector === 'function') {
+	            listener = selector;
+	            selector = null;
+	        }
+	        var root = this.el;
+	        var handler = selector ? function (e) {
+	            var node = e.target || e.srcElement;
+	            // Already handled
+	            if (e.delegateTarget)
+	                return;
+	            for (; node && node != root; node = node.parentNode) {
+	                if (utils_1.html.matches(node, selector)) {
+	                    e.delegateTarget = node;
+	                    listener(e);
+	                }
+	            }
+	        } : function (e) {
+	            if (e.delegateTarget)
+	                return;
+	            listener(e);
+	        };
+	        /*jshint bitwise: false*/
+	        var useCap = !!~unbubblebles.indexOf(eventName) && selector != null;
+	        utils_1.html.addEventListener(this.el, eventName, handler, useCap);
+	        this._domEvents.push({ eventName: eventName, handler: handler, listener: listener, selector: selector });
+	        return handler;
+	    };
+	    BaseView.prototype.undelegate = function (eventName, selector, listener) {
+	        if (typeof selector === 'function') {
+	            listener = selector;
+	            selector = null;
+	        }
+	        if (this.el) {
+	            var handlers = this._domEvents.slice();
+	            for (var i = 0, len = handlers.length; i < len; i++) {
+	                var item = handlers[i];
+	                var match = item.eventName === eventName &&
+	                    (listener ? item.listener === listener : true) &&
+	                    (selector ? item.selector === selector : true);
+	                if (!match)
+	                    continue;
+	                utils_1.html.removeEventListener(this.el, item.eventName, item.handler);
+	                this._domEvents.splice(utils_1.utils.indexOf(handlers, item), 1);
+	            }
+	        }
+	        return this;
+	    };
+	    BaseView.prototype.render = function (options) {
+	        return this;
+	    };
+	    BaseView.prototype.appendTo = function (elm) {
+	        elm.appendChild(this.el);
+	        return this;
+	    };
+	    BaseView.prototype.append = function (elm, toSelector) {
+	        if (toSelector != null) {
+	            var ret = this.$(toSelector);
+	            if (ret instanceof NodeList && ret.length > 0) {
+	                ret[0].appendChild(elm);
+	            }
+	            else if (ret instanceof HTMLElement) {
+	                ret.appendChild(elm);
+	            }
+	        }
+	        else {
+	            this.el.appendChild(elm);
+	        }
+	        return this;
+	    };
+	    BaseView.prototype.$ = function (selector) {
+	        if (selector instanceof HTMLElement) {
+	            return selector;
+	        }
+	        else {
+	            return BaseView.find(selector, this.el);
+	        }
+	    };
+	    BaseView.prototype.setElement = function (elm) {
+	        this.undelegateEvents();
+	        this._setElement(elm);
+	        this.delegateEvents();
+	    };
+	    BaseView.prototype.remove = function () {
+	        this._removeElement();
+	        return this;
+	    };
+	    BaseView.prototype._createElement = function (tagName) {
+	        return document.createElement(tagName);
+	    };
+	    BaseView.prototype._ensureElement = function () {
+	        if (!this.el) {
+	            var attrs = utils_1.utils.extend({}, utils_1.utils.result(this, 'attributes'));
+	            if (this.id)
+	                attrs.id = utils_1.utils.result(this, 'id');
+	            if (this.className)
+	                attrs['class'] = utils_1.utils.result(this, 'className');
+	            this.setElement(this._createElement(utils_1.utils.result(this, 'tagName') || 'div'));
+	            this._setAttributes(attrs);
+	        }
+	        else {
+	            this.setElement(utils_1.utils.result(this, 'el'));
+	        }
+	    };
+	    BaseView.prototype._removeElement = function () {
+	        this.undelegateEvents();
+	        if (this.el.parentNode)
+	            this.el.parentNode.removeChild(this.el);
+	    };
+	    BaseView.prototype._setElement = function (element) {
+	        if (typeof element === 'string') {
+	            if (paddedLt.test(element)) {
+	                var el = document.createElement('div');
+	                el.innerHTML = element;
+	                this.el = el.firstElementChild;
+	            }
+	            else {
+	                this.el = document.querySelector(element);
+	            }
+	        }
+	        else {
+	            this.el = element;
+	        }
+	    };
+	    BaseView.prototype._setAttributes = function (attrs) {
+	        for (var attr in attrs) {
+	            attr in this.el ? this.el[attr] = attrs[attr] : this.el.setAttribute(attr, attrs[attr]);
+	        }
+	    };
+	    return BaseView;
+	})(object_1.BaseObject);
+	exports.BaseView = BaseView;
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    __.prototype = b.prototype;
+	    d.prototype = new __();
+	};
+	var events_1 = __webpack_require__(4);
+	var utils_1 = __webpack_require__(5);
 	/** Base object */
 	var BaseObject = (function (_super) {
 	    __extends(BaseObject, _super);
@@ -301,7 +506,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports) {
 
 	var idCounter = 0;
@@ -408,7 +613,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 	var ElementProto = (typeof Element !== 'undefined' && Element.prototype) || {};
@@ -777,143 +982,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    __.prototype = b.prototype;
-	    d.prototype = new __();
-	};
-	var base = __webpack_require__(6);
-	var utils_1 = __webpack_require__(4);
-	var kUIRegExp = /@ui.([a-zA-Z_\-\$#]+)/i;
-	function normalizeUIKeys(obj, uimap) {
-	    /*jshint -W030 */
-	    var o = {}, k, v, ms, sel, ui;
-	    for (k in obj) {
-	        v = obj[k];
-	        if ((ms = kUIRegExp.exec(k)) !== null) {
-	            ui = ms[1], sel = uimap[ui];
-	            if (sel != null) {
-	                k = k.replace(ms[0], sel);
-	            }
-	        }
-	        o[k] = v;
-	    }
-	    return o;
-	}
-	exports.normalizeUIKeys = normalizeUIKeys;
-	var View = (function (_super) {
-	    __extends(View, _super);
-	    /**
-	     * View
-	     * @param {ViewOptions} options
-	     * @extends BaseView
-	     */
-	    function View(options) {
-	        this._options = options;
-	        _super.call(this, options);
-	    }
-	    View.prototype.delegateEvents = function (events) {
-	        this.bindUIElements();
-	        events = events || this.events;
-	        events = normalizeUIKeys(events, this._ui);
-	        var triggers = this._configureTriggers();
-	        events = utils_1.utils.extend({}, events, triggers);
-	        _super.prototype.delegateEvents.call(this, events);
-	        return this;
-	    };
-	    View.prototype.undelegateEvents = function () {
-	        this.unbindUIElements();
-	        _super.prototype.undelegateEvents.call(this);
-	        return this;
-	    };
-	    /* UI Elements */
-	    View.prototype.bindUIElements = function () {
-	        var _this = this;
-	        var ui = this.getOption('ui'); //this.options.ui||this.ui
-	        if (!ui)
-	            return;
-	        if (!this._ui) {
-	            this._ui = ui;
-	        }
-	        ui = utils_1.utils.result(this, '_ui');
-	        this.ui = {};
-	        Object.keys(ui).forEach(function (k) {
-	            var elm = _this.$(ui[k]);
-	            if (elm && elm.length) {
-	                // unwrap if it's a nodelist.
-	                if (elm instanceof NodeList) {
-	                    elm = elm[0];
-	                }
-	                _this.ui[k] = elm;
-	            }
-	        });
-	    };
-	    View.prototype.unbindUIElements = function () {
-	        this.ui = {};
-	    };
-	    /**
-	     * Configure triggers
-	     * @return {Object} events object
-	     * @private
-	     */
-	    View.prototype._configureTriggers = function () {
-	        /*if (!this.triggers) {
-	          return {};
-	        }*/
-	        var triggers = this.getOption('triggers') || {};
-	        if (typeof triggers === 'function') {
-	            triggers = triggers.call(this);
-	        }
-	        // Allow `triggers` to be configured as a function
-	        triggers = normalizeUIKeys(triggers, this._ui);
-	        // Configure the triggers, prevent default
-	        // action and stop propagation of DOM events
-	        var events = {}, val, key;
-	        for (key in triggers) {
-	            val = triggers[key];
-	            events[key] = this._buildViewTrigger(val);
-	        }
-	        return events;
-	    };
-	    /**
-	     * builder trigger function
-	     * @param  {Object|String} triggerDef Trigger definition
-	     * @return {Function}
-	     * @private
-	     */
-	    View.prototype._buildViewTrigger = function (triggerDef) {
-	        if (typeof triggerDef === 'string')
-	            triggerDef = { event: triggerDef };
-	        var options = utils_1.utils.extend({
-	            preventDefault: true,
-	            stopPropagation: true
-	        }, triggerDef);
-	        return function (e) {
-	            if (e) {
-	                if (e.preventDefault && options.preventDefault) {
-	                    e.preventDefault();
-	                }
-	                if (e.stopPropagation && options.stopPropagation) {
-	                    e.stopPropagation();
-	                }
-	            }
-	            this.triggerMethod(options.event, {
-	                view: this,
-	                model: this.model,
-	                collection: this.collection
-	            });
-	        };
-	    };
-	    return View;
-	})(base.BaseView);
-	exports.View = View;
-
-
-/***/ },
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -923,225 +991,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var object_1 = __webpack_require__(2);
-	var utils_1 = __webpack_require__(4);
-	var paddedLt = /^\s*</;
-	var unbubblebles = 'focus blur change'.split(' ');
-	var viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events'];
-	var BaseView = (function (_super) {
-	    __extends(BaseView, _super);
-	    /**
-	     * BaseView
-	     * @param {BaseViewOptions} options
-	     * @extends BaseObject
-	     */
-	    function BaseView(options) {
-	        if (options === void 0) { options = {}; }
-	        this._cid = utils_1.utils.uniqueId('view');
-	        utils_1.utils.extend(this, utils_1.utils.pick(options, viewOptions));
-	        this._domEvents = [];
-	        if (this.el == null) {
-	            this._ensureElement();
-	        }
-	        else {
-	        }
-	        _super.call(this, options);
-	    }
-	    BaseView.find = function (selector, context) {
-	        return context.querySelectorAll(selector);
-	    };
-	    Object.defineProperty(BaseView.prototype, "cid", {
-	        get: function () {
-	            return this._cid;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    /**
-	     * Delegate events
-	     * @param {EventsMap} events
-	     */
-	    BaseView.prototype.delegateEvents = function (events) {
-	        var _this = this;
-	        if (!(events || (events = utils_1.utils.result(this, 'events'))))
-	            return this;
-	        this.undelegateEvents();
-	        var dels = [];
-	        for (var key in events) {
-	            var method = events[key];
-	            if (typeof method !== 'function')
-	                method = this[method];
-	            var match = key.match(/^(\S+)\s*(.*)$/);
-	            // Set delegates immediately and defer event on this.el
-	            var boundFn = utils_1.utils.bind(method, this);
-	            if (match[2]) {
-	                this.delegate(match[1], match[2], boundFn);
-	            }
-	            else {
-	                dels.push([match[1], boundFn]);
-	            }
-	        }
-	        dels.forEach(function (d) { _this.delegate(d[0], d[1]); });
-	        return this;
-	    };
-	    /**
-	     * Undelegate events
-	     */
-	    BaseView.prototype.undelegateEvents = function () {
-	        if (this.el) {
-	            for (var i = 0, len = this._domEvents.length; i < len; i++) {
-	                var item = this._domEvents[i];
-	                utils_1.html.removeEventListener(this.el, item.eventName, item.handler);
-	            }
-	            this._domEvents.length = 0;
-	        }
-	        return this;
-	    };
-	    BaseView.prototype.delegate = function (eventName, selector, listener) {
-	        if (typeof selector === 'function') {
-	            listener = selector;
-	            selector = null;
-	        }
-	        var root = this.el;
-	        var handler = selector ? function (e) {
-	            var node = e.target || e.srcElement;
-	            // Already handled
-	            if (e.delegateTarget)
-	                return;
-	            for (; node && node != root; node = node.parentNode) {
-	                if (utils_1.html.matches(node, selector)) {
-	                    e.delegateTarget = node;
-	                    listener(e);
-	                }
-	            }
-	        } : function (e) {
-	            if (e.delegateTarget)
-	                return;
-	            listener(e);
-	        };
-	        /*jshint bitwise: false*/
-	        var useCap = !!~unbubblebles.indexOf(eventName) && selector != null;
-	        utils_1.html.addEventListener(this.el, eventName, handler, useCap);
-	        this._domEvents.push({ eventName: eventName, handler: handler, listener: listener, selector: selector });
-	        return handler;
-	    };
-	    BaseView.prototype.undelegate = function (eventName, selector, listener) {
-	        if (typeof selector === 'function') {
-	            listener = selector;
-	            selector = null;
-	        }
-	        if (this.el) {
-	            var handlers = this._domEvents.slice();
-	            for (var i = 0, len = handlers.length; i < len; i++) {
-	                var item = handlers[i];
-	                var match = item.eventName === eventName &&
-	                    (listener ? item.listener === listener : true) &&
-	                    (selector ? item.selector === selector : true);
-	                if (!match)
-	                    continue;
-	                utils_1.html.removeEventListener(this.el, item.eventName, item.handler);
-	                this._domEvents.splice(utils_1.utils.indexOf(handlers, item), 1);
-	            }
-	        }
-	        return this;
-	    };
-	    BaseView.prototype.render = function (options) {
-	        return this;
-	    };
-	    BaseView.prototype.appendTo = function (elm) {
-	        elm.appendChild(this.el);
-	        return this;
-	    };
-	    BaseView.prototype.append = function (elm, toSelector) {
-	        if (toSelector != null) {
-	            var ret = this.$(toSelector);
-	            if (ret instanceof NodeList && ret.length > 0) {
-	                ret[0].appendChild(elm);
-	            }
-	            else if (ret instanceof HTMLElement) {
-	                ret.appendChild(elm);
-	            }
-	        }
-	        else {
-	            this.el.appendChild(elm);
-	        }
-	        return this;
-	    };
-	    BaseView.prototype.$ = function (selector) {
-	        if (selector instanceof HTMLElement) {
-	            return selector;
-	        }
-	        else {
-	            return BaseView.find(selector, this.el);
-	        }
-	    };
-	    BaseView.prototype.setElement = function (elm) {
-	        this.undelegateEvents();
-	        this._setElement(elm);
-	        this.delegateEvents();
-	    };
-	    BaseView.prototype.remove = function () {
-	        this._removeElement();
-	        return this;
-	    };
-	    BaseView.prototype._createElement = function (tagName) {
-	        return document.createElement(tagName);
-	    };
-	    BaseView.prototype._ensureElement = function () {
-	        if (!this.el) {
-	            var attrs = utils_1.utils.extend({}, utils_1.utils.result(this, 'attributes'));
-	            if (this.id)
-	                attrs.id = utils_1.utils.result(this, 'id');
-	            if (this.className)
-	                attrs['class'] = utils_1.utils.result(this, 'className');
-	            this.setElement(this._createElement(utils_1.utils.result(this, 'tagName') || 'div'));
-	            this._setAttributes(attrs);
-	        }
-	        else {
-	            this.setElement(utils_1.utils.result(this, 'el'));
-	        }
-	    };
-	    BaseView.prototype._removeElement = function () {
-	        this.undelegateEvents();
-	        if (this.el.parentNode)
-	            this.el.parentNode.removeChild(this.el);
-	    };
-	    BaseView.prototype._setElement = function (element) {
-	        if (typeof element === 'string') {
-	            if (paddedLt.test(element)) {
-	                var el = document.createElement('div');
-	                el.innerHTML = element;
-	                this.el = el.firstElementChild;
-	            }
-	            else {
-	                this.el = document.querySelector(element);
-	            }
-	        }
-	        else {
-	            this.el = element;
-	        }
-	    };
-	    BaseView.prototype._setAttributes = function (attrs) {
-	        for (var attr in attrs) {
-	            attr in this.el ? this.el[attr] = attrs[attr] : this.el.setAttribute(attr, attrs[attr]);
-	        }
-	    };
-	    return BaseView;
-	})(object_1.BaseObject);
-	exports.BaseView = BaseView;
-
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    __.prototype = b.prototype;
-	    d.prototype = new __();
-	};
-	var views = __webpack_require__(5);
+	var views = __webpack_require__(1);
 	var TemplateView = (function (_super) {
 	    __extends(TemplateView, _super);
 	    /** TemplateView
@@ -1183,6 +1033,157 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* global BaseClass */
+	/* jshint latedef:nofunc */
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    __.prototype = b.prototype;
+	    d.prototype = new __();
+	};
+	var object_1 = __webpack_require__(3);
+	var utils_1 = __webpack_require__(5);
+	/** Region  */
+	var Region = (function (_super) {
+	    __extends(Region, _super);
+	    /**
+	     * Regions manage a view
+	     * @param {Object} options
+	     * @param {HTMLElement} options.el  A Html element
+	     * @constructor Region
+	     * @extends BaseObject
+	     * @inheritdoc
+	     */
+	    function Region(options) {
+	        this.options = options;
+	        this._el = this.getOption('el');
+	        _super.call(this);
+	    }
+	    Object.defineProperty(Region.prototype, "view", {
+	        get: function () {
+	            return this._view;
+	        },
+	        set: function (view) {
+	            this.show(view);
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Region.prototype, "el", {
+	        get: function () {
+	            return this._el;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    /**
+	     * Build region from a definition
+	     * @param {Object|String|Region} def The description of the region
+	     * @return {Region}
+	     */
+	    Region.buildRegion = function (def, context) {
+	        if (context === void 0) { context = null; }
+	        if (def instanceof Region) {
+	            return def;
+	        }
+	        else if (typeof def === 'string') {
+	            return buildBySelector(def, Region, context);
+	        }
+	        else {
+	            return buildByObject(def, context);
+	        }
+	    };
+	    /**
+	   * Show a view in the region.
+	   * This will destroy or remove any existing views.
+	   * @param  {View} view    The view to Show
+	   * @return {Region}       this for chaining.
+	   */
+	    Region.prototype.show = function (view, options) {
+	        var diff = view !== this._view;
+	        if (diff) {
+	            // Remove any containing views
+	            this.empty();
+	            // If the view is destroyed be others
+	            view.once('destroy', this.empty, this);
+	            view.once('render', function () {
+	                utils_1.utils.triggerMethodOn(view, 'show');
+	            });
+	            view.render();
+	            utils_1.utils.triggerMethodOn(view, 'before:show');
+	            this._attachHtml(view);
+	            this._view = view;
+	        }
+	        return this;
+	    };
+	    /**
+	     * Destroy the region, this will remove any views, but not the containing element
+	     * @return {Region} this for chaining
+	     */
+	    Region.prototype.destroy = function () {
+	        this.empty();
+	        _super.prototype.destroy.call(this);
+	    };
+	    /**
+	     * Empty the region. This will destroy any existing view.
+	     * @return {Region} this for chaining;
+	     */
+	    Region.prototype.empty = function () {
+	        if (!this._view)
+	            return;
+	        var view = this._view;
+	        view.off('destroy', this.empty, this);
+	        this.trigger('before:empty', view);
+	        this._destroyView();
+	        this.trigger('empty', view);
+	        delete this._view;
+	        return this;
+	    };
+	    /**
+	     * Attach the view element to the regions element
+	     * @param {View} view
+	     * @private
+	     *
+	     */
+	    Region.prototype._attachHtml = function (view) {
+	        this._el.innerHTML = '';
+	        this._el.appendChild(view.el);
+	    };
+	    Region.prototype._destroyView = function () {
+	        var view = this._view;
+	        if ((view.destroy && typeof view.destroy === 'function') && !view.isDestroyed) {
+	            view.destroy();
+	        }
+	        else if (view.remove && typeof view.remove === 'function') {
+	            view.remove();
+	        }
+	        this._el.innerHTML = '';
+	    };
+	    return Region;
+	})(object_1.BaseObject);
+	exports.Region = Region;
+	function buildByObject(object, context) {
+	    if (object === void 0) { object = {}; }
+	    if (!object.selector)
+	        throw new Error('No selector specified: ' + object);
+	    return buildBySelector(object.selector, object.regionClass || Region, context);
+	}
+	function buildBySelector(selector, Klass, context) {
+	    if (Klass === void 0) { Klass = Region; }
+	    context = context || document;
+	    var el = context.querySelector(selector);
+	    if (!el)
+	        throw new Error('selector must exist in the dom');
+	    return new Klass({
+	        el: el
+	    });
+	}
+
+
+/***/ },
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -1193,9 +1194,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var object_1 = __webpack_require__(2);
-	var region_1 = __webpack_require__(1);
-	var utils_1 = __webpack_require__(4);
+	var object_1 = __webpack_require__(3);
+	var region_1 = __webpack_require__(7);
+	var utils_1 = __webpack_require__(5);
 	var proxyties = [
 	    'addRegions',
 	    'addRegion',
@@ -1302,10 +1303,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    d.prototype = new __();
 	};
 	/*global View, RegionManager, Region*/
-	var templateview_1 = __webpack_require__(7);
+	var templateview_1 = __webpack_require__(6);
 	var region_manager_1 = __webpack_require__(8);
-	var utils_1 = __webpack_require__(4);
-	var region_1 = __webpack_require__(1);
+	var utils_1 = __webpack_require__(5);
+	var region_1 = __webpack_require__(7);
 	var LayoutView = (function (_super) {
 	    __extends(LayoutView, _super);
 	    /**
@@ -1379,8 +1380,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var templateview_1 = __webpack_require__(7);
-	var utils_1 = __webpack_require__(4);
+	var templateview_1 = __webpack_require__(6);
+	var utils_1 = __webpack_require__(5);
 	var DataView = (function (_super) {
 	    __extends(DataView, _super);
 	    /**
@@ -1514,7 +1515,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    d.prototype = new __();
 	};
 	var data_view_1 = __webpack_require__(10);
-	var utils_1 = __webpack_require__(4);
+	var utils_1 = __webpack_require__(5);
 	var Buffer = (function () {
 	    function Buffer() {
 	        this.children = [];
@@ -1794,8 +1795,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var utils_1 = __webpack_require__(4);
-	var object_1 = __webpack_require__(2);
+	var utils_1 = __webpack_require__(5);
+	var object_1 = __webpack_require__(3);
 	var Model = (function (_super) {
 	    __extends(Model, _super);
 	    function Model(attributes, options) {
@@ -1942,6 +1943,282 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return Model;
 	})(object_1.BaseObject);
 	exports.Model = Model;
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    __.prototype = b.prototype;
+	    d.prototype = new __();
+	};
+	var object_1 = __webpack_require__(3);
+	var utils_1 = __webpack_require__(5);
+	var setOptions = { add: true, remove: true, merge: true };
+	var addOptions = { add: true, remove: false };
+	var Collection = (function (_super) {
+	    __extends(Collection, _super);
+	    function Collection(models, options) {
+	        if (options === void 0) { options = {}; }
+	        this.options = options;
+	        //this._byId = {};
+	        if (models) {
+	            this.add(models);
+	        }
+	        _super.call(this);
+	    }
+	    Object.defineProperty(Collection.prototype, "length", {
+	        get: function () {
+	            return this._models.length;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Collection.prototype, "models", {
+	        get: function () {
+	            return this._models;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Collection.prototype.add = function (models, options) {
+	        if (options === void 0) { options = {}; }
+	        this.set(models, utils_1.utils.extend({ merge: false }, options, addOptions));
+	    };
+	    Collection.prototype.set = function (items, options) {
+	        if (options === void 0) { options = {}; }
+	        options = utils_1.utils.extend({}, setOptions, options);
+	        if (options.parse)
+	            items = this.parse(items, options);
+	        var singular = !Array.isArray(items);
+	        var models = (singular ? (items ? [items] : []) : items.slice());
+	        var i, l, id, model, attrs, existing, sort;
+	        var at = options.at;
+	        //var targetModel = this.model;
+	        var sortable = this.comparator && (at == null) && options.sort !== false;
+	        var sortAttr = typeof this.comparator === 'string' ? this.comparator : null;
+	        var toAdd = [], toRemove = [], modelMap = {};
+	        var add = options.add, merge = options.merge, remove = options.remove;
+	        var order = !sortable && add && remove ? [] : null;
+	        // Turn bare objects into model references, and prevent invalid models
+	        // from being added.
+	        for (i = 0, l = models.length; i < l; i++) {
+	            model = models[i];
+	            /*if (attrs instanceof Model) {
+	              id = model = attrs;
+	            } else {
+	              id =
+	            }*/
+	            id = model.uid;
+	            // If a duplicate is found, prevent it from being added and
+	            // optionally merge it into the existing model.
+	            if (existing = this.get(id)) {
+	                if (remove)
+	                    modelMap[existing.uid] = true;
+	                if (merge) {
+	                    attrs = model.toJSON();
+	                    //if (options.parse) attrs = existing.parse(attrs, options);
+	                    existing.set(attrs, options);
+	                    if (sortable && !sort && existing.hasChanged(sortAttr))
+	                        sort = true;
+	                }
+	                models[i] = existing;
+	            }
+	            else if (add) {
+	                models[i] = model; //this._prepareModel(attrs, options);
+	                if (!model)
+	                    continue;
+	                toAdd.push(model);
+	                this._addReference(model, options);
+	            }
+	        }
+	        // Remove nonexistent models if appropriate.
+	        if (remove) {
+	            for (i = 0, l = this.length; i < l; ++i) {
+	                if (!modelMap[(model = this.models[i]).uid])
+	                    toRemove.push(model);
+	            }
+	            if (toRemove.length)
+	                this.remove(toRemove, options);
+	        }
+	        // See if sorting is needed, update `length` and splice in new models.
+	        if (toAdd.length || (order && order.length)) {
+	            if (sortable)
+	                sort = true;
+	            this.length += toAdd.length;
+	            if (at != null) {
+	                for (i = 0, l = toAdd.length; i < l; i++) {
+	                    this.models.splice(at + i, 0, toAdd[i]);
+	                }
+	            }
+	            else {
+	                if (order)
+	                    this.models.length = 0;
+	                var orderedModels = order || toAdd;
+	                for (i = 0, l = orderedModels.length; i < l; i++) {
+	                    this.models.push(orderedModels[i]);
+	                }
+	            }
+	        }
+	        // Silently sort the collection if appropriate.
+	        if (sort)
+	            this.sort({ silent: true });
+	        // Unless silenced, it's time to fire all appropriate add/sort events.
+	        if (!options.silent) {
+	            for (i = 0, l = toAdd.length; i < l; i++) {
+	                (model = toAdd[i]).trigger('add', model, this, options);
+	            }
+	            if (sort || (order && order.length))
+	                this.trigger('sort', this, options);
+	        }
+	        // Return the added (or merged) model (or models).
+	        return singular ? models[0] : models;
+	    };
+	    Collection.prototype.remove = function (models, options) {
+	        if (options === void 0) { options = {}; }
+	        var singular = !Array.isArray(models);
+	        models = singular ? [models] : models.slice();
+	        var i, l, index, model;
+	        for (i = 0, l = models.length; i < l; i++) {
+	            model = models[i] = this.get(models[i]);
+	            if (!model)
+	                continue;
+	            //delete this._byId[model.id];
+	            //delete this._byId[model.nid];
+	            index = this.indexOf(model);
+	            this.models.splice(index, 1);
+	            this.length--;
+	            if (!options.silent) {
+	                options.index = index;
+	                model.trigger('remove', model, this, options);
+	            }
+	            this._removeReference(model, options);
+	        }
+	        return singular ? models[0] : models;
+	    };
+	    Collection.prototype.get = function (id) {
+	        return null;
+	    };
+	    // Get the model at the given index.
+	    Collection.prototype.at = function (index) {
+	        return this.models[index];
+	    };
+	    Collection.prototype.clone = function (options) {
+	        options = options || this.options;
+	        return new this.constructor(this.models, options);
+	    };
+	    Collection.prototype.sort = function (options) {
+	        if (options === void 0) { options = {}; }
+	        if (!this.comparator)
+	            throw new Error('Cannot sort a set without a comparator');
+	        // Run sort based on type of `comparator`.
+	        if (typeof this.comparator === 'string' || this.comparator.length === 1) {
+	            this._models = this.sortBy(this.comparator, this);
+	        }
+	        else {
+	            this.models.sort(this.comparator.bind(this));
+	        }
+	        if (!options.silent)
+	            this.trigger('sort', this, options);
+	        return this;
+	    };
+	    Collection.prototype.sortBy = function (key, context) {
+	        return utils_1.utils.sortBy(this._models, key, context);
+	    };
+	    Collection.prototype.push = function (model, options) {
+	        if (options === void 0) { options = {}; }
+	        return this.add(model, utils_1.utils.extend({ at: this.length }, options));
+	    };
+	    Collection.prototype.reset = function (models, options) {
+	        var _this = this;
+	        if (options === void 0) { options = {}; }
+	        this.forEach(function (model) {
+	            _this._removeReference(model, options);
+	        });
+	        options.previousModels = this.models;
+	        this._reset();
+	        models = this.add(models, options);
+	        if (!options.silent)
+	            this.trigger('reset', this, options);
+	        return models;
+	    };
+	    Collection.prototype.create = function (values, options) {
+	        var model = new this.Model(values, options);
+	        this.add(model);
+	        return model;
+	    };
+	    Collection.prototype.parse = function (models, options) {
+	        if (options === void 0) { options = {}; }
+	        return models;
+	    };
+	    Collection.prototype.find = function (nidOrFn) {
+	        var model;
+	        if (typeof nidOrFn === 'function') {
+	            model = utils_1.utils.find(this.models, nidOrFn);
+	        }
+	        else {
+	            model = utils_1.utils.find(this.models, function (model) {
+	                return model.uid == nidOrFn;
+	            });
+	        }
+	        return model;
+	    };
+	    Collection.prototype.forEach = function (iterator, ctx) {
+	        for (var i = 0, l = this.models.length; i < l; i++) {
+	            iterator.call(ctx || this, this.models[i], i);
+	        }
+	        return this;
+	    };
+	    Collection.prototype.indexOf = function (model) {
+	        return this.models.indexOf(model);
+	    };
+	    Collection.prototype.toJSON = function () {
+	        return this.models.map(function (m) { return m.toJSON(); });
+	    };
+	    Collection.prototype.comparator = function () {
+	    };
+	    Collection.prototype._removeReference = function (model, options) {
+	        if (this === model.collection)
+	            delete model.collection;
+	        model.off('all', this._onModelEvent, this);
+	    };
+	    Collection.prototype._addReference = function (model, options) {
+	        //this._byId[model.nid] = model;
+	        //if (model.id != null) this._byId[model.id] = model;
+	        if (!model.collection)
+	            model.collection = this;
+	        model.on('all', this._onModelEvent, this);
+	    };
+	    /*_prepareModel (attrs, options) {
+	      if (attrs instanceof Model) return attrs;
+	      options = utils.extend({}, options);
+	      options.collection = this;
+	      var model = new (<any>this.model)(attrs, options);
+	      if (!model.validationError) return model;
+	      this.trigger('invalid', this, model.validationError, options);
+	      return false;
+	    }*/
+	    Collection.prototype._reset = function () {
+	        this._models = [];
+	        //this._byId = Object.create(null);
+	    };
+	    Collection.prototype._onModelEvent = function (event, model, collection, options) {
+	        if ((event === 'add' || event === 'remove') && collection !== this)
+	            return;
+	        if (event === 'destroy')
+	            this.remove(model, options);
+	        /*if (model && event === 'change:' + model.idAttribute) {
+	          delete this._byId[model.previous(model.idAttribute)];
+	          if (model.id != null) this._byId[model.id] = model;
+	        }*/
+	        this.trigger.apply(this, arguments);
+	    };
+	    return Collection;
+	})(object_1.BaseObject);
+	exports.default = Collection;
 
 
 /***/ }
