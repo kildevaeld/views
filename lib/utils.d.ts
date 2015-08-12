@@ -29,5 +29,5 @@ export declare module utils {
     function equal(a: any, b: any): boolean;
     function triggerMethodOn(obj: any, eventName: string, args?: any[]): void;
     function getOption(option: string, objs: any[]): any;
-    function deepFreeze(obj: any): void;
+    function sortBy<T>(obj: T[], value: string | Function, context?: any): T[];
 }

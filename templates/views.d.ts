@@ -52,10 +52,19 @@ declare module 'views/lib/types' {
 }
 
 
-declare module 'views/lib/extensions/collection-view' {
-  export * from 'views/lib/extensions/collection-view'
+declare module 'views/lib/collection-view' {
+  export * from 'views/lib/collection-view'
 }
 
-declare module 'views/lib/extensions/data-view' {
-  export * from 'views/lib/extensions/data-view'
+declare module 'views/lib/data-view' {
+  export * from 'views/lib/data-view'
+}
+
+
+declare module 'views/lib/collection' {
+  export * from 'views/lib/collection'
+}
+
+declare module 'views/lib/model' {
+  export * from 'views/lib/model'
 }

@@ -1,15 +1,21 @@
 import { IEventEmitter } from './events';
 import { IView } from './baseview';
 export interface IModel extends IEventEmitter {
-    get(key: string, value: any): any;
-    set(key: string): any;
+    collection?: ICollection;
+    idAttribute?: string;
+    uid: string;
+    get(key: string): any;
+    set(key: string, value: any): any;
     toJSON?: () => any;
+    hasChanged(attr?: any): boolean;
 }
 export interface ICollection extends IEventEmitter {
     length: number;
     indexOf: (item: IModel) => number;
     forEach(fn: (item: IModel) => any): any;
+    push(item: IModel): any;
 }
 export interface IDataView extends IView {
     model: IModel;
+    collection: ICollection;
 }
