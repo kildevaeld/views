@@ -9,7 +9,6 @@ export declare class CollectionView<T extends HTMLElement> extends DataView<T> {
     childView: IDataView;
     private _container;
     private _buffer;
-    private _options;
     /** Child views associated with the view
      * @property {Array<IDataView>} children
      */
@@ -84,4 +83,16 @@ export declare class CollectionView<T extends HTMLElement> extends DataView<T> {
     _insertBefore(childView: any, index: any): boolean;
     _insertAfter(childView: any): void;
     private _delegateCollectionEvents();
+    /**
+     * Called when a model is add to the collection
+     * @param {JaffaMVC.Model|Backbone.model} model Model
+     * @private
+     */
+    private _onCollectionAdd(model);
+    /**
+     * Called when a model is removed from the collection
+     * @param {JaffaMVC.Model|Backbone.model} model Model
+     * @private
+     */
+    private _onCollectionRemove(model);
 }

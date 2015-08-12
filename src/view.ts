@@ -34,7 +34,8 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
   triggers: {[key: string]: string}
   
   private _ui: {[key:string]: string}
-
+  private _options: ViewOptions
+  
   delegateEvents (events?:any) {
 
     this.bindUIElements()
@@ -58,6 +59,7 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
    * @extends BaseView
    */
   constructor (options?: ViewOptions) {
+    this._options = options
     super(options)
   }
 
@@ -104,9 +106,9 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
    * @private
    */
   _configureTriggers() {
-    if (!this.triggers) {
+    /*if (!this.triggers) {
       return {};
-    }
+    }*/
    
     let triggers = this.getOption('triggers')||{}
    
@@ -115,7 +117,7 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
     }
    
     // Allow `triggers` to be configured as a function
-    triggers = normalizeUIKeys(utils.result(this, 'triggers', this), this._ui);
+    triggers = normalizeUIKeys(triggers, this._ui);
 
     // Configure the triggers, prevent default
     // action and stop propagation of DOM events

@@ -16,6 +16,7 @@ export declare class View<T extends HTMLElement> extends base.BaseView<T> {
         [key: string]: string;
     };
     private _ui;
+    private _options;
     delegateEvents(events?: any): View<T>;
     /**
      * View

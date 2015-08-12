@@ -24,7 +24,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 
 	private _container: HTMLElement
 	private _buffer: Buffer
-	private _options: CollectionViewOptions
+	//private _options: CollectionViewOptions
   
   
   /** Child views associated with the view
@@ -42,7 +42,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
    * @param {DataViewOptions} options 
    */
 	constructor (options?:CollectionViewOptions) {
-    this._options = options||{}
+    //this._options = options||{}
     this.children = []
     
     super(options)	
@@ -324,8 +324,42 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
   }
 	
 	private _delegateCollectionEvents () {
-		
+		if (this.collection) {
+
+      this.listenTo(this.collection, 'add', this._onCollectionAdd);
+      this.listenTo(this.collection, 'remove', this._onCollectionRemove);
+      this.listenTo(this.collection, 'reset', this.render);
+
+      //if (this.sort)
+        //this.listenTo(this.collection, 'sort', this._onCollectionSort);
+    }
 	}
+  
+  // Event handlers
+
+  /**
+   * Called when a model is add to the collection
+   * @param {JaffaMVC.Model|Backbone.model} model Model
+   * @private
+   */
+  private _onCollectionAdd (model) {
+    let view = this.getChildView(model)
+    let index = this.collection.indexOf(model);
+    this._appendChild(view, index)
+  }
+
+  /**
+   * Called when a model is removed from the collection
+   * @param {JaffaMVC.Model|Backbone.model} model Model
+   * @private
+   */
+  private _onCollectionRemove (model) {
+    let view = utils.find(this.children, function(view) {
+      return view.model === model;
+    });
+
+    this.removeChildView(view);
+  }
 	
 	
 	

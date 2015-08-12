@@ -107,6 +107,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @extends BaseView
 	     */
 	    function View(options) {
+	        this._options = options;
 	        _super.call(this, options);
 	    }
 	    View.prototype.delegateEvents = function (events) {
@@ -154,15 +155,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    View.prototype._configureTriggers = function () {
-	        if (!this.triggers) {
-	            return {};
-	        }
+	        /*if (!this.triggers) {
+	          return {};
+	        }*/
 	        var triggers = this.getOption('triggers') || {};
 	        if (typeof triggers === 'function') {
 	            triggers = triggers.call(this);
 	        }
 	        // Allow `triggers` to be configured as a function
-	        triggers = normalizeUIKeys(utils_1.utils.result(this, 'triggers', this), this._ui);
+	        triggers = normalizeUIKeys(triggers, this._ui);
 	        // Configure the triggers, prevent default
 	        // action and stop propagation of DOM events
 	        var events = {}, val, key;
@@ -1510,7 +1511,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * @param {DataViewOptions} options
 	   */
 	    function CollectionView(options) {
-	        this._options = options || {};
+	        //this._options = options||{}
 	        this.children = [];
 	        _super.call(this, options);
 	    }
@@ -1729,6 +1730,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._container.appendChild(childView.el);
 	    };
 	    CollectionView.prototype._delegateCollectionEvents = function () {
+	        if (this.collection) {
+	            this.listenTo(this.collection, 'add', this._onCollectionAdd);
+	            this.listenTo(this.collection, 'remove', this._onCollectionRemove);
+	            this.listenTo(this.collection, 'reset', this.render);
+	        }
+	    };
+	    // Event handlers
+	    /**
+	     * Called when a model is add to the collection
+	     * @param {JaffaMVC.Model|Backbone.model} model Model
+	     * @private
+	     */
+	    CollectionView.prototype._onCollectionAdd = function (model) {
+	        var view = this.getChildView(model);
+	        var index = this.collection.indexOf(model);
+	        this._appendChild(view, index);
+	    };
+	    /**
+	     * Called when a model is removed from the collection
+	     * @param {JaffaMVC.Model|Backbone.model} model Model
+	     * @private
+	     */
+	    CollectionView.prototype._onCollectionRemove = function (model) {
+	        var view = utils_1.utils.find(this.children, function (view) {
+	            return view.model === model;
+	        });
+	        this.removeChildView(view);
 	    };
 	    return CollectionView;
 	})(data_view_1.DataView);
