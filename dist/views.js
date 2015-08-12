@@ -2218,7 +2218,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    return Collection;
 	})(object_1.BaseObject);
-	exports.default = Collection;
+	exports.Collection = Collection;
 
 
 /***/ }
