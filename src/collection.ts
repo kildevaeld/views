@@ -24,9 +24,7 @@ export interface CollectionRemoveOptions extends Silenceable {
   index?: number
 }
 
-export interface CollectionSortOptions extends Silenceable {
-  
-}
+export interface CollectionSortOptions extends Silenceable { }
 
 export interface CollectionCreateOptions {
   add?: boolean
@@ -37,20 +35,26 @@ export interface CollectionResetOptions extends Silenceable {
 }
 
 export class Collection<U extends IModel> extends BaseObject implements ICollection {
+  /**
+   * The length of the collection
+   * @property {Number} length
+   */
   public get length () {
 		return this._models.length
 	}
+
 	public Model: new (attr:Object, options?:any) => U
+
   private _models:U[]
-  
-  options: CollectionOptions
-  
+
   get models (): U[] {
     return this._models;
   }
 
+  options: CollectionOptions
+
   constructor (models?:U[], options:CollectionOptions={}) {
-    
+
     this.options = options;
     //this._byId = {};
     if (models) {
@@ -75,10 +79,10 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
   protected set (items:U|U[], options: CollectionSetOptions={}) {
     options = utils.extend({}, setOptions, options);
     if (options.parse) items = this.parse(items, options);
-    
+
 		var singular = !Array.isArray(items);
     let models: U[] = <U[]>(singular ? (items ? [items] : []) : (<U[]>items).slice())
-    
+
 		var i, l, id, model: U, attrs, existing: U, sort;
     var at = options.at;
     //var targetModel = this.model;
@@ -92,9 +96,9 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
     // from being added.
     for (i = 0, l = (<U[]>models).length; i < l; i++) {
       model = models[i]
-      
+
 			id = model.get(model.idAttribute)||model.uid
-			
+
       // If a duplicate is found, prevent it from being added and
       // optionally merge it into the existing model.
       if (existing = this.get(id)) {
@@ -169,10 +173,10 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
     for (i = 0, l = (<U[]>models).length; i < l; i++) {
       model = models[i] = this.get(models[i]);
       if (!model) continue;
-     
+
       index = this.indexOf(model);
       this.models.splice(index, 1);
-      this.length--;
+
       if (!options.silent) {
         options.index = index;
         model.trigger('remove', model, this, options);
@@ -183,7 +187,7 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
   }
 
   get (id): U {
-    
+
     return null
   }
 
@@ -240,7 +244,7 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
       this.add(model)
     return model
   }
-  
+
   parse (models:U|U[], options: CollectionSetOptions={}): U|U[] {
     return models
   }
@@ -260,12 +264,12 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
 
   forEach (iterator:(model:U, index?:number) => void, ctx?:any) {
     for (let i=0, l = this.models.length; i < l; i++) {
-      iterator.call(ctx||this, this.models[i], i);   
+      iterator.call(ctx||this, this.models[i], i);
     }
-   
+
     return this;
   }
-  
+
   indexOf (model:U): number {
     return this.models.indexOf(model)
   }
@@ -274,25 +278,23 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
     return this.models.map(function (m) { return m.toJSON(); });
   }
 
-  comparator () {
-    
-  }
+  comparator () { }
 
-  _removeReference (model:U, options?: any) {
+  private _removeReference (model:U, options?: any) {
     if (this === model.collection) delete model.collection;
     this.stopListening(model)
   }
 
-  _addReference (model:IModel, options?:any) {
+  private _addReference (model:IModel, options?:any) {
     if (!model.collection) model.collection = this;
     this.listenTo(model, 'all', this._onModelEvent)
   }
 
-  _reset () {
+  private _reset () {
     this._models = [];
   }
 
-  _onModelEvent (event, model, collection, options) {
+  private _onModelEvent (event, model, collection, options) {
     if ((event === 'add' || event === 'remove') && collection !== this) return;
     if (event === 'destroy') this.remove(model, options);
     utils.call(this.trigger, this, utils.slice(arguments))

@@ -2,7 +2,8 @@
 import {utils} from './utils';
 import {BaseObject} from './/object';
 import * as events from './events'
-import {ICollection, IModel} from './types' 
+import {ICollection, IModel} from './types'
+
 export interface  ModelOptions {
   collection?: ICollection
 }
@@ -12,33 +13,31 @@ export interface ModelSetOpions {
   silent?:boolean
 }
 
-
-
 export class Model extends BaseObject implements IModel {
 	protected _attributes: any
   public uid: string
   public collection: ICollection
   public idAttribute: string
-  
+
   private _previousAttributes: any
   private _changed: any
   private _changing: boolean
   private _pending: boolean
-  
+
   get id () {
     if (this.idAttribute in this._attributes) return this._attributes[this.idAttribute]
     return this.uid
   }
-  
-  
+
+
   constructor (attributes:any={}, options: ModelOptions={}) {
     this._attributes = attributes
     this.uid = utils.uniqueId('uid')
-    
+
     this._changed = {};
 
     this.collection = options.collection;
-		
+
 		super();
 
   }
@@ -73,7 +72,7 @@ export class Model extends BaseObject implements IModel {
     }
     current = this._attributes, prev = this._previousAttributes;
 
-   
+
     // For each `set` attribute, update or delete the current value.
     for (attr in attrs) {
       val = attrs[attr];
@@ -106,7 +105,7 @@ export class Model extends BaseObject implements IModel {
     }
     this._pending = false;
     this._changing = false;
-		
+
     return this;
   }
 

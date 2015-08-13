@@ -25,11 +25,15 @@ export interface CollectionResetOptions extends Silenceable {
     previousModels?: IModel[];
 }
 export declare class Collection<U extends IModel> extends BaseObject implements ICollection {
+    /**
+     * The length of the collection
+     * @property {Number} length
+     */
     length: number;
     Model: new (attr: Object, options?: any) => U;
     private _models;
-    options: CollectionOptions;
     models: U[];
+    options: CollectionOptions;
     constructor(models?: U[], options?: CollectionOptions);
     add(models: U | U[] | Object | Object[], options?: CollectionSetOptions): void;
     protected set(items: U | U[], options?: CollectionSetOptions): U | U[];
@@ -48,8 +52,8 @@ export declare class Collection<U extends IModel> extends BaseObject implements 
     indexOf(model: U): number;
     toJSON(): any[];
     comparator(): void;
-    _removeReference(model: U, options?: any): void;
-    _addReference(model: IModel, options?: any): void;
-    _reset(): void;
-    _onModelEvent(event: any, model: any, collection: any, options: any): void;
+    private _removeReference(model, options?);
+    private _addReference(model, options?);
+    private _reset();
+    private _onModelEvent(event, model, collection, options);
 }

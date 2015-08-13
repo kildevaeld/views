@@ -32,10 +32,10 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
 
   ui: UIMap
   triggers: {[key: string]: string}
-  
+
   private _ui: {[key:string]: string}
   private _options: ViewOptions
-  
+
   delegateEvents (events?:any) {
 
     this.bindUIElements()
@@ -44,7 +44,7 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
     events = normalizeUIKeys(events, this._ui)
 
     let triggers = this._configureTriggers()
-    
+
     events = utils.extend({}, events, triggers)
 
     super.delegateEvents(events)
@@ -52,7 +52,7 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
     return this
 
   }
-  
+
   /**
    * View
    * @param {ViewOptions} options
@@ -99,7 +99,7 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
   unbindUIElements () {
     this.ui = {}
   }
-  
+
   /**
    * Configure triggers
    * @return {Object} events object
@@ -109,13 +109,13 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
     /*if (!this.triggers) {
       return {};
     }*/
-   
+
     let triggers = this.getOption('triggers')||{}
-   
+
     if (typeof triggers === 'function') {
       triggers = triggers.call(this)
     }
-   
+
     // Allow `triggers` to be configured as a function
     triggers = normalizeUIKeys(triggers, this._ui);
 
@@ -130,7 +130,7 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
     return events;
 
   }
-  
+
   /**
    * builder trigger function
    * @param  {Object|String} triggerDef Trigger definition
@@ -166,14 +166,5 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
       });
 
     };
-
   }
-  
-  
-}
-
-module views {
-
-
-
 }

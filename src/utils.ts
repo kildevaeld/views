@@ -1,7 +1,6 @@
 
 var ElementProto: any = (typeof Element !== 'undefined' && Element.prototype) || {};
 
-
 var matchesSelector = ElementProto.matches ||
     ElementProto.webkitMatchesSelector ||
     ElementProto.mozMatchesSelector ||
@@ -66,10 +65,18 @@ export module html {
   }
 
   export function addClass(elm: HTMLElement, className:string) {
-    elm.classList.add(<string>className)
+    if (elm.classList)
+      elm.classList.add(className)
+    else {
+      elm.className = elm.className.split(' ').concat(className.split(' ')).join(' ')
+    }
   }
   export function removeClass(elm: HTMLElement, className:string) {
-    elm.classList.remove(className)
+    if (elm.classList)
+      elm.classList.remove(className)
+    else {
+      elm.className = elm.className.split(' ').concat(className.split(' ')).join(' ')
+    }
   }
 }
 
@@ -78,21 +85,21 @@ const noop = function () {}
 let idCounter = 0
 /** @module utils */
 export module utils {
-  
+
   export function camelcase(input) {
 	   return input.toLowerCase().replace(/-(.)/g, function(match, group1) {
 		    return group1.toUpperCase();
 	   });
   };
-  
+
   /** Generate an unique id with an optional prefix
-   * @param {string} prefix 
+   * @param {string} prefix
    * @return {string}
    */
   export function uniqueId (prefix=''): string {
     return prefix + (++idCounter)
   }
-  
+
   export function isObject (obj:any): boolean {
     return obj === Object(obj);
   }
@@ -130,16 +137,16 @@ export module utils {
     return (typeof ret === 'function') ? utils.call(ret,ctx,args||[]) : ret
 
   }
-  
+
   export function values<T> (obj:Object): T[] {
   	let output = []
-  
+
   	for (let k in obj) if (utils.has(obj, k)) {
   		output.push(obj[k])
   	}
   	return output
   }
-  
+
   export function find<T>(array:T[], callback:(item: T, index?:number) => boolean, ctx?:any): T {
   	let i, v
   	for (i=0;i<array.length;i++) {
@@ -148,7 +155,7 @@ export module utils {
   	}
   	return null
   }
-  
+
   export function proxy (from, to, fns) {
 		if (!Array.isArray(fns)) fns = [fns];
 		fns.forEach(function(fn) {
@@ -157,7 +164,7 @@ export module utils {
 			}
 		});
 	}
-  
+
   export function bind(method: Function, context: any, ...args:any[]): Function   {
     if (typeof method !== 'function') throw new Error('method not at function')
 
@@ -201,37 +208,37 @@ export module utils {
     return Array.prototype.slice.call(array)
   }
 
-  
+
 
   export function equal (a: any, b: any): boolean {
     return eq(a, b, [], [])
   }
-  
+
   export function triggerMethodOn (obj:any, eventName:string, args?: any[]) {
-   
+
     let ev = camelcase("on-" + eventName.replace(':','-'))
-   
-  
+
+
     if (obj[ev] && typeof obj[ev] === 'function') {
-      
+
       utils.call(obj[ev], obj, args)
     }
-    
+
     if (typeof obj.trigger === 'function') {
         args = [eventName].concat(args)
        utils.call(obj.trigger, obj, args)
     }
   }
-  
+
   export function getOption(option: string, objs:any[]): any {
- 
+
     for (let o of objs) {
       if (isObject(o) && o[option]) return o[option]
     }
-    
+
     return null
   }
-  
+
   export function sortBy<T> (obj:T[], value:string|Function, context?:any): T[] {
     var iterator = typeof value === 'function' ? value : function(obj:any){ return obj[<string>value]; };
     return obj

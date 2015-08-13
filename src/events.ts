@@ -1,5 +1,4 @@
 
-
 export interface EventHandler {
   (...args: any[])
 }
@@ -28,8 +27,8 @@ function getID (): string {
 
 export class EventEmitter implements IEventEmitter {
   static debugCallback: (className:string, name:string, event:string, args:any[]) => void
-  
-  
+
+
   listenId: string
   private _listeners: { [key: string]: Events[] } // = {}
   private _listeningTo: { [key: string]: any } // = {}
@@ -76,30 +75,30 @@ export class EventEmitter implements IEventEmitter {
     let events = (this._listeners|| (this._listeners = {}))[eventName]||(this._listeners[eventName]=[])
     .concat(this._listeners['all']||[])
 
-    if (EventEmitter.debugCallback) 
+    if (EventEmitter.debugCallback)
       EventEmitter.debugCallback((<any>this.constructor).name, (<any>this).name, eventName, args)
-    
+
     let event, a, len = events.length, index, i
-    
+
     for (i=0;i<events.length;i++) {
       event = events[i]
       a = args
-      
+
       if (event.name == 'all') {
         a = [eventName].concat(args)
       }
 
       event.handler.apply(event.ctx, a)
-      
+
       if (event.once === true) {
-       
+
         index = this._listeners[event.name].indexOf(event)
         this._listeners[event.name].splice(index,1)
       }
     }
-    
+
     return this
-    
+
   }
 
   listenTo (obj: IEventEmitter, event: string, fn:EventHandler, ctx?:any, once:boolean = false): any {

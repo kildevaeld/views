@@ -2,7 +2,6 @@
     "version": "1.5.3",
     "compilerOptions": {
         "target": "es6",
-        
         "isolatedModules": false,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
@@ -21,10 +20,18 @@
     ],
     "files": [
         "./src/baseview.ts",
+        "./src/collection-view.ts",
+        "./src/collection.ts",
+        "./src/data-view.ts",
         "./src/events.ts",
         "./src/index.ts",
+        "./src/layout-view.ts",
+        "./src/model.ts",
         "./src/object.ts",
+        "./src/region-manager.ts",
+        "./src/region.ts",
         "./src/templateview.ts",
+        "./src/types.ts",
         "./src/utils.ts",
         "./src/view.ts"
     ]

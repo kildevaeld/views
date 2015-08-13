@@ -11,7 +11,7 @@ export class LayoutView<T extends HTMLElement> extends TemplateView<T> {
 	public get regions(): RegionMap {
 		return this._regionManager.regions
 	}
-	
+
 	/**
 	 * LayoutView
 	 * @param {Object} options options
@@ -19,22 +19,17 @@ export class LayoutView<T extends HTMLElement> extends TemplateView<T> {
 	 * @extends TemplateView
 	 */
 	constructor(options) {
-		//this.options = options || {};
-		
 
 		// Set region manager
 		this._regionManager = new RegionManager();
 		utils.proxy(this, this._regionManager, ['removeRegion', 'removeRegions']);
-		
-		let regions = this.getOption('regions');
-		//this.options = options || {};
 
-		
+		let regions = this.getOption('regions');
 		
 		this.listenTo(this, 'render', function() {
 			this.addRegion(regions);
 		});
-		
+
 		super(options);
 
 	}

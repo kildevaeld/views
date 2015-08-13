@@ -18,68 +18,67 @@ class Buffer {
 }
 
 export class CollectionView<T extends HTMLElement> extends DataView<T> {
-  
-  
+
 	public childView: IDataView
 
 	private _container: HTMLElement
 	private _buffer: Buffer
 	//private _options: CollectionViewOptions
-  
-  
+
+
   /** Child views associated with the view
    * @property {Array<IDataView>} children
    */
 	public children: IDataView[]
-  
-  /** Whether the collection sould be sorted 
-   * @property {boolean} sort 
+
+  /** Whether the collection sould be sorted
+   * @property {boolean} sort
    */
 	public sort: boolean
-	
-	/** CollectionView 
+
+	/** CollectionView
    * @extends DataView
-   * @param {DataViewOptions} options 
+   * @param {DataViewOptions} options
    */
 	constructor (options?:CollectionViewOptions) {
     //this._options = options||{}
     this.children = []
-    
-    super(options)	
+
+    super(options)
 	}
-	
+
 	/**
    * Render the collection view and alle of the children
    * @return {CollectionView}
    *
    */
 	render (options?:any): any {
-		
+
 		this.destroyChildren()
 		this._destroyContainer()
-		
+
 		super.render(options)
-		
+
 		this._initContainer()
-		
+
 		if (this.collection && this.collection.length) {
-      
+
 			this.renderCollection()
 		}
-		
-		
+
+
 		return this
-	} 
-	
+	}
+
   /**
    * @protected
    */
 	setCollection (collection) {
     super.setCollection(collection)
-		this._delegateCollectionEvents()			
+		this._delegateCollectionEvents()
 	}
-	
-	
+
+
 	renderCollection () {
 		this.destroyChildren()
 		if (this.collection.length != 0) {
@@ -87,12 +86,12 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 			this._startBuffering()
 			this._renderCollection()
 			this._stopBuffering()
-      
+
 		} else {
 			this.showEmptyView()
 		}
 	}
-	
+
 	/**
    * Returns a new instance of this.childView with attached model.
    *
@@ -102,31 +101,31 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 	getChildView(model:IModel):IDataView {
 		let View = this.getOption('childView') || DataView,
       options = this.getOption('childViewOptions') || {};
-   
+
     return new View(utils.extend({
       model: model
     }, options));
-		
+
 	}
-	
+
 	renderChildView(view, index) {
 		this.triggerMethod('before:render:child', view);
 
     view.render();
-    
+
     this._attachHTML(view, index);
 
     this.triggerMethod('render:child', view);
 	}
-	
+
 	showEmptyView () {
-		
+
 	}
-	
+
 	hideEmptyView () {
-		
+
 	}
-	
+
 	destroyChildren () {
 		if (this._container) {
       this._container.innerHTML = '';
@@ -137,7 +136,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
     this.children.forEach(this.removeChildView, this);
     this.children = []
 	}
-	
+
 	removeChildView (view: IDataView) {
 		if (!view) return;
 
@@ -155,10 +154,10 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
     if (this.children.length === 0) {
       this.showEmptyView();
     }
-    
+
     this._updateIndexes(view, false)
 	}
-	
+
 	/**
    * Destroy the collection view and all of it's children
    * @see JaffaMVC.View
@@ -173,18 +172,18 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
     return super.destroy();
 
   }
-	
+
 	private _renderCollection () {
 		this.triggerMethod('before:render:collection')
 		this.collection.forEach((model) => {
-      
+
 			let view = this.getChildView(model)
-      
+
 			this._appendChild(view)
 		})
 		this.triggerMethod('render:collection')
 	}
-  
+
 	/**
    * Append childview to the container
    * @private
@@ -204,7 +203,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 
     this.triggerMethod('add:child', view);
 	}
-	
+
 	/**
    * Attach the childview's element to the CollectionView.
    * When in buffer mode, the view is added to a documentfragment to optimize performance
@@ -228,7 +227,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
       //  utils.triggerMethodOn(view, 'show')
     }
 	}
-	
+
 	/**
    * Proxy event froms childview to the collectionview
    * @param {IView} view
@@ -247,41 +246,26 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
     });
 
   }
-	
+
 	private _updateIndexes (view:IDataView, increment:boolean, index?:number) {
     if (!this.sort)
       return;
-
-    if (increment) {
-      (<any>view)._index = index;
-
-      this.children.forEach((lView, index) => {
-        if ((<any>lView)._index >= (<any>view)._index) {
-          (<any>lView)._index++;
-        }
-      });
-
-    } else {
-
-      this.children.forEach(function(lView) {
-        if ((<any>lView)._index >= (<any>view)._index) {
-          (<any>lView)._index--;
-        }
-      });
-
-    }
-
+		this.children.forEach(function(lView) {
+			if ((<any>lView)._index >= (<any>view)._index) {
+				increment ? (<any>lView)._index++ : (<any>lView)._index--;
+			}
+		});
   }
-	
+
 	private _startBuffering () {
-		this._buffer = new Buffer()	
+		this._buffer = new Buffer()
 	}
-	
+
 	private _stopBuffering () {
 		this._container.appendChild(this._buffer.buffer)
 		delete this._buffer
 	}
-	
+
 	private _initContainer () {
 		var container = this.getOption('childViewContainer');
     if (container) {
@@ -291,15 +275,20 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
     }
     this._container = container;
 	}
-	
+
 	private _destroyContainer () {
     if (this._container)
       delete this._container;
 	}
-	
-	// Internal method. Check whether we need to insert the view into
-  // the correct position.
-  _insertBefore (childView, index) {
+
+	/**
+	 * Internal method. Check whether we need to insert the view into
+   * the correct position.
+	 * @param  {IView} childView [description]
+	 * @param  {number} index     [description]
+	 * @return {boolean}           [description]
+	 */
+  _insertBefore (childView:IDataView, index:number): boolean {
     let currentView;
 
     let findPosition = this.sort && (index < this.children.length - 1);
@@ -307,7 +296,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
       // Find the view after this one
       currentView = utils.find(this.children, (view) => {
 				return (<any>view)._index === index + 1;
-			}) 
+			})
     }
 
     if (currentView) {
@@ -318,11 +307,18 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
     return false;
   }
 
-  // Internal method. Append a view to the end of the $el
-  _insertAfter (childView) {
+	/**
+	 * Internal method. Append a view to the end of the $el
+	 * @private
+	 */
+  _insertAfter (childView: IDataView) {
     this._container.appendChild(childView.el);
   }
-	
+
+	/**
+	 * Delegate collection events
+	 * @private
+	 */
 	private _delegateCollectionEvents () {
 		if (this.collection) {
 
@@ -330,11 +326,11 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
       this.listenTo(this.collection, 'remove', this._onCollectionRemove);
       this.listenTo(this.collection, 'reset', this.render);
 
-      //if (this.sort)
-        //this.listenTo(this.collection, 'sort', this._onCollectionSort);
+      if (this.sort)
+        this.listenTo(this.collection, 'sort', this._onCollectionSort);
     }
 	}
-  
+
   // Event handlers
 
   /**
@@ -360,7 +356,13 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 
     this.removeChildView(view);
   }
-	
-	
-	
+
+	/**
+	 * Called when the collection is sorted
+	 * @private
+	 */
+	private _onCollectionSort () {
+
+	}
+
 }

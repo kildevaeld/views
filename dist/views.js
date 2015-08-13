@@ -676,11 +676,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    html.removeEventListener = removeEventListener;
 	    function addClass(elm, className) {
-	        elm.classList.add(className);
+	        if (elm.classList)
+	            elm.classList.add(className);
+	        else {
+	            elm.className = elm.className.split(' ').concat(className.split(' ')).join(' ');
+	        }
 	    }
 	    html.addClass = addClass;
 	    function removeClass(elm, className) {
-	        elm.classList.remove(className);
+	        if (elm.classList)
+	            elm.classList.remove(className);
+	        else {
+	            elm.className = elm.className.split(' ').concat(className.split(' ')).join(' ');
+	        }
 	    }
 	    html.removeClass = removeClass;
 	})(html = exports.html || (exports.html = {}));
@@ -1010,12 +1018,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    TemplateView.prototype.render = function (options) {
 	        this.triggerMethod('before:render');
 	        this.undelegateEvents();
-	        /*let template: string
-	        if ( typeof this.template == 'function') {
-	          template = (<TemplateFunction>this.template).call(this, this.getTemplateData())
-	        } else if (typeof this.template == 'string') {
-	          template = <string>this.template
-	        }*/
 	        var template = this.getOption('template');
 	        if (typeof template === 'function') {
 	            template = template.call(this, this.getTemplateData());
@@ -1197,12 +1199,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var object_1 = __webpack_require__(3);
 	var region_1 = __webpack_require__(7);
 	var utils_1 = __webpack_require__(5);
-	var proxyties = [
-	    'addRegions',
-	    'addRegion',
-	    'removeRegion',
-	    'removeRegions',
-	];
 	var RegionManager = (function (_super) {
 	    __extends(RegionManager, _super);
 	    /** Region manager
@@ -1316,12 +1312,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @extends TemplateView
 	     */
 	    function LayoutView(options) {
-	        //this.options = options || {};
 	        // Set region manager
 	        this._regionManager = new region_manager_1.RegionManager();
 	        utils_1.utils.proxy(this, this._regionManager, ['removeRegion', 'removeRegions']);
 	        var regions = this.getOption('regions');
-	        //this.options = options || {};
 	        this.listenTo(this, 'render', function () {
 	            this.addRegion(regions);
 	        });
@@ -1693,21 +1687,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    CollectionView.prototype._updateIndexes = function (view, increment, index) {
 	        if (!this.sort)
 	            return;
-	        if (increment) {
-	            view._index = index;
-	            this.children.forEach(function (lView, index) {
-	                if (lView._index >= view._index) {
-	                    lView._index++;
-	                }
-	            });
-	        }
-	        else {
-	            this.children.forEach(function (lView) {
-	                if (lView._index >= view._index) {
-	                    lView._index--;
-	                }
-	            });
-	        }
+	        this.children.forEach(function (lView) {
+	            if (lView._index >= view._index) {
+	                increment ? lView._index++ : lView._index--;
+	            }
+	        });
 	    };
 	    CollectionView.prototype._startBuffering = function () {
 	        this._buffer = new Buffer();
@@ -1730,8 +1714,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (this._container)
 	            delete this._container;
 	    };
-	    // Internal method. Check whether we need to insert the view into
-	    // the correct position.
+	    /**
+	     * Internal method. Check whether we need to insert the view into
+	   * the correct position.
+	     * @param  {IView} childView [description]
+	     * @param  {number} index     [description]
+	     * @return {boolean}           [description]
+	     */
 	    CollectionView.prototype._insertBefore = function (childView, index) {
 	        var currentView;
 	        var findPosition = this.sort && (index < this.children.length - 1);
@@ -1747,15 +1736,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        return false;
 	    };
-	    // Internal method. Append a view to the end of the $el
+	    /**
+	     * Internal method. Append a view to the end of the $el
+	     * @private
+	     */
 	    CollectionView.prototype._insertAfter = function (childView) {
 	        this._container.appendChild(childView.el);
 	    };
+	    /**
+	     * Delegate collection events
+	     * @private
+	     */
 	    CollectionView.prototype._delegateCollectionEvents = function () {
 	        if (this.collection) {
 	            this.listenTo(this.collection, 'add', this._onCollectionAdd);
 	            this.listenTo(this.collection, 'remove', this._onCollectionRemove);
 	            this.listenTo(this.collection, 'reset', this.render);
+	            if (this.sort)
+	                this.listenTo(this.collection, 'sort', this._onCollectionSort);
 	        }
 	    };
 	    // Event handlers
@@ -1779,6 +1777,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return view.model === model;
 	        });
 	        this.removeChildView(view);
+	    };
+	    /**
+	     * Called when the collection is sorted
+	     * @private
+	     */
+	    CollectionView.prototype._onCollectionSort = function () {
 	    };
 	    return CollectionView;
 	})(data_view_1.DataView);
@@ -1971,6 +1975,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _super.call(this);
 	    }
 	    Object.defineProperty(Collection.prototype, "length", {
+	        /**
+	         * The length of the collection
+	         * @property {Number} length
+	         */
 	        get: function () {
 	            return this._models.length;
 	        },
@@ -2099,7 +2107,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                continue;
 	            index = this.indexOf(model);
 	            this.models.splice(index, 1);
-	            this.length--;
 	            if (!options.silent) {
 	                options.index = index;
 	                model.trigger('remove', model, this, options);
@@ -2189,8 +2196,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Collection.prototype.toJSON = function () {
 	        return this.models.map(function (m) { return m.toJSON(); });
 	    };
-	    Collection.prototype.comparator = function () {
-	    };
+	    Collection.prototype.comparator = function () { };
 	    Collection.prototype._removeReference = function (model, options) {
 	        if (this === model.collection)
 	            delete model.collection;

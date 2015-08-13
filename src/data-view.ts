@@ -9,97 +9,97 @@ export interface DataViewOptions extends TemplateViewOptions {
 }
 
 export class DataView<T extends HTMLElement> extends TemplateView<T> implements IDataView {
-	
+
 	private _model: IModel
   private _collection: ICollection
 	private _dataEvents: any
-	
+
   public get model (): IModel { return this._model }
-	
+
 	public set model (model) {
 		this.setModel(model)
 	}
-  
+
   public get collection () { return this._collection }
-  
+
   public set collection (collection) {
     this.setCollection(collection)
   }
- 
-  
+
+
   /**
    * DataView
    * @param {DataViewOptions} options
    * @extends TemplateView
    */
   constructor (options:DataViewOptions) {
-    
-    
+
+
     if (options.model) {
       this._model = options.model
     }
     if (options.collection) {
       this._collection = options.collection
     }
-    
+
     super(options)
-    
+
   }
-	
+
 	public setModel (model:IModel) {
 		if (this._model === model) return
-    
+
     this.triggerMethod('before:model', this._model, model)
-		
+
     if (this._model) {
 			this.stopListening(this._model)
 		}
-		
+
 		this._model = model
-	  
+
     this.triggerMethod('model', model)
   }
-  
+
   public setCollection (collection:ICollection) {
     if (this._collection === collection) return
-    
+
     this.triggerMethod('before:collection', this._collection, collection)
-		
+
     if (this._collection) {
 			this.stopListening(this._collection)
 		}
-		
+
 		this._collection = collection
-	  
+
     this.triggerMethod('collection', collection)
   }
-  
+
   public getTemplateData (): any {
-    return this.model ? 
-      typeof this.model.toJSON === 'function' ? 
+    return this.model ?
+      typeof this.model.toJSON === 'function' ?
       this.model.toJSON() : this.model  : {}
   }
-	
+
 	public delegateEvents (events?:any): any {
 		events = events||this.events
 		//events = normalizeUIKeys(events)
-	
+
 		let {c,e,m} = this._filterEvents(events)
-		
+
 		super.delegateEvents(e)
-		this._delegateDataEvents(m,c)	
-		
+		this._delegateDataEvents(m,c)
+
 		return this
 	}
-	
+
 	public undelegateEvents() {
 		this._undelegateDataEvents()
 		super.undelegateEvents()
 		return this
 	}
-	
+
 	private _delegateDataEvents (model:any, collection:any) {
-		
+
 		this._dataEvents = {};
     let fn = (item, ev) => {
 
@@ -118,9 +118,9 @@ export class DataView<T extends HTMLElement> extends TemplateView<T> implements 
     utils.extend(this._dataEvents,
       fn('model',model),
       fn('collection',collection));
-		
+
 	}
-	
+
 	private _undelegateDataEvents () {
 		if (!this._dataEvents) return;
     let k, v;
@@ -128,15 +128,13 @@ export class DataView<T extends HTMLElement> extends TemplateView<T> implements 
       v = this._dataEvents[k];
       let [item, ev] = k.split(':');
       if (!this[item]) continue;
-     
+
       this[item].off(ev, v);
       //this.stopListening(this[item],ev, v);
     }
     delete this._dataEvents;
 	}
-	
-	
-	
+
 	private _filterEvents (obj:any) {
     /*jshint -W030 */
     let c = {}, m = {}, e = {}, k, v;
@@ -153,6 +151,4 @@ export class DataView<T extends HTMLElement> extends TemplateView<T> implements 
     }
     return {c,m,e};
   }
-
-	
 }

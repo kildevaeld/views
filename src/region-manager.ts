@@ -4,42 +4,34 @@ import {BaseObject} from './object'
 import {Region} from './region'
 import {utils} from './utils'
 
-const proxyties = [
-	'addRegions',
-	'addRegion',
-	'removeRegion',
-	'removeRegions',
-]
-
 export type RegionMap = {[key: string]: Region}
-
 
 export class RegionManager extends BaseObject {
   private _regions: RegionMap = {}
-	
+
   /**
    * Regions
    * @type {string:Region}
    */
   public get regions () {
     return this._regions
-  } 
-  
-  /** Region manager 
+  }
+
+  /** Region manager
    * @extends BaseObject
    */
   constructor () {
 		super();
-   
+
 	}
 
-	
+
   /**
     * Add one or more regions to the region manager
     * @param {Object} regions
     */
   addRegions (regions:RegionMap) {
-    
+
     let def, out = {}, keys = Object.keys(regions);
     keys.forEach(function (k) {
       def = regions[k];
@@ -85,7 +77,7 @@ export class RegionManager extends BaseObject {
   destroy () {
     this.removeRegions();
     super.destroy();
-    
+
   }
 
   /**

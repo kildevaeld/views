@@ -1,4 +1,3 @@
-
 import {BaseObject} from './object';
 import {html, utils} from './utils'
 import * as events from './events'
@@ -32,28 +31,28 @@ export interface BaseViewOptions {
 let viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events'];
 
 export class BaseView<T extends HTMLElement> extends BaseObject implements IView {
-  
+
   static find(selector: string, context: HTMLElement): NodeList {
     return context.querySelectorAll(selector)
   }
-  
+
   tagName: string
   className: string
   id: string
-  
+
   private _cid: string
   get cid(): string  {
     return this._cid
   }
-  
-  
+
+
   el: T
   events: EventsMap //{[key:string]:Function|string}
   attributes: StringMap
   //triggers: StringMap
   private _domEvents: any[]
 
-  /** 
+  /**
    * BaseView
    * @param {BaseViewOptions} options
    * @extends BaseObject
@@ -61,7 +60,6 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
   constructor (options: BaseViewOptions = {}) {
 
     this._cid = utils.uniqueId('view')
-    
 
     utils.extend(this, utils.pick(options, viewOptions))
 
@@ -72,11 +70,10 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
     } else {
       //this.delegateEvents()
     }
-    
-    super(options)
-    
-  }
 
+    super(options)
+
+  }
 
   /**
    * Delegate events
@@ -186,7 +183,7 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
     elm.appendChild(this.el)
     return this
   }
-  
+
   append (elm: HTMLElement, toSelector?:string): any {
     if (toSelector != null) {
       let ret = this.$(toSelector)

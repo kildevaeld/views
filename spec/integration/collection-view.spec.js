@@ -18,14 +18,18 @@ var Region = views.region,
   CollectionView = views.CollectionView,
   TemplateView = views.TemplateView;
 
+function setupHTMLFixtures() {
+  setFixtures('<div id="region"></div>');
+}
 
 describe('Collection View', function () {
   var region;
 
   beforeEach(function () {
     if (region) region.destroy();
-    body = document.getElementsByTagName('body')[0];
-    region = Region.buildRegion('body');
+    setupHTMLFixtures()
+    //body = document.getElementsByTagName('body')[0];
+    region = Region.buildRegion('#region');
   });
 
   afterEach(function () {
@@ -39,7 +43,7 @@ describe('Collection View', function () {
         collection: collection
       });
 
-     
+
 
       view.on('render:collection', function () {
 
@@ -47,12 +51,12 @@ describe('Collection View', function () {
         // Wait for children to render
         setTimeout(function () {
           expect(view.el.children.length).toEqual(3, 'list size');
-          
-          done()  
+
+          done()
         })
-        
+
       });
-      
+
        view.render();
 
     });
@@ -139,7 +143,25 @@ describe('Collection View', function () {
   });
 
   describe('events', function () {
-    xit('should proxy childview events', function (done) {
+    it('should emit render:collection', function () {
+      var view = new CollectionView({
+        collection: collection,
+        childView: TemplateView.extend({
+          template: function (data) {
+            return data.title;
+          }
+        })
+
+      });
+
+      var spy = jasmine.createSpy('render:collection');
+
+      view.on('render:collection', spy)
+      view.render();
+      expect(spy.calls.count()).toEqual(1);
+
+    });
+    it('should proxy childview events', function (done) {
       var view = new CollectionView({
         collection: collection,
         childView: TemplateView.extend({
@@ -154,23 +176,21 @@ describe('Collection View', function () {
       });
 
       view.on('render:collection', function () {
+
         var spy = jasmine.createSpy('trigger');
         view.on('childview:click', spy)
 
-        setTimeout(function () {
+        view.children.forEach(function (item) {
+          $(item.el).click();
+        })
 
-          view.children.forEach(function (item) {
-            $(item.el).click();
-
-          })
-
-          expect(spy.calls.count()).toEqual(view.collection.length);
-          done();
-
-        });
+        expect(spy.calls.count()).toEqual(view.collection.length);
+        done();
 
       });
+      
       region.show(view);
+
     });
   });
 

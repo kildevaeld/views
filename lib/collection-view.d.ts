@@ -78,8 +78,23 @@ export declare class CollectionView<T extends HTMLElement> extends DataView<T> {
     private _stopBuffering();
     private _initContainer();
     private _destroyContainer();
-    _insertBefore(childView: any, index: any): boolean;
-    _insertAfter(childView: any): void;
+    /**
+     * Internal method. Check whether we need to insert the view into
+   * the correct position.
+     * @param  {IView} childView [description]
+     * @param  {number} index     [description]
+     * @return {boolean}           [description]
+     */
+    _insertBefore(childView: IDataView, index: number): boolean;
+    /**
+     * Internal method. Append a view to the end of the $el
+     * @private
+     */
+    _insertAfter(childView: IDataView): void;
+    /**
+     * Delegate collection events
+     * @private
+     */
     private _delegateCollectionEvents();
     /**
      * Called when a model is add to the collection
@@ -93,4 +108,9 @@ export declare class CollectionView<T extends HTMLElement> extends DataView<T> {
      * @private
      */
     private _onCollectionRemove(model);
+    /**
+     * Called when the collection is sorted
+     * @private
+     */
+    private _onCollectionSort();
 }
