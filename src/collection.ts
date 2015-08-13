@@ -43,7 +43,7 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
    * @property {Number} length
    */
   public get length () {
-		return this._models.length
+		return this.models.length
 	}
 
   private _model: new (attr:Object, options?:any) => U 
@@ -62,12 +62,12 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
   private _models:U[]
 
   get models (): U[] {
-    return this._models;
+    return this._models||(this._models=[]);
   }
 
   options: CollectionOptions<U>
 
-  constructor (models?:U[], options:CollectionOptions<U>={}) {
+  constructor (models?:U[]|Object[], options:CollectionOptions<U>={}) {
 
     this.options = options;
     
@@ -119,7 +119,7 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
       model = models[i]
 
 			id = model.get(model.idAttribute)||model.uid
-
+      
       // If a duplicate is found, prevent it from being added and
       // optionally merge it into the existing model.
       if (existing = this.get(id)) {
@@ -207,9 +207,8 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
     return singular ? models[0] : models;
   }
 
-  get (id): U {
-
-    return null
+  get (id:any): U {
+    return this.find(id)
   }
 
   // Get the model at the given index.

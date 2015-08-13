@@ -36,7 +36,7 @@ export declare class Collection<U extends IModel> extends BaseObject implements 
     private _models;
     models: U[];
     options: CollectionOptions<U>;
-    constructor(models?: U[], options?: CollectionOptions<U>);
+    constructor(models?: U[] | Object[], options?: CollectionOptions<U>);
     add(models: U | U[] | Object | Object[], options?: CollectionSetOptions): void;
     protected set(items: U | U[], options?: CollectionSetOptions): U | U[];
     remove(models: U[] | U, options?: CollectionRemoveOptions): any;

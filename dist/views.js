@@ -1984,7 +1984,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * @property {Number} length
 	         */
 	        get: function () {
-	            return this._models.length;
+	            return this.models.length;
 	        },
 	        enumerable: true,
 	        configurable: true
@@ -2004,7 +2004,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	    Object.defineProperty(Collection.prototype, "models", {
 	        get: function () {
-	            return this._models;
+	            return this._models || (this._models = []);
 	        },
 	        enumerable: true,
 	        configurable: true
@@ -2133,7 +2133,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return singular ? models[0] : models;
 	    };
 	    Collection.prototype.get = function (id) {
-	        return null;
+	        return this.find(id);
 	    };
 	    // Get the model at the given index.
 	    Collection.prototype.at = function (index) {
