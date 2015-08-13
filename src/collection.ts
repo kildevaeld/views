@@ -28,6 +28,10 @@ export interface CollectionSortOptions extends Silenceable {
   
 }
 
+export interface CollectionCreateOptions {
+  add?: boolean
+}
+
 export interface CollectionResetOptions extends Silenceable {
   previousModels?: IModel[]
 }
@@ -38,9 +42,7 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
 	}
 	public Model: new (attr:Object, options?:any) => U
   private _models:U[]
-  //private _byId:any = {}
   
-  //length: number = 0
   options: CollectionOptions
   
   get models (): U[] {
@@ -57,11 +59,20 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
 		super();
   }
 
-  add (models:U|U[], options:CollectionSetOptions={}) {
-    this.set(models, utils.extend({merge:false}, options, addOptions));
+  add (models:U|U[]|Object|Object[], options:CollectionSetOptions={}) {
+    if (!Array.isArray(models)) {
+      if (!(models instanceof this.Model)) {
+        models = this.create(models, { add: false })
+      }
+    } else {
+      models = (<any[]>models).map<U>( (item) => {
+        return (item instanceof this.Model) ? item : this.create(item, { add: false })
+      });
+    }
+    this.set(<U|U[]>models, utils.extend({merge:false}, options, addOptions));
   }
 
-  set (items:U|U[], options: CollectionSetOptions={}) {
+  protected set (items:U|U[], options: CollectionSetOptions={}) {
     options = utils.extend({}, setOptions, options);
     if (options.parse) items = this.parse(items, options);
     
@@ -81,12 +92,8 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
     // from being added.
     for (i = 0, l = (<U[]>models).length; i < l; i++) {
       model = models[i]
-      /*if (attrs instanceof Model) {
-        id = model = attrs;
-      } else {
-        id = 
-      }*/
-			id = model.uid
+      
+			id = model.get(model.idAttribute)||model.uid
 			
       // If a duplicate is found, prevent it from being added and
       // optionally merge it into the existing model.
@@ -109,9 +116,9 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
       }
 
       // Do not add multiple models with the same `id`.
-     /* model = existing || model;
-      if (order && (model.isNew() || !modelMap[model.id])) order.push(model);
-      modelMap[model.nid] = true;*/
+       model = existing || model;
+      if (order && !modelMap[model.id]) order.push(model);
+      modelMap[model.uid] = true;
     }
 
     // Remove nonexistent models if appropriate.
@@ -154,16 +161,15 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
     return singular ? models[0] : models;
   }
 
-  remove (models, options: CollectionRemoveOptions={}) {
+  remove (models:U[]|U, options: CollectionRemoveOptions={}) {
     var singular = !Array.isArray(models);
-    models = singular ? [models] : models.slice();
+    models = <U[]>(singular ? [models] : (<U[]>models).slice());
 
     var i, l, index, model;
-    for (i = 0, l = models.length; i < l; i++) {
+    for (i = 0, l = (<U[]>models).length; i < l; i++) {
       model = models[i] = this.get(models[i]);
       if (!model) continue;
-      //delete this._byId[model.id];
-      //delete this._byId[model.nid];
+     
       index = this.indexOf(model);
       this.models.splice(index, 1);
       this.length--;
@@ -228,9 +234,10 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
     return models;
   }
 
-  create (values?:any, options?: any): IModel  {
+  create (values?:any, options: CollectionCreateOptions={add:true}): IModel  {
     let model = new this.Model(values, options)
-    this.add(model)
+    if (options.add)
+      this.add(model)
     return model
   }
   
@@ -244,7 +251,7 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
       model = utils.find<IModel>(this.models, nidOrFn);
     } else {
       model = utils.find<IModel>(this.models, function (model) {
-        return model.uid == nidOrFn;
+        return model.id == nidOrFn || model.uid == nidOrFn;
       });
     }
 
@@ -273,40 +280,22 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
 
   _removeReference (model:U, options?: any) {
     if (this === model.collection) delete model.collection;
-    model.off('all', this._onModelEvent, this);
+    this.stopListening(model)
   }
 
   _addReference (model:IModel, options?:any) {
-    //this._byId[model.nid] = model;
-    //if (model.id != null) this._byId[model.id] = model;
     if (!model.collection) model.collection = this;
-    model.on('all', this._onModelEvent, this);
+    this.listenTo(model, 'all', this._onModelEvent)
   }
-
-  /*_prepareModel (attrs, options) {
-    if (attrs instanceof Model) return attrs;
-    options = utils.extend({}, options);
-    options.collection = this;
-    var model = new (<any>this.model)(attrs, options);
-    if (!model.validationError) return model;
-    this.trigger('invalid', this, model.validationError, options);
-    return false;
-  }*/
 
   _reset () {
     this._models = [];
-    //this._byId = Object.create(null);
   }
 
   _onModelEvent (event, model, collection, options) {
     if ((event === 'add' || event === 'remove') && collection !== this) return;
     if (event === 'destroy') this.remove(model, options);
-    /*if (model && event === 'change:' + model.idAttribute) {
-      delete this._byId[model.previous(model.idAttribute)];
-      if (model.id != null) this._byId[model.id] = model;
-    }*/
-    this.trigger.apply(this, arguments);
+    utils.call(this.trigger, this, utils.slice(arguments))
   }
-
 
 }

@@ -18,6 +18,9 @@ export interface CollectionRemoveOptions extends Silenceable {
 }
 export interface CollectionSortOptions extends Silenceable {
 }
+export interface CollectionCreateOptions {
+    add?: boolean;
+}
 export interface CollectionResetOptions extends Silenceable {
     previousModels?: IModel[];
 }
@@ -28,9 +31,9 @@ export declare class Collection<U extends IModel> extends BaseObject implements 
     options: CollectionOptions;
     models: U[];
     constructor(models?: U[], options?: CollectionOptions);
-    add(models: U | U[], options?: CollectionSetOptions): void;
-    set(items: U | U[], options?: CollectionSetOptions): U | U[];
-    remove(models: any, options?: CollectionRemoveOptions): any;
+    add(models: U | U[] | Object | Object[], options?: CollectionSetOptions): void;
+    protected set(items: U | U[], options?: CollectionSetOptions): U | U[];
+    remove(models: U[] | U, options?: CollectionRemoveOptions): any;
     get(id: any): U;
     at(index: any): U;
     clone(options?: CollectionOptions): any;
@@ -38,7 +41,7 @@ export declare class Collection<U extends IModel> extends BaseObject implements 
     sortBy(key: string | Function, context?: any): U[];
     push(model: any, options?: {}): void;
     reset(models: any, options?: CollectionResetOptions): any;
-    create(values?: any, options?: any): IModel;
+    create(values?: any, options?: CollectionCreateOptions): IModel;
     parse(models: U | U[], options?: CollectionSetOptions): U | U[];
     find(nidOrFn: any): any;
     forEach(iterator: (model: U, index?: number) => void, ctx?: any): Collection<U>;

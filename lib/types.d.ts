@@ -4,6 +4,7 @@ export interface IModel extends IEventEmitter {
     collection?: ICollection;
     idAttribute?: string;
     uid: string;
+    id?: string;
     get(key: string): any;
     set(key: string, value: any): any;
     toJSON?: () => any;
