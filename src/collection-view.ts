@@ -1,7 +1,7 @@
 import {DataView,DataViewOptions} from './data-view'
 import {IDataView, IModel,ICollection} from './types'
 import {utils,extend} from './utils'
-
+import {EventEmitter} from './events'
 export interface CollectionViewOptions extends DataViewOptions {
 	childView?: IDataView
 	childViewContainer?: string
@@ -326,7 +326,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 	 * @private
 	 */
 	private _delegateCollectionEvents () {
-		if (this.collection) {
+		if (this.collection && this.collection instanceof EventEmitter) {
 
       this.listenTo(this.collection, 'add', this._onCollectionAdd);
       this.listenTo(this.collection, 'remove', this._onCollectionRemove);

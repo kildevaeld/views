@@ -107,7 +107,7 @@ export class EventEmitter implements IEventEmitter {
       id = obj.listenId || (obj.listenId = getID())
       listeningTo[id] = obj;
       meth = once ? 'once' : 'on';
-
+      //console.log(obj, obj[meth],meth, event, fn)
       obj[meth](event, fn, this);
 
       return this;

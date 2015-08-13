@@ -594,6 +594,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        id = obj.listenId || (obj.listenId = getID());
 	        listeningTo[id] = obj;
 	        meth = once ? 'once' : 'on';
+	        //console.log(obj, obj[meth],meth, event, fn)
 	        obj[meth](event, fn, this);
 	        return this;
 	    };
@@ -1521,6 +1522,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	var data_view_1 = __webpack_require__(10);
 	var utils_1 = __webpack_require__(5);
+	var events_1 = __webpack_require__(4);
 	var Buffer = (function () {
 	    function Buffer() {
 	        this.children = [];
@@ -1762,7 +1764,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    CollectionView.prototype._delegateCollectionEvents = function () {
-	        if (this.collection) {
+	        if (this.collection && this.collection instanceof events_1.EventEmitter) {
 	            this.listenTo(this.collection, 'add', this._onCollectionAdd);
 	            this.listenTo(this.collection, 'remove', this._onCollectionRemove);
 	            this.listenTo(this.collection, 'reset', this.render);
