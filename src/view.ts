@@ -38,7 +38,7 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
 
   delegateEvents (events?:any) {
 
-    this.bindUIElements()
+    this._bindUIElements()
 
     events = events || this.events;
     events = normalizeUIKeys(events, this._ui)
@@ -64,13 +64,16 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
   }
 
   undelegateEvents (): any {
-    this.unbindUIElements()
+    this._unbindUIElements()
     super.undelegateEvents()
     return this
   }
 
-  /* UI Elements */
-  bindUIElements() {
+  /**
+   * Bind ui elements
+   * @private
+   */
+  _bindUIElements() {
 
     let ui = this.getOption('ui') //this.options.ui||this.ui
     if (!ui) return;
@@ -96,7 +99,11 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
 
   }
 
-  unbindUIElements () {
+  /**
+   * Unbind ui elements
+   * @private
+   */
+  _unbindUIElements () {
     this.ui = {}
   }
 
@@ -106,9 +113,6 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
    * @private
    */
   _configureTriggers() {
-    /*if (!this.triggers) {
-      return {};
-    }*/
 
     let triggers = this.getOption('triggers')||{}
 

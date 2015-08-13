@@ -39,19 +39,6 @@ gulp.task('build:bower', ['build'], function () {
     resolve: {
         extensions: ['', '.webpack.js', '.web.js', '.ts', '.js']
     },
-    module: {
-        loaders: [
-            
-            /*{ 
-              test: /\.js$/, 
-              loader: 'babel',
-              query: {
-                optional: ['runtime'],
-                loose: ['es6.classes']
-              } 
-            }*/
-        ]
-    },
     output: {
       library: "views",
       libraryTarget: "umd",

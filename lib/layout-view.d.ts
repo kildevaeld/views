@@ -15,7 +15,7 @@ export declare class LayoutView<T extends HTMLElement> extends TemplateView<T> {
      * @param {string|RegionMap} name
      * @param {Object|string|HTMLElement} def
      */
-    addRegion(name: string | RegionMap, def?: any): void;
+    addRegion(name: string | RegionMap, def?: Object | string | HTMLElement): void;
     /**
      * Delete one or more regions from the the layoutview
      * @param {string|Array<string>} name

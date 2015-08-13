@@ -38,8 +38,8 @@ export class LayoutView<T extends HTMLElement> extends TemplateView<T> {
 	 * @param {string|RegionMap} name
 	 * @param {Object|string|HTMLElement} def
 	 */
-  addRegion(name: string|RegionMap, def?: any) {
-		let regions: RegionMap = {}
+  addRegion(name: string|RegionMap, def?: Object|string|HTMLElement) {
+		let regions = {}
 		if (typeof name === 'string') {
 			if (def == null) throw new Error('add region')
 			regions[name] = def

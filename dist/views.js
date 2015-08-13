@@ -113,7 +113,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _super.call(this, options);
 	    }
 	    View.prototype.delegateEvents = function (events) {
-	        this.bindUIElements();
+	        this._bindUIElements();
 	        events = events || this.events;
 	        events = normalizeUIKeys(events, this._ui);
 	        var triggers = this._configureTriggers();
@@ -122,12 +122,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return this;
 	    };
 	    View.prototype.undelegateEvents = function () {
-	        this.unbindUIElements();
+	        this._unbindUIElements();
 	        _super.prototype.undelegateEvents.call(this);
 	        return this;
 	    };
-	    /* UI Elements */
-	    View.prototype.bindUIElements = function () {
+	    /**
+	     * Bind ui elements
+	     * @private
+	     */
+	    View.prototype._bindUIElements = function () {
 	        var _this = this;
 	        var ui = this.getOption('ui'); //this.options.ui||this.ui
 	        if (!ui)
@@ -148,7 +151,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        });
 	    };
-	    View.prototype.unbindUIElements = function () {
+	    /**
+	     * Unbind ui elements
+	     * @private
+	     */
+	    View.prototype._unbindUIElements = function () {
 	        this.ui = {};
 	    };
 	    /**
@@ -157,9 +164,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    View.prototype._configureTriggers = function () {
-	        /*if (!this.triggers) {
-	          return {};
-	        }*/
 	        var triggers = this.getOption('triggers') || {};
 	        if (typeof triggers === 'function') {
 	            triggers = triggers.call(this);
@@ -344,6 +348,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    BaseView.prototype.render = function (options) {
 	        return this;
 	    };
+	    /**
+	     * Append the view to a HTMLElement
+	     * @param {HTMLElement|string} elm A html element or a selector string
+	     * @return {this} for chaining
+	     */
 	    BaseView.prototype.appendTo = function (elm) {
 	        if (elm instanceof HTMLElement) {
 	            elm.appendChild(this.el);
@@ -354,6 +363,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        return this;
 	    };
+	    /**
+	     * Append a element the view
+	     * @param {HTMLElement} elm
+	     * @param {String} toSelector
+	     * @return {this} for chaining
+	     */
 	    BaseView.prototype.append = function (elm, toSelector) {
 	        if (toSelector != null) {
 	            var ret = this.$(toSelector);
@@ -369,6 +384,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        return this;
 	    };
+	    /**
+	     * Convience for view.el.querySelectorAll()
+	     * @param {string|HTMLElement} selector
+	     */
 	    BaseView.prototype.$ = function (selector) {
 	        if (selector instanceof HTMLElement) {
 	            return selector;
@@ -1281,7 +1300,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Remove all regions from the manager
 	     */
 	    RegionManager.prototype.removeRegions = function () {
-	        this.removeRegion.apply(this, Object.keys(this._regions));
+	        utils_1.utils.call(this.removeRegion, this, Object.keys(this._regions));
 	    };
 	    /**
 	     * @private

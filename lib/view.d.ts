@@ -25,8 +25,16 @@ export declare class View<T extends HTMLElement> extends base.BaseView<T> {
      */
     constructor(options?: ViewOptions);
     undelegateEvents(): any;
-    bindUIElements(): void;
-    unbindUIElements(): void;
+    /**
+     * Bind ui elements
+     * @private
+     */
+    _bindUIElements(): void;
+    /**
+     * Unbind ui elements
+     * @private
+     */
+    _unbindUIElements(): void;
     /**
      * Configure triggers
      * @return {Object} events object

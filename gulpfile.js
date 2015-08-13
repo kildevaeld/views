@@ -25,10 +25,6 @@ gulp.task('uglify', ['build:bower'], function () {
 
 });
 
-
-
-
-
 gulp.task('clean', function (done) {
   del(['./lib','./dist', './docs'], done);
 });
@@ -57,4 +53,5 @@ gulp.task('default', [
   'test',
   'test:integration', 
   'docs', 
- 'uglify']);
+  'uglify'
+]);

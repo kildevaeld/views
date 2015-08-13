@@ -22,7 +22,6 @@ export class RegionManager extends BaseObject {
    */
   constructor () {
 		super();
-
 	}
 
 
@@ -84,7 +83,7 @@ export class RegionManager extends BaseObject {
    * Remove all regions from the manager
    */
   removeRegions () {
-    this.removeRegion.apply(this, Object.keys(this._regions));
+    utils.call(this.removeRegion, this, Object.keys(this._regions))
   }
 
   /**

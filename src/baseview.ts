@@ -47,9 +47,9 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
 
 
   el: T
-  events: EventsMap //{[key:string]:Function|string}
+  events: EventsMap 
   attributes: StringMap
-  //triggers: StringMap
+  
   private _domEvents: any[]
 
   /**
@@ -179,7 +179,12 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
     return this
   }
 
-  appendTo(elm:HTMLElement|string): any {
+  /**
+   * Append the view to a HTMLElement
+   * @param {HTMLElement|string} elm A html element or a selector string
+   * @return {this} for chaining
+   */
+  public appendTo(elm:HTMLElement|string): any {
     
     if (elm instanceof HTMLElement) {
       elm.appendChild(this.el)  
@@ -192,6 +197,12 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
     return this
   }
 
+  /**
+   * Append a element the view
+   * @param {HTMLElement} elm
+   * @param {String} toSelector
+   * @return {this} for chaining 
+   */
   append (elm: HTMLElement, toSelector?:string): any {
     if (toSelector != null) {
       let ret = this.$(toSelector)
@@ -206,6 +217,10 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
     return this
   }
 
+  /**
+   * Convience for view.el.querySelectorAll()
+   * @param {string|HTMLElement} selector
+   */
   $ (selector: string|HTMLElement): NodeList|HTMLElement {
     if (selector instanceof HTMLElement) {
       return selector
