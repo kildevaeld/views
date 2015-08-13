@@ -112,7 +112,7 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
     var toAdd = [], toRemove = [], modelMap = {};
     var add = options.add, merge = options.merge, remove = options.remove;
     var order = !sortable && add && remove ? [] : null;
-
+   
     // Turn bare objects into model references, and prevent invalid models
     // from being added.
     for (i = 0, l = (<U[]>models).length; i < l; i++) {
@@ -157,7 +157,7 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
     // See if sorting is needed, update `length` and splice in new models.
     if (toAdd.length || (order && order.length)) {
       if (sortable) sort = true;
-      this.length += toAdd.length;
+      //this.length += toAdd.length;
       if (at != null) {
         for (i = 0, l = toAdd.length; i < l; i++) {
           this.models.splice(at + i, 0, toAdd[i]);
@@ -177,9 +177,11 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
     // Unless silenced, it's time to fire all appropriate add/sort events.
     if (!options.silent) {
       for (i = 0, l = toAdd.length; i < l; i++) {
+        
         (model = toAdd[i]).trigger('add', model, this, options);
       }
       if (sort || (order && order.length)) this.trigger('sort', this, options);
+      if (toAdd.length || toRemove.length) this.trigger('update', this, options);
     }
 
     // Return the added (or merged) model (or models).
@@ -275,7 +277,7 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
       model = utils.find<IModel>(this.models, nidOrFn);
     } else {
       model = utils.find<IModel>(this.models, function (model) {
-        return model.id == nidOrFn || model.uid == nidOrFn;
+        return model.id == nidOrFn || model.uid == nidOrFn || nidOrFn === model;
       });
     }
 
@@ -307,6 +309,7 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
 
   private _addReference (model:IModel, options?:any) {
     if (!model.collection) model.collection = this;
+    
     this.listenTo(model, 'all', this._onModelEvent)
   }
 
@@ -317,6 +320,7 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
   private _onModelEvent (event, model, collection, options) {
     if ((event === 'add' || event === 'remove') && collection !== this) return;
     if (event === 'destroy') this.remove(model, options);
+    
     utils.call(this.trigger, this, utils.slice(arguments))
   }
 

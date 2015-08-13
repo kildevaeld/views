@@ -6,6 +6,7 @@ export interface CollectionViewOptions extends DataViewOptions {
 	childView?: IDataView
 	childViewContainer?: string
   childViewOptions?: DataViewOptions
+  sort?:boolean
 }
 
 class Buffer {
@@ -43,6 +44,8 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 	constructor (options?:CollectionViewOptions) {
     //this._options = options||{}
     this.children = []
+
+    this.sort = (options && options.sort != null) ? options.sort : true
 
     super(options)
 	}
@@ -175,11 +178,11 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 
 	private _renderCollection () {
 		this.triggerMethod('before:render:collection')
-		this.collection.forEach((model) => {
+		this.collection.forEach((model, index) => {
 
 			let view = this.getChildView(model)
 
-			this._appendChild(view)
+			this._appendChild(view, index)
 		})
 		this.triggerMethod('render:collection')
 	}
@@ -190,9 +193,9 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
    * @param {IDataView} view
    * @param {Number} index
    */
-	private _appendChild (view: IDataView, index?: number) {
+	private _appendChild (view: IDataView, index: number) {
 		this._updateIndexes(view, true, index);
-
+    
     this._proxyChildViewEvents(view);
 
     this.children.push(view);
@@ -250,6 +253,9 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 	private _updateIndexes (view:IDataView, increment:boolean, index?:number) {
     if (!this.sort)
       return;
+      
+    if (increment) (<any>view)._index = index;  
+    
 		this.children.forEach(function(lView) {
 			if ((<any>lView)._index >= (<any>view)._index) {
 				increment ? (<any>lView)._index++ : (<any>lView)._index--;
@@ -298,7 +304,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 				return (<any>view)._index === index + 1;
 			})
     }
-
+    
     if (currentView) {
       this._container.insertBefore(childView.el, currentView.el);
       return true;
@@ -341,6 +347,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
   private _onCollectionAdd (model) {
     let view = this.getChildView(model)
     let index = this.collection.indexOf(model);
+    
     this._appendChild(view, index)
   }
 
@@ -362,7 +369,15 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 	 * @private
 	 */
 	private _onCollectionSort () {
-
+    let orderChanged = (<any>this.collection).find((model, index) => {
+      let view = utils.find(this.children, function (view) {
+        return view.model === model;
+      });
+      return !view || (<any>view)._index !== index;
+    });
+    
+    if (orderChanged)
+      this.render()
 	}
 
 }

@@ -78,6 +78,18 @@ describe('Collection', function () {
      
       
 		})
+    
+     
+     it('should trigger add event', function () {
+       let spy = jasmine.createSpy('add')
+      
+       let collection = new Collection([], {})
+       let model = new TestModel(data)
+      
+       collection.on('add', spy)
+       collection.add(model)
+       expect(spy.calls.count()).toBe(1) 
+     })
 
   });
 

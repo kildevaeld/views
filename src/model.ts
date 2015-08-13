@@ -170,5 +170,9 @@ export class Model extends BaseObject implements IModel {
   toJSON () {
     return JSON.parse(JSON.stringify(this._attributes));
   }
+  
+  clone (): IModel {
+    return new ((<any>this).constructor)(this._attributes); 
+  }
 
 }

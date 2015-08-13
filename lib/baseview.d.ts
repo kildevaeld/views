@@ -52,7 +52,7 @@ export declare class BaseView<T extends HTMLElement> extends BaseObject implemen
     delegate(eventName: string, selector?: string | Function, listener?: Function): (e: any) => void;
     undelegate(eventName: string, selector?: string | Function, listener?: Function): BaseView<T>;
     render(options: any): any;
-    appendTo(elm: HTMLElement): any;
+    appendTo(elm: HTMLElement | string): any;
     append(elm: HTMLElement, toSelector?: string): any;
     $(selector: string | HTMLElement): NodeList | HTMLElement;
     setElement(elm: T): void;

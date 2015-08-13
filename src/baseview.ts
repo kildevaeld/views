@@ -179,8 +179,16 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
     return this
   }
 
-  appendTo(elm:HTMLElement): any {
-    elm.appendChild(this.el)
+  appendTo(elm:HTMLElement|string): any {
+    
+    if (elm instanceof HTMLElement) {
+      elm.appendChild(this.el)  
+    } else {
+      let el = document.querySelector(<string>elm)
+      el ? el.appendChild(this.el) : void 0
+    }
+    
+    
     return this
   }
 

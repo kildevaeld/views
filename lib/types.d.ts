@@ -13,7 +13,7 @@ export interface IModel extends IEventEmitter {
 export interface ICollection extends IEventEmitter {
     length: number;
     indexOf: (item: IModel) => number;
-    forEach(fn: (item: IModel) => any): any;
+    forEach(fn: (item: IModel, index?: number) => any): any;
     push(item: IModel): any;
 }
 export interface IDataView extends IView {

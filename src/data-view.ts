@@ -34,12 +34,12 @@ export class DataView<T extends HTMLElement> extends TemplateView<T> implements 
    */
   constructor (options:DataViewOptions) {
 
-
+    
     if (options.model) {
-      this._model = options.model
+      this.model = options.model
     }
     if (options.collection) {
-      this._collection = options.collection
+      this.collection = options.collection
     }
 
     super(options)

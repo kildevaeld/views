@@ -4,6 +4,7 @@ export interface CollectionViewOptions extends DataViewOptions {
     childView?: IDataView;
     childViewContainer?: string;
     childViewOptions?: DataViewOptions;
+    sort?: boolean;
 }
 export declare class CollectionView<T extends HTMLElement> extends DataView<T> {
     childView: IDataView;
@@ -58,7 +59,7 @@ export declare class CollectionView<T extends HTMLElement> extends DataView<T> {
    * @param {IDataView} view
    * @param {Number} index
    */
-    private _appendChild(view, index?);
+    private _appendChild(view, index);
     /**
    * Attach the childview's element to the CollectionView.
    * When in buffer mode, the view is added to a documentfragment to optimize performance

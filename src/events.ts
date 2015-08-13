@@ -117,18 +117,23 @@ export class EventEmitter implements IEventEmitter {
     return this.listenTo(obj, event, fn, ctx, true)
   }
 
-  stopListening (obj?: IEventEmitter, event?:string, callback?:EventHandler) {
-      let listeningTo = this._listeningTo||{};
-
+  stopListening (obj?: IEventEmitter, event?:string, callback?:EventHandler) {     
+      let listeningTo = this._listeningTo;
+      if (!listeningTo) return this;
+      
       var remove = !event && !callback;
-      if (obj) listeningTo[obj.listenId] = obj;
-
+      
+      if (!callback && typeof event === 'object') callback = <any>this;
+      if (obj) (listeningTo = {})[obj.listenId] = <any>obj;
+      
       for (var id in listeningTo) {
         obj = listeningTo[id];
         obj.off(event, callback, this);
-
-        if (remove || !Object.keys(obj.listeners).length) delete this._listeningTo[id];
+        if (remove || !Object.keys(obj.listeners).length) {
+          delete this._listeningTo[id];
+        }
       }
-      return this;
+    
+    return this;
   }
 }

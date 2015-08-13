@@ -345,7 +345,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return this;
 	    };
 	    BaseView.prototype.appendTo = function (elm) {
-	        elm.appendChild(this.el);
+	        if (elm instanceof HTMLElement) {
+	            elm.appendChild(this.el);
+	        }
+	        else {
+	            var el = document.querySelector(elm);
+	            el ? el.appendChild(this.el) : void 0;
+	        }
 	        return this;
 	    };
 	    BaseView.prototype.append = function (elm, toSelector) {
@@ -595,15 +601,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return this.listenTo(obj, event, fn, ctx, true);
 	    };
 	    EventEmitter.prototype.stopListening = function (obj, event, callback) {
-	        var listeningTo = this._listeningTo || {};
+	        var listeningTo = this._listeningTo;
+	        if (!listeningTo)
+	            return this;
 	        var remove = !event && !callback;
+	        if (!callback && typeof event === 'object')
+	            callback = this;
 	        if (obj)
-	            listeningTo[obj.listenId] = obj;
+	            (listeningTo = {})[obj.listenId] = obj;
 	        for (var id in listeningTo) {
 	            obj = listeningTo[id];
 	            obj.off(event, callback, this);
-	            if (remove || !Object.keys(obj.listeners).length)
+	            if (remove || !Object.keys(obj.listeners).length) {
 	                delete this._listeningTo[id];
+	            }
 	        }
 	        return this;
 	    };
@@ -1385,10 +1396,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    function DataView(options) {
 	        if (options.model) {
-	            this._model = options.model;
+	            this.model = options.model;
 	        }
 	        if (options.collection) {
-	            this._collection = options.collection;
+	            this.collection = options.collection;
 	        }
 	        _super.call(this, options);
 	    }
@@ -1530,6 +1541,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function CollectionView(options) {
 	        //this._options = options||{}
 	        this.children = [];
+	        this.sort = (options && options.sort != null) ? options.sort : true;
 	        _super.call(this, options);
 	    }
 	    /**
@@ -1630,9 +1642,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    CollectionView.prototype._renderCollection = function () {
 	        var _this = this;
 	        this.triggerMethod('before:render:collection');
-	        this.collection.forEach(function (model) {
+	        this.collection.forEach(function (model, index) {
 	            var view = _this.getChildView(model);
-	            _this._appendChild(view);
+	            _this._appendChild(view, index);
 	        });
 	        this.triggerMethod('render:collection');
 	    };
@@ -1687,6 +1699,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    CollectionView.prototype._updateIndexes = function (view, increment, index) {
 	        if (!this.sort)
 	            return;
+	        if (increment)
+	            view._index = index;
 	        this.children.forEach(function (lView) {
 	            if (lView._index >= view._index) {
 	                increment ? lView._index++ : lView._index--;
@@ -1783,6 +1797,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    CollectionView.prototype._onCollectionSort = function () {
+	        var _this = this;
+	        var orderChanged = this.collection.find(function (model, index) {
+	            var view = utils_1.utils.find(_this.children, function (view) {
+	                return view.model === model;
+	            });
+	            return !view || view._index !== index;
+	        });
+	        if (orderChanged)
+	            this.render();
 	    };
 	    return CollectionView;
 	})(data_view_1.DataView);
@@ -1944,6 +1967,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Model.prototype.toJSON = function () {
 	        return JSON.parse(JSON.stringify(this._attributes));
 	    };
+	    Model.prototype.clone = function () {
+	        return new (this.constructor)(this._attributes);
+	    };
 	    return Model;
 	})(object_1.BaseObject);
 	exports.Model = Model;
@@ -2084,7 +2110,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (toAdd.length || (order && order.length)) {
 	            if (sortable)
 	                sort = true;
-	            this.length += toAdd.length;
+	            //this.length += toAdd.length;
 	            if (at != null) {
 	                for (i = 0, l = toAdd.length; i < l; i++) {
 	                    this.models.splice(at + i, 0, toAdd[i]);
@@ -2109,6 +2135,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            if (sort || (order && order.length))
 	                this.trigger('sort', this, options);
+	            if (toAdd.length || toRemove.length)
+	                this.trigger('update', this, options);
 	        }
 	        // Return the added (or merged) model (or models).
 	        return singular ? models[0] : models;
@@ -2196,7 +2224,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        else {
 	            model = utils_1.utils.find(this.models, function (model) {
-	                return model.id == nidOrFn || model.uid == nidOrFn;
+	                return model.id == nidOrFn || model.uid == nidOrFn || nidOrFn === model;
 	            });
 	        }
 	        return model;

@@ -29,4 +29,5 @@ export declare class Model extends BaseObject implements IModel {
     previous(attr: any): any;
     previousAttributes(): any;
     toJSON(): any;
+    clone(): IModel;
 }
