@@ -30,7 +30,8 @@ export class Model extends BaseObject implements IModel {
   }
 
 
-  constructor (attributes:any={}, options: ModelOptions={}) {
+  constructor (attributes:Object={}, options?: ModelOptions) {
+    options = options||{}
     this._attributes = attributes
     this.uid = utils.uniqueId('uid')
 

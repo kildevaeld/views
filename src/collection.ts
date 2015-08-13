@@ -1,11 +1,14 @@
 import {BaseObject} from './object';
 import {IModel, ICollection} from './types';
 import {utils} from './utils';
+import {Model} from './model'
 
 var setOptions = {add: true, remove: true, merge: true};
 var addOptions = {add: true, remove: false};
 
-export interface CollectionOptions {}
+export interface CollectionOptions<U> {
+  model?: new (attr:Object, options?:any) => U
+}
 
 export interface Silenceable {
   silent?:boolean
@@ -43,7 +46,18 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
 		return this._models.length
 	}
 
-	public Model: new (attr:Object, options?:any) => U
+  private _model: new (attr:Object, options?:any) => U 
+	public get Model (): new (attr:Object, options?:any) => U {
+   if (!this._model) {
+     this._model = <any>Model
+   }
+   
+   return this._model
+  }
+  
+  public set Model (con:new (attr:Object, options?:any) => U) {
+   this._model = con
+  }
 
   private _models:U[]
 
@@ -51,11 +65,18 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
     return this._models;
   }
 
-  options: CollectionOptions
+  options: CollectionOptions<U>
 
-  constructor (models?:U[], options:CollectionOptions={}) {
+  constructor (models?:U[], options:CollectionOptions<U>={}) {
 
     this.options = options;
+    
+    if (this.options.model) {
+      this.Model = this.options.model
+    }
+    
+    
+    
     //this._byId = {};
     if (models) {
       this.add(models);
@@ -196,7 +217,7 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
     return this.models[index];
   }
 
-  clone (options?:CollectionOptions) {
+  clone (options?:CollectionOptions<U>) {
     options = options||this.options
     return new (<any>this).constructor(this.models, options);
   }

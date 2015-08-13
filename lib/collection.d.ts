@@ -1,6 +1,7 @@
 import { BaseObject } from './object';
 import { IModel, ICollection } from './types';
-export interface CollectionOptions {
+export interface CollectionOptions<U> {
+    model?: new (attr: Object, options?: any) => U;
 }
 export interface Silenceable {
     silent?: boolean;
@@ -30,17 +31,18 @@ export declare class Collection<U extends IModel> extends BaseObject implements 
      * @property {Number} length
      */
     length: number;
+    private _model;
     Model: new (attr: Object, options?: any) => U;
     private _models;
     models: U[];
-    options: CollectionOptions;
-    constructor(models?: U[], options?: CollectionOptions);
+    options: CollectionOptions<U>;
+    constructor(models?: U[], options?: CollectionOptions<U>);
     add(models: U | U[] | Object | Object[], options?: CollectionSetOptions): void;
     protected set(items: U | U[], options?: CollectionSetOptions): U | U[];
     remove(models: U[] | U, options?: CollectionRemoveOptions): any;
     get(id: any): U;
     at(index: any): U;
-    clone(options?: CollectionOptions): any;
+    clone(options?: CollectionOptions<U>): any;
     sort(options?: CollectionSortOptions): Collection<U>;
     sortBy(key: string | Function, context?: any): U[];
     push(model: any, options?: {}): void;

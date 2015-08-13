@@ -83,6 +83,7 @@ export module html {
 const nativeBind = Function.prototype.bind
 const noop = function () {}
 let idCounter = 0
+
 /** @module utils */
 export module utils {
 

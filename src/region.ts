@@ -5,7 +5,6 @@ import {BaseObject} from './object'
 import {IView} from './baseview'
 import {utils} from './utils'
 
-
 export interface RegionOptions {
   el: HTMLElement
 }
@@ -15,19 +14,19 @@ export class Region extends BaseObject {
 	private _el: HTMLElement
   private _view: IView
   public options: RegionOptions
-  
+
   public get view (): IView {
     return this._view
   }
-  
+
   public set view (view:IView) {
     this.show(view)
   }
-  
+
   public get el (): HTMLElement {
     return this._el
   }
-  
+
   /**
    * Build region from a definition
    * @param {Object|String|Region} def The description of the region
@@ -54,9 +53,9 @@ export class Region extends BaseObject {
 	constructor(options:RegionOptions) {
     this.options = options
     this._el = this.getOption('el');
-    
+
     super();
-    
+
 	}
 
 	/**
@@ -67,14 +66,14 @@ export class Region extends BaseObject {
    */
   show (view: IView, options?) {
     let diff = view !== this._view;
-    
+
 
     if (diff) {
       // Remove any containing views
       this.empty();
       // If the view is destroyed be others
       view.once('destroy', this.empty, this);
-      
+
       view.once('render', () => {
         utils.triggerMethodOn(view, 'show');
       });
@@ -121,18 +120,18 @@ export class Region extends BaseObject {
     return this;
 
   }
-  
+
   /**
    * Attach the view element to the regions element
    * @param {View} view
    * @private
-   * 
+   *
    */
   private _attachHtml (view) {
     this._el.innerHTML = '';
     this._el.appendChild(view.el);
   }
-  
+
 
   _destroyView () {
     let view = <any>this._view;
@@ -142,7 +141,7 @@ export class Region extends BaseObject {
     } else if (view.remove && typeof view.remove === 'function') {
       view.remove();
     }
-    
+
     this._el.innerHTML = ''
 
   }
@@ -160,7 +159,7 @@ function buildBySelector(selector:string, Klass:any = Region, context?:HTMLEleme
   var el = context.querySelector(selector)
 
   if (!el) throw new Error('selector must exist in the dom')
- 
+
   return new Klass({
     el: el
   });

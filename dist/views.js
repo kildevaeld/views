@@ -1805,7 +1805,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    __extends(Model, _super);
 	    function Model(attributes, options) {
 	        if (attributes === void 0) { attributes = {}; }
-	        if (options === void 0) { options = {}; }
+	        options = options || {};
 	        this._attributes = attributes;
 	        this.uid = utils_1.utils.uniqueId('uid');
 	        this._changed = {};
@@ -1961,6 +1961,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	var object_1 = __webpack_require__(3);
 	var utils_1 = __webpack_require__(5);
+	var model_1 = __webpack_require__(12);
 	var setOptions = { add: true, remove: true, merge: true };
 	var addOptions = { add: true, remove: false };
 	var Collection = (function (_super) {
@@ -1968,6 +1969,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function Collection(models, options) {
 	        if (options === void 0) { options = {}; }
 	        this.options = options;
+	        if (this.options.model) {
+	            this.Model = this.options.model;
+	        }
 	        //this._byId = {};
 	        if (models) {
 	            this.add(models);
@@ -1981,6 +1985,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	         */
 	        get: function () {
 	            return this._models.length;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Collection.prototype, "Model", {
+	        get: function () {
+	            if (!this._model) {
+	                this._model = model_1.Model;
+	            }
+	            return this._model;
+	        },
+	        set: function (con) {
+	            this._model = con;
 	        },
 	        enumerable: true,
 	        configurable: true
