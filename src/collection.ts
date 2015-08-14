@@ -6,6 +6,9 @@ import {Model} from './model'
 var setOptions = {add: true, remove: true, merge: true};
 var addOptions = {add: true, remove: false};
 
+export type SortFunction = <T>(a:T, b:T) => number 
+
+
 export interface CollectionOptions<U> {
   model?: new (attr:Object, options?:any) => U
 }
@@ -64,6 +67,8 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
   get models (): U[] {
     return this._models||(this._models=[]);
   }
+  
+  comparator:string|SortFunction
 
   options: CollectionOptions<U>
 
@@ -74,8 +79,6 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
     if (this.options.model) {
       this.Model = this.options.model
     }
-    
-    
     
     //this._byId = {};
     if (models) {
@@ -231,7 +234,7 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
     if (typeof this.comparator === 'string' || this.comparator.length === 1) {
       this._models = this.sortBy((<any>this.comparator), this);
     } else {
-      this.models.sort(this.comparator.bind(this));
+      this.models.sort((<SortFunction>this.comparator).bind(this));
     }
 
     if (!options.silent) this.trigger('sort', this, options);
@@ -300,7 +303,7 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
     return this.models.map(function (m) { return m.toJSON(); });
   }
 
-  comparator () { }
+  
 
   private _removeReference (model:U, options?: any) {
     if (this === model.collection) delete model.collection;

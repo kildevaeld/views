@@ -1,4 +1,4 @@
-export declare function extend(protoProps: any, staticProps: any): any;
+export declare function extend(protoProps: Object, staticProps?: Object): any;
 export declare module html {
     function matches(elm: any, selector: any): boolean;
     function addEventListener(elm: Element, eventName: string, listener: any, useCap?: boolean): void;

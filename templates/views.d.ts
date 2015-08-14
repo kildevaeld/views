@@ -1,70 +1,77 @@
 
 declare module 'views' {
-  export * from 'views/lib/index'
-}
-
-declare module 'views/lib/index' {
-  export * from 'views/lib/index'
+  import tmp = require('lib/index');
+  export = tmp;
 }
 
 declare module 'views/lib/view' {
-  export * from 'views/lib/view'
+  import tmp = require('lib/view');
+  export = tmp;
 }
 
 declare module 'views/lib/events' {
-  export * from 'views/lib/events'
+ import tmp = require('lib/events');
+  export = tmp;
 }
 
 declare module 'views/lib/utils' {
-  export * from 'views/lib/utils'
-}
-
-declare module 'views/lib/events' {
-  export * from 'views/lib/events'
+  import tmp = require('lib/utils');
+  export = tmp;
 }
 
 declare module 'views/lib/object' {
-  export * from 'views/lib/object'
+  import tmp = require('lib/object');
+  export = tmp;
 }
 
 declare module 'views/lib/baseview' {
-  export * from 'views/lib/baseview'
+  import tmp = require('lib/baseview');
+  export = tmp;
 }
 
 declare module 'views/lib/templateview' {
-  export * from 'views/lib/templateview'
+  import tmp = require('lib/templateview');
+  export = tmp;
 }
 
 declare module 'views/lib/layout-view' {
-  export * from 'views/lib/layout-view'
+  import tmp = require('lib/layout-view');
+  export = tmp;
 }
 
 declare module 'views/lib/region' {
-  export * from 'views/lib/region'
+  import tmp = require('lib/region');
+  export = tmp;
 }
 
 declare module 'views/lib/region-manager' {
-  export * from 'views/lib/region-manager'
+  import tmp = require('lib/region-manager');
+  export = tmp;
 }
 
 declare module 'views/lib/types' {
-  export * from 'views/lib/types'
+  import tmp = require('lib/types');
+  export = tmp;
 }
 
 
 declare module 'views/lib/collection-view' {
-  export * from 'views/lib/collection-view'
+  import tmp = require('lib/collection-view');
+  export = tmp;
 }
 
 declare module 'views/lib/data-view' {
-  export * from 'views/lib/data-view'
+  import tmp = require('lib/data-view');
+  export = tmp;
 }
 
 
 declare module 'views/lib/collection' {
-  export * from 'views/lib/collection'
+  import tmp = require('lib/collection');
+  export = tmp;
 }
 
 declare module 'views/lib/model' {
-  export * from 'views/lib/model'
+  import tmp = require('lib/model');
+  export = tmp;
 }

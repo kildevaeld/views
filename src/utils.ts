@@ -17,7 +17,7 @@ var elementRemoveEventListener = ElementProto.removeEventListener || function(ev
     return this.detachEvent('on' + eventName, listener);
 }
 
-export function extend (protoProps, staticProps): any {
+export function extend (protoProps:Object, staticProps?:Object): any {
   var parent = this;
   var child;
 

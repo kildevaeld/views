@@ -1,5 +1,6 @@
 import { BaseObject } from './object';
 import { IModel, ICollection } from './types';
+export declare type SortFunction = <T>(a: T, b: T) => number;
 export interface CollectionOptions<U> {
     model?: new (attr: Object, options?: any) => U;
 }
@@ -35,6 +36,7 @@ export declare class Collection<U extends IModel> extends BaseObject implements 
     Model: new (attr: Object, options?: any) => U;
     private _models;
     models: U[];
+    comparator: string | SortFunction;
     options: CollectionOptions<U>;
     constructor(models?: U[] | Object[], options?: CollectionOptions<U>);
     add(models: U | U[] | Object | Object[], options?: CollectionSetOptions): void;
@@ -53,7 +55,6 @@ export declare class Collection<U extends IModel> extends BaseObject implements 
     forEach(iterator: (model: U, index?: number) => void, ctx?: any): Collection<U>;
     indexOf(model: U): number;
     toJSON(): any[];
-    comparator(): void;
     private _removeReference(model, options?);
     private _addReference(model, options?);
     private _reset();

@@ -2262,7 +2262,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Collection.prototype.toJSON = function () {
 	        return this.models.map(function (m) { return m.toJSON(); });
 	    };
-	    Collection.prototype.comparator = function () { };
 	    Collection.prototype._removeReference = function (model, options) {
 	        if (this === model.collection)
 	            delete model.collection;
