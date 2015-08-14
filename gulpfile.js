@@ -46,7 +46,6 @@ gulp.task('docs', function (done) {
 
 
 gulp.task('default', [
-  'clean',
   'build', 
   'build:bower', 
   'definition', 

@@ -1047,18 +1047,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return {};
 	    };
 	    TemplateView.prototype.render = function (options) {
-	        this.triggerMethod('before:render');
-	        this.undelegateEvents();
+	        if (options === void 0) { options = {}; }
+	        if (!options.silent)
+	            this.triggerMethod('before:render');
+	        this.renderTemplate(this.getTemplateData());
+	        if (!options.silent)
+	            this.triggerMethod('render');
+	        return this;
+	    };
+	    TemplateView.prototype.renderTemplate = function (data) {
 	        var template = this.getOption('template');
 	        if (typeof template === 'function') {
-	            template = template.call(this, this.getTemplateData());
+	            template = template.call(this, data);
 	        }
 	        if (template && typeof template === 'string') {
-	            this.el.innerHTML = template;
+	            this.attachTemplate(template);
 	        }
+	    };
+	    TemplateView.prototype.attachTemplate = function (template) {
+	        this.undelegateEvents();
+	        this.el.innerHTML = template;
 	        this.delegateEvents();
-	        this.triggerMethod('render');
-	        return this;
 	    };
 	    return TemplateView;
 	})(views.View);
@@ -1360,8 +1369,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        configurable: true
 	    });
 	    LayoutView.prototype.render = function (options) {
-	        _super.prototype.render.call(this, options);
+	        this.triggerMethod('before:render');
+	        _super.prototype.render.call(this, { silent: true });
 	        this.addRegion(this._regions || {});
+	        this.triggerMethod('render');
 	        return this;
 	    };
 	    /**

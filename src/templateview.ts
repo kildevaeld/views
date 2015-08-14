@@ -1,8 +1,13 @@
 
 import * as views from './view'
+import {Silenceable} from './types'
 
 export interface TemplateFunction {
   (locals:Object): string
+}
+
+export interface TemplateViewRenderOptions extends Silenceable  {
+
 }
 
 export interface TemplateViewOptions extends views.ViewOptions {
@@ -10,13 +15,13 @@ export interface TemplateViewOptions extends views.ViewOptions {
 }
 
 export class TemplateView<T extends HTMLElement> extends views.View<T> {
-  template: string|TemplateFunction
+  public template: string|TemplateFunction
 
   /** TemplateView
    * @param {TemplateViewOptions} options
    * @extends View
    */
-  constructor (options?: TemplateViewOptions) {
+  public constructor (options?: TemplateViewOptions) {
 
     if (options && options.template) {
       this.template = options.template
@@ -25,31 +30,40 @@ export class TemplateView<T extends HTMLElement> extends views.View<T> {
     super(options)
   }
 
-  getTemplateData (): any {
+  public getTemplateData (): any {
     return {}
   }
 
-  render (options:any): any {
+  public render (options:TemplateViewRenderOptions={}): any {
+    
+    if (!options.silent) 
+      this.triggerMethod('before:render')
+    
+    this.renderTemplate(this.getTemplateData())
 
-    this.triggerMethod('before:render')
-
-    this.undelegateEvents()
-
-    let template = this.getOption('template');
-
-    if (typeof template === 'function') {
-      template = template.call(this, this.getTemplateData())
-    }
-
-    if (template && typeof template === 'string') {
-      this.el.innerHTML = template;
-    }
-
-    this.delegateEvents()
-
-    this.triggerMethod('render')
+    if (!options.silent)
+      this.triggerMethod('render')
 
     return this
+  }
+  
+  protected renderTemplate(data:Object) {
+    let template = this.getOption('template')
+    
+    if (typeof template === 'function') {
+      template = template.call(this, data)
+    } 
+    
+    if (template && typeof template === 'string') {
+       this.attachTemplate(template)
+    }
+    
+  }
+  
+  protected attachTemplate(template: string) {
+    this.undelegateEvents()
+    this.el.innerHTML = template
+    this.delegateEvents()
   }
 
 }

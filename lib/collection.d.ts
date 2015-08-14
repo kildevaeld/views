@@ -1,11 +1,8 @@
 import { BaseObject } from './object';
-import { IModel, ICollection } from './types';
+import { IModel, ICollection, Silenceable } from './types';
 export declare type SortFunction = <T>(a: T, b: T) => number;
 export interface CollectionOptions<U> {
     model?: new (attr: Object, options?: any) => U;
-}
-export interface Silenceable {
-    silent?: boolean;
 }
 export interface CollectionSetOptions extends Silenceable {
     at?: number;

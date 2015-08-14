@@ -31,8 +31,10 @@ export class LayoutView<T extends HTMLElement> extends TemplateView<T> {
 	}
 	
 	render (options?:any): any {
-		super.render(options)
+		this.triggerMethod('before:render')
+		super.render({silent:true})
 		this.addRegion(this._regions||{});
+		this.triggerMethod('render')
 		return this
 	}
 	/**
