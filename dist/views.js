@@ -1306,6 +1306,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    RegionManager.prototype._setRegion = function (name, region) {
+	        if (this._regions[name]) {
+	            this._regions[name].destroy();
+	        }
 	        this._regions[name] = region;
 	    };
 	    /**
@@ -1346,10 +1349,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // Set region manager
 	        this._regionManager = new region_manager_1.RegionManager();
 	        utils_1.utils.proxy(this, this._regionManager, ['removeRegion', 'removeRegions']);
-	        var regions = this.getOption('regions');
-	        this.listenTo(this, 'render', function () {
-	            this.addRegion(regions);
-	        });
+	        this._regions = this.getOption('regions');
 	        _super.call(this, options);
 	    }
 	    Object.defineProperty(LayoutView.prototype, "regions", {
@@ -1359,6 +1359,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        enumerable: true,
 	        configurable: true
 	    });
+	    LayoutView.prototype.render = function (options) {
+	        _super.prototype.render.call(this, options);
+	        this.addRegion(this._regions || {});
+	        return this;
+	    };
 	    /**
 	     * Add one or more regions to the view
 	     * @param {string|RegionMap} name

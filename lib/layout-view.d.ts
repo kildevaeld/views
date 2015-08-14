@@ -1,6 +1,7 @@
 import { TemplateView } from './templateview';
 import { RegionMap } from './region-manager';
 export declare class LayoutView<T extends HTMLElement> extends TemplateView<T> {
+    private _regions;
     private _regionManager;
     regions: RegionMap;
     /**
@@ -10,6 +11,7 @@ export declare class LayoutView<T extends HTMLElement> extends TemplateView<T> {
      * @extends TemplateView
      */
     constructor(options: any);
+    render(options?: any): any;
     /**
      * Add one or more regions to the view
      * @param {string|RegionMap} name

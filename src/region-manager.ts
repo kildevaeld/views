@@ -90,6 +90,9 @@ export class RegionManager extends BaseObject {
    * @private
    */
   _setRegion (name, region) {
+    if (this._regions[name]) {
+      this._regions[name].destroy()
+    } 
     this._regions[name] = region;
   }
 

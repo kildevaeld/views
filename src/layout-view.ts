@@ -5,7 +5,7 @@ import {utils} from './utils'
 import {Region} from './region'
 
 export class LayoutView<T extends HTMLElement> extends TemplateView<T> {
-
+	private _regions: any
 	private _regionManager: RegionManager
 
 	public get regions(): RegionMap {
@@ -24,14 +24,16 @@ export class LayoutView<T extends HTMLElement> extends TemplateView<T> {
 		this._regionManager = new RegionManager();
 		utils.proxy(this, this._regionManager, ['removeRegion', 'removeRegions']);
 
-		let regions = this.getOption('regions');
-		
-		this.listenTo(this, 'render', function() {
-			this.addRegion(regions);
-		});
+		this._regions = this.getOption('regions');
 
 		super(options);
 
+	}
+	
+	render (options?:any): any {
+		super.render(options)
+		this.addRegion(this._regions||{});
+		return this
 	}
 	/**
 	 * Add one or more regions to the view
