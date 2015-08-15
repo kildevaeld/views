@@ -156,7 +156,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    View.prototype._unbindUIElements = function () {
-	        this.ui = {};
 	    };
 	    /**
 	     * Configure triggers
@@ -587,8 +586,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var _i = 1; _i < arguments.length; _i++) {
 	            args[_i - 1] = arguments[_i];
 	        }
-	        var events = (this._listeners || (this._listeners = {}))[eventName] || (this._listeners[eventName] = [])
-	            .concat(this._listeners['all'] || []);
+	        var events = (this._listeners || (this._listeners = {}))[eventName] || (this._listeners[eventName] = []);
+	        events = events.concat(this._listeners['all'] || []);
 	        if (EventEmitter.debugCallback)
 	            EventEmitter.debugCallback(this.constructor.name, this.name, eventName, args);
 	        var event, a, len = events.length, index, i;
@@ -613,7 +612,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        id = obj.listenId || (obj.listenId = getID());
 	        listeningTo[id] = obj;
 	        meth = once ? 'once' : 'on';
-	        //console.log(obj, obj[meth],meth, event, fn)
 	        obj[meth](event, fn, this);
 	        return this;
 	    };
@@ -1358,7 +1356,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // Set region manager
 	        this._regionManager = new region_manager_1.RegionManager();
 	        utils_1.utils.proxy(this, this._regionManager, ['removeRegion', 'removeRegions']);
-	        this._regions = this.getOption('regions');
+	        this._regions = this.getOption('regions', options || {});
 	        _super.call(this, options);
 	    }
 	    Object.defineProperty(LayoutView.prototype, "regions", {

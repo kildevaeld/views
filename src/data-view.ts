@@ -32,7 +32,7 @@ export class DataView<T extends HTMLElement> extends TemplateView<T> implements 
    * @param {DataViewOptions} options
    * @extends TemplateView
    */
-  constructor (options:DataViewOptions) {
+  constructor (options?:DataViewOptions) {
 
     
     if (options.model) {

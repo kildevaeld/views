@@ -35,6 +35,7 @@ export class EventEmitter implements IEventEmitter {
   public get listeners (): {[key: string]: Events[]} {
     return this._listeners
   }
+  
   on (event: string, fn:EventHandler, ctx?:any, once:boolean = false): any {
     let events = (this._listeners|| (this._listeners = {}))[event]||(this._listeners[event]=[])
     //let events = this._listeners[event]||(this._listeners[event]=[])
@@ -72,8 +73,8 @@ export class EventEmitter implements IEventEmitter {
   }
 
   trigger (eventName: string, ...args:any[]): any {
-    let events = (this._listeners|| (this._listeners = {}))[eventName]||(this._listeners[eventName]=[])
-    .concat(this._listeners['all']||[])
+    let events = (this._listeners||(this._listeners = {}))[eventName]||(this._listeners[eventName]=[])
+    events = events.concat(this._listeners['all']||[])
 
     if (EventEmitter.debugCallback)
       EventEmitter.debugCallback((<any>this.constructor).name, (<any>this).name, eventName, args)
@@ -107,7 +108,7 @@ export class EventEmitter implements IEventEmitter {
       id = obj.listenId || (obj.listenId = getID())
       listeningTo[id] = obj;
       meth = once ? 'once' : 'on';
-      //console.log(obj, obj[meth],meth, event, fn)
+      
       obj[meth](event, fn, this);
 
       return this;

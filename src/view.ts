@@ -104,7 +104,7 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
    * @private
    */
   _unbindUIElements () {
-    this.ui = {}
+    
   }
 
   /**

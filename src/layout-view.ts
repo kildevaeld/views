@@ -24,7 +24,7 @@ export class LayoutView<T extends HTMLElement> extends TemplateView<T> {
 		this._regionManager = new RegionManager();
 		utils.proxy(this, this._regionManager, ['removeRegion', 'removeRegions']);
 
-		this._regions = this.getOption('regions');
+		this._regions = this.getOption('regions', options||{});
 
 		super(options);
 

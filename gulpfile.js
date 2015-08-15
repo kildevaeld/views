@@ -32,25 +32,25 @@ gulp.task('clean', function (done) {
 
 gulp.task('docs', function (done) {
   let exec = require('child_process').exec
- 
+
   exec('./node_modules/.bin/tsc --outDir ./tmp', function (err) {
     if (err) return done(err)
-    
+
     exec('./node_modules/.bin/jsdoc -R README.md -r -d ./docs tmp/*.js', function (err) {
       exec('rm -r tmp', done)
     })
-    
+
   })
 })
 
 
 
 gulp.task('default', [
-  'build', 
-  'build:bower', 
-  'definition', 
+  'build',
+  'build:bower',
+  'definition',
   'test',
-  'test:integration', 
-  'docs', 
+  'test:integration',
+  'docs',
   'uglify'
 ]);

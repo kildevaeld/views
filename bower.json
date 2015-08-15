@@ -1,6 +1,6 @@
 {
   "name": "views",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "main": "./dist/views.js",
   "private": true,
   "authors": [

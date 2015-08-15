@@ -15,7 +15,7 @@ export declare class DataView<T extends HTMLElement> extends TemplateView<T> imp
      * @param {DataViewOptions} options
      * @extends TemplateView
      */
-    constructor(options: DataViewOptions);
+    constructor(options?: DataViewOptions);
     setModel(model: IModel): void;
     setCollection(collection: ICollection): void;
     getTemplateData(): any;
