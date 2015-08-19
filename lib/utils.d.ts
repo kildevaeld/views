@@ -30,4 +30,32 @@ export declare module utils {
     function triggerMethodOn(obj: any, eventName: string, args?: any[]): void;
     function getOption(option: string, objs: any[]): any;
     function sortBy<T>(obj: T[], value: string | Function, context?: any): T[];
+    function isPromise(obj: any): boolean;
+    function toPromise(obj: any): any;
+    /**
+     * Convert a thunk to a promise.
+     *
+     * @param {Function}
+     * @return {Promise}
+     * @api private
+     */
+    function thunkToPromise(fn: any): Promise<{}>;
+    /**
+     * Convert an array of "yieldables" to a promise.
+     * Uses `Promise.all()` internally.
+     *
+     * @param {Array} obj
+     * @return {Promise}
+     * @api private
+     */
+    function arrayToPromise(obj: any): Promise<{}[]>;
+    /**
+     * Convert an object of "yieldables" to a promise.
+     * Uses `Promise.all()` internally.
+     *
+     * @param {Object} obj
+     * @return {Promise}
+     * @api private
+     */
+    function objectToPromise(obj: any): Promise<any>;
 }

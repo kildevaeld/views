@@ -57,6 +57,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function __export(m) {
 	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 	}
+	/// <reference path="../typings/es6-promise/es6-promise.d.ts" />
 	__export(__webpack_require__(6));
 	__export(__webpack_require__(8));
 	__export(__webpack_require__(4));
@@ -644,6 +645,98 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	    }
 	    utils.sortBy = sortBy;
+	    // Promises
+	    function isPromise(obj) {
+	        return obj && typeof obj.then === 'function';
+	    }
+	    utils.isPromise = isPromise;
+	    function toPromise(obj) {
+	        /* jshint validthis:true */
+	        if (!obj) {
+	            return obj;
+	        }
+	        if (isPromise(obj)) {
+	            return obj;
+	        }
+	        if ("function" == typeof obj) {
+	            return thunkToPromise.call(this, obj);
+	        }
+	        if (Array.isArray(obj)) {
+	            return arrayToPromise.call(this, obj);
+	        }
+	        if (isObject(obj)) {
+	            return objectToPromise.call(this, obj);
+	        }
+	        return obj;
+	    }
+	    utils.toPromise = toPromise;
+	    /**
+	     * Convert a thunk to a promise.
+	     *
+	     * @param {Function}
+	     * @return {Promise}
+	     * @api private
+	     */
+	    function thunkToPromise(fn) {
+	        /* jshint validthis:true */
+	        var ctx = this;
+	        return new Promise(function (resolve, reject) {
+	            fn.call(ctx, function (err, res) {
+	                if (err)
+	                    return reject(err);
+	                if (arguments.length > 2)
+	                    res = slice.call(arguments, 1);
+	                resolve(res);
+	            });
+	        });
+	    }
+	    utils.thunkToPromise = thunkToPromise;
+	    /**
+	     * Convert an array of "yieldables" to a promise.
+	     * Uses `Promise.all()` internally.
+	     *
+	     * @param {Array} obj
+	     * @return {Promise}
+	     * @api private
+	     */
+	    function arrayToPromise(obj) {
+	        /* jshint validthis:true */
+	        return Promise.all(obj.map(toPromise, this));
+	    }
+	    utils.arrayToPromise = arrayToPromise;
+	    /**
+	     * Convert an object of "yieldables" to a promise.
+	     * Uses `Promise.all()` internally.
+	     *
+	     * @param {Object} obj
+	     * @return {Promise}
+	     * @api private
+	     */
+	    function objectToPromise(obj) {
+	        /* jshint validthis:true */
+	        var results = new obj.constructor();
+	        var keys = Object.keys(obj);
+	        var promises = [];
+	        for (var i = 0; i < keys.length; i++) {
+	            var key = keys[i];
+	            var promise = toPromise.call(this, obj[key]);
+	            if (promise && isPromise(promise))
+	                defer(promise, key);
+	            else
+	                results[key] = obj[key];
+	        }
+	        return Promise.all(promises).then(function () {
+	            return results;
+	        });
+	        function defer(promise, key) {
+	            // predefine the key in the result
+	            results[key] = undefined;
+	            promises.push(promise.then(function (res) {
+	                results[key] = res;
+	            }));
+	        }
+	    }
+	    utils.objectToPromise = objectToPromise;
 	})(utils = exports.utils || (exports.utils = {}));
 	function eq(a, b, aStack, bStack) {
 	    // Identical objects are equal. `0 === -0`, but they aren't identical.

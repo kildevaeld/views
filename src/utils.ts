@@ -84,9 +84,12 @@ const nativeBind = Function.prototype.bind
 const noop = function () {}
 let idCounter = 0
 
+
+
 /** @module utils */
 export module utils {
-
+  
+  
   export function camelcase(input) {
 	   return input.toLowerCase().replace(/-(.)/g, function(match, group1) {
 		    return group1.toUpperCase();
@@ -263,6 +266,94 @@ export module utils {
         return item.value;
       });
   }
+
+  // Promises
+  export function isPromise (obj): boolean {
+    return obj && typeof obj.then === 'function';
+  }
+
+  export function toPromise(obj) {
+    /* jshint validthis:true */
+    if (!obj) {
+      return obj;
+    } if (isPromise(obj)) {
+      return obj;
+    } if ("function" == typeof obj) {
+      return thunkToPromise.call(this, obj);
+    } if (Array.isArray(obj)) {
+      return arrayToPromise.call(this, obj);
+    } if (isObject(obj)) {
+      return objectToPromise.call(this, obj);
+    } return obj;
+  }
+
+  /**
+   * Convert a thunk to a promise.
+   *
+   * @param {Function}
+   * @return {Promise}
+   * @api private
+   */
+
+  export function thunkToPromise(fn) {
+    /* jshint validthis:true */
+    var ctx = this;
+    return new Promise(function (resolve, reject) {
+      fn.call(ctx, function (err, res) {
+        if (err) return reject(err);
+        if (arguments.length > 2) res = slice.call(arguments, 1);
+        resolve(res);
+      });
+    });
+  }
+
+  /**
+   * Convert an array of "yieldables" to a promise.
+   * Uses `Promise.all()` internally.
+   *
+   * @param {Array} obj
+   * @return {Promise}
+   * @api private
+   */
+
+  export function arrayToPromise(obj) {
+    /* jshint validthis:true */
+    return Promise.all(obj.map(toPromise, this));
+  }
+
+  /**
+   * Convert an object of "yieldables" to a promise.
+   * Uses `Promise.all()` internally.
+   *
+   * @param {Object} obj
+   * @return {Promise}
+   * @api private
+   */
+
+  export function objectToPromise(obj) {
+    /* jshint validthis:true */
+    var results = new obj.constructor();
+    var keys = Object.keys(obj);
+    var promises = [];
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var promise = toPromise.call(this, obj[key]);
+      if (promise && isPromise(promise)) defer(promise, key);else results[key] = obj[key];
+    }
+    return Promise.all(promises).then(function () {
+      return results;
+    });
+
+    function defer(promise, key) {
+      // predefine the key in the result
+      results[key] = undefined;
+      promises.push(promise.then(function (res) {
+        results[key] = res;
+      }));
+    }
+  }
+
+
 }
 
 

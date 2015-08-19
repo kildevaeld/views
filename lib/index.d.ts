@@ -1,3 +1,4 @@
+/// <reference path="../typings/es6-promise/es6-promise.d.ts" />
 export * from './view';
 export * from './templateview';
 export * from './utils';

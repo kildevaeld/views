@@ -1,39 +1,14 @@
-import {IEventEmitter} from './events'
-import {IView} from './baseview'
+// Type definitions for es6-promise
+// Project: https://github.com/jakearchibald/ES6-Promise
+// Definitions by: François de Campredon <https://github.com/fdecampredon/>, vvakame <https://github.com/vvakame>
+// Definitions: https://github.com/borisyankov/DefinitelyTyped
 
-export interface IModel extends IEventEmitter {
-	collection?:ICollection
-	idAttribute?: string
-	uid: string
-	id?:string
-	get(key: string)
-	set(key: string, value: any): any
-	toJSON?: () => any
-	hasChanged (attr?): boolean
-}
-
-export interface ICollection extends IEventEmitter {
-	length: number
-	indexOf: (item:IModel) => number 
-	forEach(fn:(item:IModel, index?:number) => any)
-	push(item:IModel): any
-}
-
-export interface IDataView extends IView {
-	model: IModel
-	collection: ICollection
-}
-
-export interface Silenceable {
-  silent?:boolean
-}
-
-export interface Thenable<R> {
+interface Thenable<R> {
     then<U>(onFulfilled?: (value: R) => U | Thenable<U>, onRejected?: (error: any) => U | Thenable<U>): Thenable<U>;
     then<U>(onFulfilled?: (value: R) => U | Thenable<U>, onRejected?: (error: any) => void): Thenable<U>;
 }
 
-export interface Promise<R> extends Thenable<R> {
+declare class Promise<R> implements Thenable<R> {
 	/**
 	 * If you call resolve in the body of the callback passed to the constructor,
 	 * your promise is fulfilled with result object passed to resolve.
@@ -87,4 +62,12 @@ declare module Promise {
 	 * Make a Promise that fulfills when any item fulfills, and rejects if any item rejects.
 	 */
 	function race<R>(promises: (R | Thenable<R>)[]): Promise<R>;
+}
+
+declare module 'es6-promise' {
+	var foo: typeof Promise; // Temp variable to reference Promise in local context
+	module rsvp {
+		export var Promise: typeof foo;
+	}
+	export = rsvp;
 }
