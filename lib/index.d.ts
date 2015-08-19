@@ -11,3 +11,4 @@ export * from './data-view';
 export * from './collection-view';
 export * from './model';
 export * from './collection';
+export * from './types';
