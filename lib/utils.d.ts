@@ -5,6 +5,7 @@ export declare module html {
     function removeEventListener(elm: Element, eventName: string, listener: any): void;
     function addClass(elm: HTMLElement, className: string): void;
     function removeClass(elm: HTMLElement, className: string): void;
+    function selectionStart(elm: HTMLInputElement): number;
 }
 /** @module utils */
 export declare module utils {

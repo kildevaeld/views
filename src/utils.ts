@@ -78,6 +78,20 @@ export module html {
       elm.className = elm.className.split(' ').concat(className.split(' ')).join(' ')
     }
   }
+  
+  export function selectionStart(elm: HTMLInputElement): number {
+    if ('selectionStart' in elm) {
+      // Standard-compliant browsers
+      return elm.selectionStart;
+    } else if ((<any>document).selection) {
+      // IE
+      elm.focus();
+      var sel = (<any>document).selection.createRange();
+      var selLen = (<any>document).selection.createRange().text.length;
+      sel.moveStart('character', -elm.value.length);
+      return sel.text.length - selLen;
+    }
+  }
 }
 
 const nativeBind = Function.prototype.bind
