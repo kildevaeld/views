@@ -51,6 +51,6 @@ gulp.task('default', [
   'definition',
   'test',
   'test:integration',
-  'docs',
+  //'docs',
   'uglify'
 ]);

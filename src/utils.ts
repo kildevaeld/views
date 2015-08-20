@@ -88,8 +88,8 @@ let idCounter = 0
 
 /** @module utils */
 export module utils {
-  
-  
+
+
   export function camelcase(input) {
 	   return input.toLowerCase().replace(/-(.)/g, function(match, group1) {
 		    return group1.toUpperCase();
@@ -284,7 +284,7 @@ export module utils {
       return arrayToPromise.call(this, obj);
     } if (isObject(obj)) {
       return objectToPromise.call(this, obj);
-    } return obj;
+    } return Promise.resolve(obj);
   }
 
   /**
@@ -352,6 +352,43 @@ export module utils {
       }));
     }
   }
+
+  export interface Deferred<T> {
+    promise: Promise<T>
+    resolve: (result:T) => void
+    reject: (error:Error) => void
+    done: (error:Error, result:T) => void
+  }
+  export function deferred<T>(fn?, ctx?, ...args: any[]): Deferred<T>|Promise<T> {
+    let ret: any = {};
+    ret.promise = new Promise(function(resolve, reject) {
+      ret.resolve = resolve;
+      ret.reject = reject;
+      ret.done = function(err, result) { if (err) return reject(err); else resolve(result); };
+    });
+
+    if (typeof fn === 'function') {
+
+      fn.apply(ctx, args.concat([ret.done]));
+      return ret.promise;
+    }
+    return ret;
+
+  };
+
+  export function callback<T>(promise: Promise<T>, callback: (error: Error, result: T) => void, ctx?: any) {
+    promise.then(function(result) {
+      callback.call(ctx, null, result);
+    }).catch(function(err) {
+      callback.call(ctx, err);
+    });
+  }
+
+  export function delay<T>(timeout): Promise<T> {
+    let defer: Deferred<T> = <Deferred<T>>deferred();
+    setTimeout(defer.resolve, timeout);
+    return defer.promise;
+  };
 
 
 }

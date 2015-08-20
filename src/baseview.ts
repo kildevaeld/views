@@ -68,7 +68,7 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
     if (this.el == null) {
       this._ensureElement()
     } else {
-      //this.delegateEvents()
+      this.delegateEvents();
     }
 
     super(options)

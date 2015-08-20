@@ -58,4 +58,13 @@ export declare module utils {
      * @api private
      */
     function objectToPromise(obj: any): Promise<any>;
+    interface Deferred<T> {
+        promise: Promise<T>;
+        resolve: (result: T) => void;
+        reject: (error: Error) => void;
+        done: (error: Error, result: T) => void;
+    }
+    function deferred<T>(fn?: any, ctx?: any, ...args: any[]): Deferred<T> | Promise<T>;
+    function callback<T>(promise: Promise<T>, callback: (error: Error, result: T) => void, ctx?: any): void;
+    function delay<T>(timeout: any): Promise<T>;
 }
