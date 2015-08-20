@@ -2474,6 +2474,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	}
 	exports.events = events;
+	function triggers(triggers) {
+	    return function (target) {
+	        target.prototype.triggers = triggers;
+	    };
+	}
+	exports.triggers = triggers;
 
 
 /***/ }
