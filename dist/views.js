@@ -819,6 +819,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	var elementRemoveEventListener = ElementProto.removeEventListener || function (eventName, listener) {
 	    return this.detachEvent('on' + eventName, listener);
 	};
+	var transitionEndEvent = (function transitionEnd() {
+	    var el = document.createElement('bootstrap');
+	    var transEndEventNames = {
+	        'WebkitTransition': 'webkitTransitionEnd',
+	        'MozTransition': 'transitionend',
+	        'OTransition': 'oTransitionEnd otransitionend',
+	        'transition': 'transitionend'
+	    };
+	    for (var name in transEndEventNames) {
+	        if (el.style[name] !== undefined) {
+	            return transEndEventNames[name];
+	        }
+	    }
+	    return null; // explicit for ie8 (  ._.)
+	})();
+	var animationEndEvent = (function animationEnd() {
+	    var el = document.createElement('bootstrap');
+	    var transEndEventNames = {
+	        'WebkitAnimation': 'webkitAnimationEnd',
+	        'MozAnimation': 'animationend',
+	        'OTransition': 'oAnimationEnd oanimationend',
+	        'animation': 'animationend'
+	    };
+	    for (var name in transEndEventNames) {
+	        if (el.style[name] !== undefined) {
+	            return transEndEventNames[name];
+	        }
+	    }
+	    return null; // explicit for ie8 (  ._.)
+	})();
 	function extend(protoProps, staticProps) {
 	    var parent = this;
 	    var child;
@@ -894,6 +924,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 	    html.selectionStart = selectionStart;
+	    function transitionEnd(elm, fn, ctx, duration) {
+	        var callback = function (e) {
+	            removeEventListener(elm, transitionEndEvent, callback);
+	            fn.call(ctx, e);
+	        };
+	        addEventListener(elm, transitionEndEvent, callback);
+	    }
+	    html.transitionEnd = transitionEnd;
+	    function animationEnd(elm, fn, ctx, duration) {
+	        var callback = function (e) {
+	            removeEventListener(elm, animationEndEvent, callback);
+	            fn.call(ctx, e);
+	        };
+	        addEventListener(elm, animationEndEvent, callback);
+	    }
+	    html.animationEnd = animationEnd;
 	})(html = exports.html || (exports.html = {}));
 	var nativeBind = Function.prototype.bind;
 	var noop = function () { };
@@ -1225,6 +1271,47 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    utils.delay = delay;
 	    ;
+	    function eachAsync(array, iterator, context, accumulate) {
+	        if (accumulate === void 0) { accumulate = false; }
+	        /*return new Promise<void>(function(resolve, reject) {
+	          let i = 0, len = array.length,
+	            errors = [];
+	          function next(err, result?: any) {
+	            if (err && !accumulate) return reject(err);
+	            if (err) errors.push(err);
+	            if (i === len)
+	              return errors.length ? reject(flatten(errors)) : resolve();
+	    
+	            iterator(array[i++]).then(function(r) { next(null, r); }, next);
+	          }
+	    
+	          next(null);
+	    
+	        });*/
+	        return mapAsync(array, iterator, context, accumulate)
+	            .then(function () { return void 0; });
+	    }
+	    utils.eachAsync = eachAsync;
+	    function mapAsync(array, iterator, context, accumulate) {
+	        if (accumulate === void 0) { accumulate = false; }
+	        return new Promise(function (resolve, reject) {
+	            var i = 0, len = array.length, errors = [], results = [];
+	            function next(err, result) {
+	                if (err && !accumulate)
+	                    return reject(err);
+	                if (err)
+	                    errors.push(err);
+	                if (i === len)
+	                    return errors.length ? reject(flatten(errors)) : resolve(results);
+	                iterator(array[i++]).then(function (r) {
+	                    results.push(r);
+	                    next(null, r);
+	                }, next);
+	            }
+	            next(null);
+	        });
+	    }
+	    utils.mapAsync = mapAsync;
 	})(utils = exports.utils || (exports.utils = {}));
 	function eq(a, b, aStack, bStack) {
 	    // Identical objects are equal. `0 === -0`, but they aren't identical.

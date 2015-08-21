@@ -2,22 +2,60 @@
 var ElementProto: any = (typeof Element !== 'undefined' && Element.prototype) || {};
 
 var matchesSelector = ElementProto.matches ||
-    ElementProto.webkitMatchesSelector ||
-    ElementProto.mozMatchesSelector ||
-    ElementProto.msMatchesSelector ||
-    ElementProto.oMatchesSelector || function(selector) {
-        var nodeList = (this.parentNode || document).querySelectorAll(selector) || [];
-        return !!~utils.indexOf(nodeList, this);
-    }
+  ElementProto.webkitMatchesSelector ||
+  ElementProto.mozMatchesSelector ||
+  ElementProto.msMatchesSelector ||
+  ElementProto.oMatchesSelector || function(selector) {
+    var nodeList = (this.parentNode || document).querySelectorAll(selector) || [];
+    return !!~utils.indexOf(nodeList, this);
+  }
 
 var elementAddEventListener = ElementProto.addEventListener || function(eventName, listener) {
-    return this.attachEvent('on' + eventName, listener);
+  return this.attachEvent('on' + eventName, listener);
 }
 var elementRemoveEventListener = ElementProto.removeEventListener || function(eventName, listener) {
-    return this.detachEvent('on' + eventName, listener);
+  return this.detachEvent('on' + eventName, listener);
 }
 
-export function extend (protoProps:Object, staticProps?:Object): any {
+const transitionEndEvent = (function transitionEnd() {
+  var el = document.createElement('bootstrap')
+
+  var transEndEventNames = {
+    'WebkitTransition': 'webkitTransitionEnd',
+    'MozTransition': 'transitionend',
+    'OTransition': 'oTransitionEnd otransitionend',
+    'transition': 'transitionend'
+  }
+
+  for (var name in transEndEventNames) {
+    if (el.style[name] !== undefined) {
+      return transEndEventNames[name]
+    }
+  }
+
+  return null // explicit for ie8 (  ._.)
+})();
+
+const animationEndEvent = (function animationEnd() {
+  var el = document.createElement('bootstrap')
+
+  var transEndEventNames = {
+    'WebkitAnimation': 'webkitAnimationEnd',
+    'MozAnimation': 'animationend',
+    'OTransition': 'oAnimationEnd oanimationend',
+    'animation': 'animationend'
+  }
+
+  for (var name in transEndEventNames) {
+    if (el.style[name] !== undefined) {
+      return transEndEventNames[name]
+    }
+  }
+
+  return null // explicit for ie8 (  ._.)
+})();
+
+export function extend(protoProps: Object, staticProps?: Object): any {
   var parent = this;
   var child;
 
@@ -27,7 +65,7 @@ export function extend (protoProps:Object, staticProps?:Object): any {
   if (protoProps && utils.has(protoProps, 'constructor')) {
     child = protoProps.constructor;
   } else {
-    child = function(){ return parent.apply(this, arguments); };
+    child = function() { return parent.apply(this, arguments); };
   }
 
   // Add static properties to the constructor function, if supplied.
@@ -35,7 +73,7 @@ export function extend (protoProps:Object, staticProps?:Object): any {
 
   // Set the prototype chain to inherit from `parent`, without calling
   // `parent`'s constructor function.
-  var Surrogate = function(){ this.constructor = child; };
+  var Surrogate = function() { this.constructor = child; };
   Surrogate.prototype = parent.prototype;
   child.prototype = new Surrogate;
 
@@ -53,10 +91,10 @@ export function extend (protoProps:Object, staticProps?:Object): any {
 
 export module html {
   export function matches(elm, selector): boolean {
-      return matchesSelector.call(elm, selector)
+    return matchesSelector.call(elm, selector)
   }
 
-  export function addEventListener(elm: Element, eventName: string, listener, useCap:boolean=false) {
+  export function addEventListener(elm: Element, eventName: string, listener, useCap: boolean = false) {
     elementAddEventListener.call(elm, eventName, listener, useCap)
   }
 
@@ -64,21 +102,21 @@ export module html {
     elementRemoveEventListener.call(elm, eventName, listener)
   }
 
-  export function addClass(elm: HTMLElement, className:string) {
+  export function addClass(elm: HTMLElement, className: string) {
     if (elm.classList)
       elm.classList.add(className)
     else {
       elm.className = elm.className.split(' ').concat(className.split(' ')).join(' ')
     }
   }
-  export function removeClass(elm: HTMLElement, className:string) {
+  export function removeClass(elm: HTMLElement, className: string) {
     if (elm.classList)
       elm.classList.remove(className)
     else {
       elm.className = elm.className.split(' ').concat(className.split(' ')).join(' ')
     }
   }
-  
+
   export function selectionStart(elm: HTMLInputElement): number {
     if ('selectionStart' in elm) {
       // Standard-compliant browsers
@@ -92,10 +130,26 @@ export module html {
       return sel.text.length - selLen;
     }
   }
+
+  export function transitionEnd(elm: Element, fn: (event: TransitionEvent) => void, ctx?: any, duration?: number) {
+    var callback = function(e) {
+      removeEventListener(elm, transitionEndEvent, callback);
+      fn.call(ctx, e);
+    };
+    addEventListener(elm, transitionEndEvent, callback);
+  }
+
+  export function animationEnd(elm: Element, fn: (event: AnimationEvent) => void, ctx?: any, duration?: number) {
+    var callback = function(e) {
+      removeEventListener(elm, animationEndEvent, callback);
+      fn.call(ctx, e);
+    };
+    addEventListener(elm, animationEndEvent, callback);
+  }
 }
 
 const nativeBind = Function.prototype.bind
-const noop = function () {}
+const noop = function() { }
 let idCounter = 0
 
 
@@ -114,27 +168,27 @@ export module utils {
    * @param {string} prefix
    * @return {string}
    */
-  export function uniqueId (prefix=''): string {
+  export function uniqueId(prefix = ''): string {
     return prefix + (++idCounter)
   }
 
-  export function isObject (obj:any): boolean {
+  export function isObject(obj: any): boolean {
     return obj === Object(obj);
   }
 
-  export function extend (obj: Object, ...args:Object[]): any {
+  export function extend(obj: Object, ...args: Object[]): any {
     if (!utils.isObject(obj)) return obj
     let o, k
     for (o of args) {
       if (!utils.isObject(o)) continue
       for (k in o) {
-        if (utils.has(o,k)) obj[k] = o[k]
+        if (utils.has(o, k)) obj[k] = o[k]
       }
     }
     return obj
   }
 
-  export function pick (obj: Object, props: string[]) : any {
+  export function pick(obj: Object, props: string[]): any {
     let out = {}, prop
     for (prop of props) {
       if (utils.has(obj, prop)) out[prop] = obj[prop]
@@ -142,59 +196,59 @@ export module utils {
     return out
   }
 
-  export function has (obj, prop): boolean {
+  export function has(obj, prop): boolean {
     return Object.prototype.hasOwnProperty.call(obj, prop)
   }
 
   export function indexOf(array, item): number {
-      for (var i = 0, len = array.length; i < len; i++) if (array[i] === item) return i;
-      return -1;
+    for (var i = 0, len = array.length; i < len; i++) if (array[i] === item) return i;
+    return -1;
   }
-  export function result(obj:any, prop:string, ctx?: any, args?: any[]): any {
+  export function result(obj: any, prop: string, ctx?: any, args?: any[]): any {
     let ret = obj[prop]
-    return (typeof ret === 'function') ? utils.call(ret,ctx,args||[]) : ret
+    return (typeof ret === 'function') ? utils.call(ret, ctx, args || []) : ret
 
   }
 
-  export function values<T> (obj:Object): T[] {
-  	let output = []
+  export function values<T>(obj: Object): T[] {
+    let output = []
 
-  	for (let k in obj) if (utils.has(obj, k)) {
-  		output.push(obj[k])
-  	}
-  	return output
+    for (let k in obj) if (utils.has(obj, k)) {
+      output.push(obj[k])
+    }
+    return output
   }
 
-  export function find<T>(array:T[], callback:(item: T, index?:number) => boolean, ctx?:any): T {
-  	let i, v
-  	for (i=0;i<array.length;i++) {
-  		v = array[i]
-  		if (callback.call(ctx,v)) return v
-  	}
-  	return null
+  export function find<T>(array: T[], callback: (item: T, index?: number) => boolean, ctx?: any): T {
+    let i, v
+    for (i = 0; i < array.length; i++) {
+      v = array[i]
+      if (callback.call(ctx, v)) return v
+    }
+    return null
   }
 
-  export function proxy (from, to, fns) {
-		if (!Array.isArray(fns)) fns = [fns];
-		fns.forEach(function(fn) {
-			if (typeof to[fn] === 'function') {
-				from[fn] =  utils.bind(to[fn],to);
-			}
-		});
-	}
+  export function proxy(from, to, fns) {
+    if (!Array.isArray(fns)) fns = [fns];
+    fns.forEach(function(fn) {
+      if (typeof to[fn] === 'function') {
+        from[fn] = utils.bind(to[fn], to);
+      }
+    });
+  }
 
-  export function bind(method: Function, context: any, ...args:any[]): Function   {
+  export function bind(method: Function, context: any, ...args: any[]): Function {
     if (typeof method !== 'function') throw new Error('method not at function')
 
     if (nativeBind != null) return nativeBind.call(method, context, ...args)
 
-    args = args||[]
+    args = args || []
 
-    let fnoop = function () {}
+    let fnoop = function() { }
 
-    let fBound  = function() {
-         let ctx = this instanceof fnoop ? this : context
-         return utils.call(method, ctx, args.concat(utils.slice(arguments)))
+    let fBound = function() {
+      let ctx = this instanceof fnoop ? this : context
+      return utils.call(method, ctx, args.concat(utils.slice(arguments)))
     }
 
     fnoop.prototype = this.prototype
@@ -203,7 +257,7 @@ export module utils {
     return fBound
   }
 
-  export function call (fn: Function, ctx: any, args: any[] = []): any {
+  export function call(fn: Function, ctx: any, args: any[] = []): any {
     switch (args.length) {
       case 0:
         return fn.call(ctx);
@@ -216,30 +270,30 @@ export module utils {
       case 4:
         return fn.call(ctx, args[0], args[1], args[2], args[3]);
       case 5:
-        return fn.call(ctx,args[0], args[1], args[2], args[3], args[4])
+        return fn.call(ctx, args[0], args[1], args[2], args[3], args[4])
       default:
         return fn.apply(ctx, args);
     }
   }
 
-  export function slice (array:any): any {
+  export function slice(array: any): any {
     return Array.prototype.slice.call(array)
   }
 
   export function flatten(arr) {
-    return arr.reduce(function (flat, toFlatten) {
+    return arr.reduce(function(flat, toFlatten) {
       return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
     }, []);
   }
 
 
-  export function equal (a: any, b: any): boolean {
+  export function equal(a: any, b: any): boolean {
     return eq(a, b, [], [])
   }
 
-  export function triggerMethodOn (obj:any, eventName:string, args?: any[]) {
+  export function triggerMethodOn(obj: any, eventName: string, args?: any[]) {
 
-    let ev = camelcase("on-" + eventName.replace(':','-'))
+    let ev = camelcase("on-" + eventName.replace(':', '-'))
 
 
     if (obj[ev] && typeof obj[ev] === 'function') {
@@ -248,12 +302,12 @@ export module utils {
     }
 
     if (typeof obj.trigger === 'function') {
-        args = [eventName].concat(args)
-       utils.call(obj.trigger, obj, args)
+      args = [eventName].concat(args)
+      utils.call(obj.trigger, obj, args)
     }
   }
 
-  export function getOption(option: string, objs:any[]): any {
+  export function getOption(option: string, objs: any[]): any {
 
     for (let o of objs) {
       if (isObject(o) && o[option]) return o[option]
@@ -262,8 +316,8 @@ export module utils {
     return null
   }
 
-  export function sortBy<T> (obj:T[], value:string|Function, context?:any): T[] {
-    var iterator = typeof value === 'function' ? value : function(obj:any){ return obj[<string>value]; };
+  export function sortBy<T>(obj: T[], value: string|Function, context?: any): T[] {
+    var iterator = typeof value === 'function' ? value : function(obj: any) { return obj[<string>value]; };
     return obj
       .map(function(value, index, list) {
         return {
@@ -287,7 +341,7 @@ export module utils {
   }
 
   // Promises
-  export function isPromise (obj): boolean {
+  export function isPromise(obj): boolean {
     return obj && typeof obj.then === 'function';
   }
 
@@ -317,8 +371,8 @@ export module utils {
   export function thunkToPromise(fn) {
     /* jshint validthis:true */
     var ctx = this;
-    return new Promise(function (resolve, reject) {
-      fn.call(ctx, function (err, res) {
+    return new Promise(function(resolve, reject) {
+      fn.call(ctx, function(err, res) {
         if (err) return reject(err);
         if (arguments.length > 2) res = slice.call(arguments, 1);
         resolve(res);
@@ -357,16 +411,16 @@ export module utils {
     for (var i = 0; i < keys.length; i++) {
       var key = keys[i];
       var promise = toPromise.call(this, obj[key]);
-      if (promise && isPromise(promise)) defer(promise, key);else results[key] = obj[key];
+      if (promise && isPromise(promise)) defer(promise, key); else results[key] = obj[key];
     }
-    return Promise.all(promises).then(function () {
+    return Promise.all(promises).then(function() {
       return results;
     });
 
     function defer(promise, key) {
       // predefine the key in the result
       results[key] = undefined;
-      promises.push(promise.then(function (res) {
+      promises.push(promise.then(function(res) {
         results[key] = res;
       }));
     }
@@ -374,11 +428,11 @@ export module utils {
 
   export interface Deferred<T> {
     promise: Promise<T>
-    resolve: (result:T) => void
-    reject: (error:Error) => void
-    done: (error:Error, result:T) => void
+    resolve: (result: T) => void
+    reject: (error: Error) => void
+    done: (error: Error, result: T) => void
   }
-  
+
   export function deferred<T>(fn?, ctx?, ...args: any[]): Deferred<T>|Promise<T> {
     let ret: any = {};
     ret.promise = new Promise(function(resolve, reject) {
@@ -410,96 +464,139 @@ export module utils {
     return defer.promise;
   };
 
+  export function eachAsync<T>(array: T[], iterator: (value: T) => Promise<void>, context?: any, accumulate = false): Promise<void> {
+
+    /*return new Promise<void>(function(resolve, reject) {
+      let i = 0, len = array.length,
+        errors = [];
+      function next(err, result?: any) {
+        if (err && !accumulate) return reject(err);
+        if (err) errors.push(err);
+        if (i === len)
+          return errors.length ? reject(flatten(errors)) : resolve();
+
+        iterator(array[i++]).then(function(r) { next(null, r); }, next);
+      }
+
+      next(null);
+
+    });*/
+    return mapAsync<T,void>(array, iterator, context, accumulate)
+    .then(function () { return void 0; })
+
+  }
   
+  export function mapAsync<T, U>(array: T[], iterator: (value: T) => Promise<U>, context?: any, accumulate = false): Promise<U[]> {
+
+    return new Promise<U[]>(function(resolve, reject) {
+      let i = 0, len = array.length,
+        errors = [], results: U[] = [];
+      function next(err, result?: any) {
+        if (err && !accumulate) return reject(err);
+        if (err) errors.push(err);
+        if (i === len)
+          return errors.length ? reject(flatten(errors)) : resolve(results);
+
+        iterator(array[i++]).then(function(r) { 
+          results.push(r);next(null, r); }, next);
+      }
+
+      next(null);
+
+    });
+
+  }
+
+
 }
 
 
-function eq (a, b, aStack, bStack): boolean {
-    // Identical objects are equal. `0 === -0`, but they aren't identical.
-    // See the [Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
-    if (a === b) return a !== 0 || 1 / a == 1 / b;
-    // A strict comparison is necessary because `null == undefined`.
-    if (a == null || b == null) return a === b;
-    // Unwrap any wrapped objects.
-    //if (a instanceof _) a = a._wrapped;
-    //if (b instanceof _) b = b._wrapped;
-    // Compare `[[Class]]` names.
-    var className = toString.call(a);
-    if (className != toString.call(b)) return false;
-    switch (className) {
-      // Strings, numbers, dates, and booleans are compared by value.
-      case '[object String]':
-        // Primitives and their corresponding object wrappers are equivalent; thus, `"5"` is
-        // equivalent to `new String("5")`.
-        return a == String(b);
-      case '[object Number]':
-        // `NaN`s are equivalent, but non-reflexive. An `egal` comparison is performed for
-        // other numeric values.
-        return a !== +a ? b !== +b : (a === 0 ? 1 / a === 1 / b : a === +b);
-      case '[object Date]':
-      case '[object Boolean]':
-        // Coerce dates and booleans to numeric primitive values. Dates are compared by their
-        // millisecond representations. Note that invalid dates with millisecond representations
-        // of `NaN` are not equivalent.
-        return +a == +b;
-      // RegExps are compared by their source patterns and flags.
-      case '[object RegExp]':
-        return a.source == b.source &&
-               a.global == b.global &&
-               a.multiline == b.multiline &&
-               a.ignoreCase == b.ignoreCase;
-    }
-    if (typeof a != 'object' || typeof b != 'object') return false;
-    // Assume equality for cyclic structures. The algorithm for detecting cyclic
-    // structures is adapted from ES 5.1 section 15.12.3, abstract operation `JO`.
-    var length = aStack.length;
-    while (length--) {
-      // Linear search. Performance is inversely proportional to the number of
-      // unique nested structures.
-      if (aStack[length] == a) return bStack[length] == b;
-    }
-    // Objects with different constructors are not equivalent, but `Object`s
-    // from different frames are.
-    var aCtor = a.constructor, bCtor = b.constructor;
-    if (aCtor !== bCtor && !(typeof aCtor === 'function' && (aCtor instanceof aCtor) &&
-                             typeof bCtor === 'function' && (bCtor instanceof bCtor))) {
-      return false;
-    }
-    // Add the first object to the stack of traversed objects.
-    aStack.push(a);
-    bStack.push(b);
-    var size = 0, result = true;
-    // Recursively compare objects and arrays.
-    if (className === '[object Array]') {
-      // Compare array lengths to determine if a deep comparison is necessary.
-      size = a.length;
-      result = size === b.length;
-      if (result) {
-        // Deep compare the contents, ignoring non-numeric properties.
-        while (size--) {
-          if (!(result = eq(a[size], b[size], aStack, bStack))) break;
-        }
-      }
-    } else {
-      // Deep compare objects.
-      for (var key in a) {
-        if (utils.has(a, key)) {
-          // Count the expected number of properties.
-          size++;
-          // Deep compare each member.
-          if (!(result = utils.has(b, key) && eq(a[key], b[key], aStack, bStack))) break;
-        }
-      }
-      // Ensure that both objects contain the same number of properties.
-      if (result) {
-        for (key in b) {
-          if (utils.has(b, key) && !(size--)) break;
-        }
-        result = !size;
+function eq(a, b, aStack, bStack): boolean {
+  // Identical objects are equal. `0 === -0`, but they aren't identical.
+  // See the [Harmony `egal` proposal](http://wiki.ecmascript.org/doku.php?id=harmony:egal).
+  if (a === b) return a !== 0 || 1 / a == 1 / b;
+  // A strict comparison is necessary because `null == undefined`.
+  if (a == null || b == null) return a === b;
+  // Unwrap any wrapped objects.
+  //if (a instanceof _) a = a._wrapped;
+  //if (b instanceof _) b = b._wrapped;
+  // Compare `[[Class]]` names.
+  var className = toString.call(a);
+  if (className != toString.call(b)) return false;
+  switch (className) {
+    // Strings, numbers, dates, and booleans are compared by value.
+    case '[object String]':
+      // Primitives and their corresponding object wrappers are equivalent; thus, `"5"` is
+      // equivalent to `new String("5")`.
+      return a == String(b);
+    case '[object Number]':
+      // `NaN`s are equivalent, but non-reflexive. An `egal` comparison is performed for
+      // other numeric values.
+      return a !== +a ? b !== +b : (a === 0 ? 1 / a === 1 / b : a === +b);
+    case '[object Date]':
+    case '[object Boolean]':
+      // Coerce dates and booleans to numeric primitive values. Dates are compared by their
+      // millisecond representations. Note that invalid dates with millisecond representations
+      // of `NaN` are not equivalent.
+      return +a == +b;
+    // RegExps are compared by their source patterns and flags.
+    case '[object RegExp]':
+      return a.source == b.source &&
+        a.global == b.global &&
+        a.multiline == b.multiline &&
+        a.ignoreCase == b.ignoreCase;
+  }
+  if (typeof a != 'object' || typeof b != 'object') return false;
+  // Assume equality for cyclic structures. The algorithm for detecting cyclic
+  // structures is adapted from ES 5.1 section 15.12.3, abstract operation `JO`.
+  var length = aStack.length;
+  while (length--) {
+    // Linear search. Performance is inversely proportional to the number of
+    // unique nested structures.
+    if (aStack[length] == a) return bStack[length] == b;
+  }
+  // Objects with different constructors are not equivalent, but `Object`s
+  // from different frames are.
+  var aCtor = a.constructor, bCtor = b.constructor;
+  if (aCtor !== bCtor && !(typeof aCtor === 'function' && (aCtor instanceof aCtor) &&
+    typeof bCtor === 'function' && (bCtor instanceof bCtor))) {
+    return false;
+  }
+  // Add the first object to the stack of traversed objects.
+  aStack.push(a);
+  bStack.push(b);
+  var size = 0, result = true;
+  // Recursively compare objects and arrays.
+  if (className === '[object Array]') {
+    // Compare array lengths to determine if a deep comparison is necessary.
+    size = a.length;
+    result = size === b.length;
+    if (result) {
+      // Deep compare the contents, ignoring non-numeric properties.
+      while (size--) {
+        if (!(result = eq(a[size], b[size], aStack, bStack))) break;
       }
     }
-    // Remove the first object from the stack of traversed objects.
-    aStack.pop();
-    bStack.pop();
-    return result;
-  };
+  } else {
+    // Deep compare objects.
+    for (var key in a) {
+      if (utils.has(a, key)) {
+        // Count the expected number of properties.
+        size++;
+        // Deep compare each member.
+        if (!(result = utils.has(b, key) && eq(a[key], b[key], aStack, bStack))) break;
+      }
+    }
+    // Ensure that both objects contain the same number of properties.
+    if (result) {
+      for (key in b) {
+        if (utils.has(b, key) && !(size--)) break;
+      }
+      result = !size;
+    }
+  }
+  // Remove the first object from the stack of traversed objects.
+  aStack.pop();
+  bStack.pop();
+  return result;
+};

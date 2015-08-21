@@ -6,6 +6,8 @@ export declare module html {
     function addClass(elm: HTMLElement, className: string): void;
     function removeClass(elm: HTMLElement, className: string): void;
     function selectionStart(elm: HTMLInputElement): number;
+    function transitionEnd(elm: Element, fn: (event: TransitionEvent) => void, ctx?: any, duration?: number): void;
+    function animationEnd(elm: Element, fn: (event: AnimationEvent) => void, ctx?: any, duration?: number): void;
 }
 /** @module utils */
 export declare module utils {
@@ -69,4 +71,6 @@ export declare module utils {
     function deferred<T>(fn?: any, ctx?: any, ...args: any[]): Deferred<T> | Promise<T>;
     function callback<T>(promise: Promise<T>, callback: (error: Error, result: T) => void, ctx?: any): void;
     function delay<T>(timeout: any): Promise<T>;
+    function eachAsync<T>(array: T[], iterator: (value: T) => Promise<void>, context?: any, accumulate?: boolean): Promise<void>;
+    function mapAsync<T, U>(array: T[], iterator: (value: T) => Promise<U>, context?: any, accumulate?: boolean): Promise<U[]>;
 }
