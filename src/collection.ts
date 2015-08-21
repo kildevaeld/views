@@ -324,5 +324,16 @@ export class Collection<U extends IModel> extends BaseObject implements ICollect
     
     utils.call(this.trigger, this, utils.slice(arguments))
   }
+  
+  destroy () {
+    
+    this.models.forEach( m => {
+      if (typeof (<any>m).destroy === 'function' &&
+         m.collection == this) (<any>m).destroy();
+    });
+    
+    super.destroy();
+    
+  }
 
 }

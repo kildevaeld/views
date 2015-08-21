@@ -27,6 +27,7 @@ export declare module utils {
     function bind(method: Function, context: any, ...args: any[]): Function;
     function call(fn: Function, ctx: any, args?: any[]): any;
     function slice(array: any): any;
+    function flatten(arr: any): any;
     function equal(a: any, b: any): boolean;
     function triggerMethodOn(obj: any, eventName: string, args?: any[]): void;
     function getOption(option: string, objs: any[]): any;

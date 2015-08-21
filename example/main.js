@@ -1,6 +1,7 @@
 /* global views */
 'use strict';
-
+views.debug(false)
+console.log(views)
 let Collection = views.Collection.extend({
 	comparator: 'title'
 })

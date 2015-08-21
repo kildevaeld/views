@@ -1,8 +1,11 @@
 
 import * as base from './baseview'
 import {utils} from './utils'
+import {logger} from './debug'
 
 const kUIRegExp = /@ui.([a-zA-Z_\-\$#]+)/i
+const debug = logger('view');
+
 
 export function normalizeUIKeys (obj:any, uimap:{[key:string]:string}): any {
   /*jshint -W030 */
@@ -37,7 +40,7 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
   private _options: ViewOptions
 
   delegateEvents (events?:any) {
-
+    
     this._bindUIElements()
 
     events = events || this.events;
@@ -46,7 +49,7 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
     let triggers = this._configureTriggers()
 
     events = utils.extend({}, events, triggers)
-
+    debug('%s delegate events %j', this.cid, events);
     super.delegateEvents(events)
 
     return this
@@ -65,6 +68,7 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
 
   undelegateEvents (): any {
     this._unbindUIElements()
+    debug('%s undelegate events', this.cid);
     super.undelegateEvents()
     return this
   }
@@ -85,7 +89,7 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
     ui = utils.result(this, '_ui');
 
     this.ui = {};
-
+    
     Object.keys(ui).forEach( (k) => {
       let elm: any = this.$(ui[k]);
       if (elm && elm.length) {
@@ -93,7 +97,10 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
         if (elm instanceof NodeList) {
           elm = elm[0]
         }
+        debug('added ui element %s %s',k,ui[k]);
         this.ui[k] = elm;
+      } else {
+        console.warn('view ',this.cid,': ui element not found ',k,ui[k]);
       }
     });
 
@@ -128,6 +135,7 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
     let events = {}, val, key;
     for (key in triggers) {
       val = triggers[key];
+      debug('added trigger %s %s',key, val)
       events[key] = this._buildViewTrigger(val);
     }
 

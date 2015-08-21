@@ -58,21 +58,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 	}
 	/// <reference path="../typings/es6-promise/es6-promise.d.ts" />
-	__export(__webpack_require__(1));
-	__export(__webpack_require__(6));
-	__export(__webpack_require__(5));
-	__export(__webpack_require__(4));
 	__export(__webpack_require__(3));
 	__export(__webpack_require__(2));
 	__export(__webpack_require__(7));
-	__export(__webpack_require__(8));
-	__export(__webpack_require__(9));
+	__export(__webpack_require__(6));
+	__export(__webpack_require__(5));
+	__export(__webpack_require__(4));
 	__export(__webpack_require__(10));
+	__export(__webpack_require__(9));
+	__export(__webpack_require__(1));
 	__export(__webpack_require__(11));
 	__export(__webpack_require__(12));
 	__export(__webpack_require__(13));
 	__export(__webpack_require__(14));
 	__export(__webpack_require__(15));
+	__export(__webpack_require__(16));
+	__export(__webpack_require__(8));
 
 
 /***/ },
@@ -85,9 +86,149 @@ return /******/ (function(modules) { // webpackBootstrap
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var base = __webpack_require__(2);
-	var utils_1 = __webpack_require__(5);
+	/*global View, RegionManager, Region*/
+	var templateview_1 = __webpack_require__(2);
+	var region_manager_1 = __webpack_require__(9);
+	var utils_1 = __webpack_require__(7);
+	var region_1 = __webpack_require__(10);
+	var LayoutView = (function (_super) {
+	    __extends(LayoutView, _super);
+	    /**
+	     * LayoutView
+	     * @param {Object} options options
+	     * @constructor LayoutView
+	     * @extends TemplateView
+	     */
+	    function LayoutView(options) {
+	        // Set region manager
+	        this._regionManager = new region_manager_1.RegionManager();
+	        utils_1.utils.proxy(this, this._regionManager, ['removeRegion', 'removeRegions']);
+	        this._regions = this.getOption('regions', options || {});
+	        _super.call(this, options);
+	    }
+	    Object.defineProperty(LayoutView.prototype, "regions", {
+	        get: function () {
+	            return this._regionManager.regions;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    LayoutView.prototype.render = function (options) {
+	        this.triggerMethod('before:render');
+	        _super.prototype.render.call(this, { silent: true });
+	        this.addRegion(this._regions || {});
+	        this.triggerMethod('render');
+	        return this;
+	    };
+	    /**
+	     * Add one or more regions to the view
+	     * @param {string|RegionMap} name
+	     * @param {Object|string|HTMLElement} def
+	     */
+	    LayoutView.prototype.addRegion = function (name, def) {
+	        var regions = {};
+	        if (typeof name === 'string') {
+	            if (def == null)
+	                throw new Error('add region');
+	            regions[name] = def;
+	        }
+	        else {
+	            regions = name;
+	        }
+	        for (var k in regions) {
+	            var region = region_1.Region.buildRegion(regions[k], this.el);
+	            this._regionManager.addRegion(k, region);
+	        }
+	    };
+	    /**
+	     * Delete one or more regions from the the layoutview
+	     * @param {string|Array<string>} name
+	     */
+	    LayoutView.prototype.removeRegion = function (name) {
+	        this._regionManager.removeRegion(name);
+	    };
+	    LayoutView.prototype.destroy = function () {
+	        _super.prototype.destroy.call(this);
+	        this._regionManager.destroy();
+	    };
+	    return LayoutView;
+	})(templateview_1.TemplateView);
+	exports.LayoutView = LayoutView;
+
+
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    __.prototype = b.prototype;
+	    d.prototype = new __();
+	};
+	var views = __webpack_require__(3);
+	var debug_1 = __webpack_require__(8);
+	var debug = debug_1.logger('templateview');
+	var TemplateView = (function (_super) {
+	    __extends(TemplateView, _super);
+	    /** TemplateView
+	     * @param {TemplateViewOptions} options
+	     * @extends View
+	     */
+	    function TemplateView(options) {
+	        if (options && options.template) {
+	            this.template = options.template;
+	        }
+	        _super.call(this, options);
+	    }
+	    TemplateView.prototype.getTemplateData = function () {
+	        return {};
+	    };
+	    TemplateView.prototype.render = function (options) {
+	        if (options === void 0) { options = {}; }
+	        if (!options.silent)
+	            this.triggerMethod('before:render');
+	        this.renderTemplate(this.getTemplateData());
+	        if (!options.silent)
+	            this.triggerMethod('render');
+	        return this;
+	    };
+	    TemplateView.prototype.renderTemplate = function (data) {
+	        var template = this.getOption('template');
+	        if (typeof template === 'function') {
+	            debug('%s render template function', this.cid);
+	            template = template.call(this, data);
+	        }
+	        if (template && typeof template === 'string') {
+	            debug('%s attach template: %s', this.cid, template);
+	            this.attachTemplate(template);
+	        }
+	    };
+	    TemplateView.prototype.attachTemplate = function (template) {
+	        this.undelegateEvents();
+	        this.el.innerHTML = template;
+	        this.delegateEvents();
+	    };
+	    return TemplateView;
+	})(views.View);
+	exports.TemplateView = TemplateView;
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    __.prototype = b.prototype;
+	    d.prototype = new __();
+	};
+	var base = __webpack_require__(4);
+	var utils_1 = __webpack_require__(7);
+	var debug_1 = __webpack_require__(8);
 	var kUIRegExp = /@ui.([a-zA-Z_\-\$#]+)/i;
+	var debug = debug_1.logger('view');
 	function normalizeUIKeys(obj, uimap) {
 	    /*jshint -W030 */
 	    var o = {}, k, v, ms, sel, ui;
@@ -121,11 +262,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        events = normalizeUIKeys(events, this._ui);
 	        var triggers = this._configureTriggers();
 	        events = utils_1.utils.extend({}, events, triggers);
+	        debug('%s delegate events %j', this.cid, events);
 	        _super.prototype.delegateEvents.call(this, events);
 	        return this;
 	    };
 	    View.prototype.undelegateEvents = function () {
 	        this._unbindUIElements();
+	        debug('%s undelegate events', this.cid);
 	        _super.prototype.undelegateEvents.call(this);
 	        return this;
 	    };
@@ -150,7 +293,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                if (elm instanceof NodeList) {
 	                    elm = elm[0];
 	                }
+	                debug('added ui element %s %s', k, ui[k]);
 	                _this.ui[k] = elm;
+	            }
+	            else {
+	                console.warn('view ', _this.cid, ': ui element not found ', k, ui[k]);
 	            }
 	        });
 	    };
@@ -177,6 +324,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var events = {}, val, key;
 	        for (key in triggers) {
 	            val = triggers[key];
+	            debug('added trigger %s %s', key, val);
 	            events[key] = this._buildViewTrigger(val);
 	        }
 	        return events;
@@ -216,7 +364,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 2 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -225,8 +373,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var object_1 = __webpack_require__(3);
-	var utils_1 = __webpack_require__(5);
+	var object_1 = __webpack_require__(5);
+	var utils_1 = __webpack_require__(7);
+	var debug_1 = __webpack_require__(8);
+	var debug = debug_1.logger('baseview');
 	var paddedLt = /^\s*</;
 	var unbubblebles = 'focus blur change'.split(' ');
 	var viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events'];
@@ -324,6 +474,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        };
 	        /*jshint bitwise: false*/
 	        var useCap = !!~unbubblebles.indexOf(eventName) && selector != null;
+	        debug('%s delegate event %s ', this.cid, eventName);
 	        utils_1.html.addEventListener(this.el, eventName, handler, useCap);
 	        this._domEvents.push({ eventName: eventName, handler: handler, listener: listener, selector: selector });
 	        return handler;
@@ -418,6 +569,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                attrs.id = utils_1.utils.result(this, 'id');
 	            if (this.className)
 	                attrs['class'] = utils_1.utils.result(this, 'className');
+	            debug('%s created element: %s', this.cid, utils_1.utils.result(this, 'tagName') || 'div');
 	            this.setElement(this._createElement(utils_1.utils.result(this, 'tagName') || 'div'));
 	            this._setAttributes(attrs);
 	        }
@@ -456,7 +608,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 3 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -465,8 +617,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var events_1 = __webpack_require__(4);
-	var utils_1 = __webpack_require__(5);
+	var events_1 = __webpack_require__(6);
+	var utils_1 = __webpack_require__(7);
+	var debug_1 = __webpack_require__(8);
+	var debug = debug_1.logger('object');
 	/** Base object */
 	var BaseObject = (function (_super) {
 	    __extends(BaseObject, _super);
@@ -500,6 +654,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.off();
 	        this._isDestroyed = true;
 	        this.triggerMethod('destroy');
+	        debug("%s destroy", this);
 	        if (typeof Object.freeze) {
 	            Object.freeze(this);
 	        }
@@ -534,7 +689,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 4 */
+/* 6 */
 /***/ function(module, exports) {
 
 	var idCounter = 0;
@@ -646,7 +801,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 5 */
+/* 7 */
 /***/ function(module, exports) {
 
 	var ElementProto = (typeof Element !== 'undefined' && Element.prototype) || {};
@@ -885,6 +1040,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return Array.prototype.slice.call(array);
 	    }
 	    utils.slice = slice;
+	    function flatten(arr) {
+	        return arr.reduce(function (flat, toFlatten) {
+	            return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+	        }, []);
+	    }
+	    utils.flatten = flatten;
 	    function equal(a, b) {
 	        return eq(a, b, [], []);
 	    }
@@ -1167,212 +1328,76 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    __.prototype = b.prototype;
-	    d.prototype = new __();
-	};
-	var views = __webpack_require__(1);
-	var TemplateView = (function (_super) {
-	    __extends(TemplateView, _super);
-	    /** TemplateView
-	     * @param {TemplateViewOptions} options
-	     * @extends View
-	     */
-	    function TemplateView(options) {
-	        if (options && options.template) {
-	            this.template = options.template;
-	        }
-	        _super.call(this, options);
-	    }
-	    TemplateView.prototype.getTemplateData = function () {
-	        return {};
-	    };
-	    TemplateView.prototype.render = function (options) {
-	        if (options === void 0) { options = {}; }
-	        if (!options.silent)
-	            this.triggerMethod('before:render');
-	        this.renderTemplate(this.getTemplateData());
-	        if (!options.silent)
-	            this.triggerMethod('render');
-	        return this;
-	    };
-	    TemplateView.prototype.renderTemplate = function (data) {
-	        var template = this.getOption('template');
-	        if (typeof template === 'function') {
-	            template = template.call(this, data);
-	        }
-	        if (template && typeof template === 'string') {
-	            this.attachTemplate(template);
-	        }
-	    };
-	    TemplateView.prototype.attachTemplate = function (template) {
-	        this.undelegateEvents();
-	        this.el.innerHTML = template;
-	        this.delegateEvents();
-	    };
-	    return TemplateView;
-	})(views.View);
-	exports.TemplateView = TemplateView;
-
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* global BaseClass */
-	/* jshint latedef:nofunc */
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    __.prototype = b.prototype;
-	    d.prototype = new __();
-	};
-	var object_1 = __webpack_require__(3);
-	var utils_1 = __webpack_require__(5);
-	/** Region  */
-	var Region = (function (_super) {
-	    __extends(Region, _super);
-	    /**
-	     * Regions manage a view
-	     * @param {Object} options
-	     * @param {HTMLElement} options.el  A Html element
-	     * @constructor Region
-	     * @extends BaseObject
-	     * @inheritdoc
-	     */
-	    function Region(options) {
-	        this.options = options;
-	        this._el = this.getOption('el');
-	        _super.call(this);
-	    }
-	    Object.defineProperty(Region.prototype, "view", {
-	        get: function () {
-	            return this._view;
-	        },
-	        set: function (view) {
-	            this.show(view);
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(Region.prototype, "el", {
-	        get: function () {
-	            return this._el;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    /**
-	     * Build region from a definition
-	     * @param {Object|String|Region} def The description of the region
-	     * @return {Region}
-	     */
-	    Region.buildRegion = function (def, context) {
-	        if (context === void 0) { context = null; }
-	        if (def instanceof Region) {
-	            return def;
-	        }
-	        else if (typeof def === 'string') {
-	            return buildBySelector(def, Region, context);
-	        }
-	        else {
-	            return buildByObject(def, context);
-	        }
-	    };
-	    /**
-	   * Show a view in the region.
-	   * This will destroy or remove any existing views.
-	   * @param  {View} view    The view to Show
-	   * @return {Region}       this for chaining.
-	   */
-	    Region.prototype.show = function (view, options) {
-	        var diff = view !== this._view;
-	        if (diff) {
-	            // Remove any containing views
-	            this.empty();
-	            // If the view is destroyed be others
-	            view.once('destroy', this.empty, this);
-	            view.once('render', function () {
-	                utils_1.utils.triggerMethodOn(view, 'show');
-	            });
-	            view.render();
-	            utils_1.utils.triggerMethodOn(view, 'before:show');
-	            this._attachHtml(view);
-	            this._view = view;
-	        }
-	        return this;
-	    };
-	    /**
-	     * Destroy the region, this will remove any views, but not the containing element
-	     * @return {Region} this for chaining
-	     */
-	    Region.prototype.destroy = function () {
-	        this.empty();
-	        _super.prototype.destroy.call(this);
-	    };
-	    /**
-	     * Empty the region. This will destroy any existing view.
-	     * @return {Region} this for chaining;
-	     */
-	    Region.prototype.empty = function () {
-	        if (!this._view)
-	            return;
-	        var view = this._view;
-	        view.off('destroy', this.empty, this);
-	        this.trigger('before:empty', view);
-	        this._destroyView();
-	        this.trigger('empty', view);
-	        delete this._view;
-	        return this;
-	    };
-	    /**
-	     * Attach the view element to the regions element
-	     * @param {View} view
-	     * @private
-	     *
-	     */
-	    Region.prototype._attachHtml = function (view) {
-	        this._el.innerHTML = '';
-	        this._el.appendChild(view.el);
-	    };
-	    Region.prototype._destroyView = function () {
-	        var view = this._view;
-	        if ((view.destroy && typeof view.destroy === 'function') && !view.isDestroyed) {
-	            view.destroy();
-	        }
-	        else if (view.remove && typeof view.remove === 'function') {
-	            view.remove();
-	        }
-	        this._el.innerHTML = '';
-	    };
-	    return Region;
-	})(object_1.BaseObject);
-	exports.Region = Region;
-	function buildByObject(object, context) {
-	    if (object === void 0) { object = {}; }
-	    if (!object.selector)
-	        throw new Error('No selector specified: ' + object);
-	    return buildBySelector(object.selector, object.regionClass || Region, context);
-	}
-	function buildBySelector(selector, Klass, context) {
-	    if (Klass === void 0) { Klass = Region; }
-	    context = context || document;
-	    var el = context.querySelector(selector);
-	    if (!el)
-	        throw new Error('selector must exist in the dom');
-	    return new Klass({
-	        el: el
-	    });
-	}
-
-
-/***/ },
 /* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var utils_1 = __webpack_require__(7);
+	function _log() {
+	    // this hackery is required for IE8/9, where
+	    // the `console.log` function doesn't have 'apply'
+	    return 'object' === typeof console
+	        && console.log
+	        && Function.prototype.apply.call(console.log, console, arguments);
+	}
+	var _debug = false;
+	function debug(should) {
+	    _debug = should;
+	}
+	exports.debug = debug;
+	var formatters = {
+	    j: function (v) {
+	        return JSON.stringify(v);
+	    }
+	};
+	function coerce(val) {
+	    if (val instanceof Error)
+	        return val.stack || val.message;
+	    return val;
+	}
+	function logger(namespace) {
+	    return function () {
+	        var args = [];
+	        for (var _i = 0; _i < arguments.length; _i++) {
+	            args[_i - 0] = arguments[_i];
+	        }
+	        if (!_debug)
+	            return;
+	        args[0] = coerce(args[0]);
+	        if ('string' !== typeof args[0]) {
+	            // anything else let's inspect with %o
+	            args = ['%o'].concat(args);
+	        }
+	        // apply any `formatters` transformations
+	        var index = 0;
+	        args[0] = args[0].replace(/%([a-z%])/g, function (match, format) {
+	            // if we encounter an escaped % then don't increase the array index
+	            if (match === '%%')
+	                return match;
+	            index++;
+	            var formatter = formatters[format];
+	            if ('function' === typeof formatter) {
+	                var val = args[index];
+	                match = formatter.call(self, val);
+	                // now we need to remove `args[index]` since it's inlined in the `format`
+	                args.splice(index, 1);
+	                index--;
+	            }
+	            return match;
+	        });
+	        args = formatArgs(namespace, args);
+	        utils_1.utils.call(_log, null, args);
+	    };
+	}
+	exports.logger = logger;
+	function formatArgs(namespace, args) {
+	    //var args = arguments;
+	    args[0] = '[views:' + namespace + '] ' + args[0];
+	    return args;
+	}
+
+
+/***/ },
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* global BaseClass, __has */
@@ -1382,9 +1407,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var object_1 = __webpack_require__(3);
-	var region_1 = __webpack_require__(7);
-	var utils_1 = __webpack_require__(5);
+	var object_1 = __webpack_require__(5);
+	var region_1 = __webpack_require__(10);
+	var utils_1 = __webpack_require__(7);
 	var RegionManager = (function (_super) {
 	    __extends(RegionManager, _super);
 	    /** Region manager
@@ -1478,87 +1503,156 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/* global BaseClass */
+	/* jshint latedef:nofunc */
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
 	    function __() { this.constructor = d; }
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	/*global View, RegionManager, Region*/
-	var templateview_1 = __webpack_require__(6);
-	var region_manager_1 = __webpack_require__(8);
-	var utils_1 = __webpack_require__(5);
-	var region_1 = __webpack_require__(7);
-	var LayoutView = (function (_super) {
-	    __extends(LayoutView, _super);
+	var object_1 = __webpack_require__(5);
+	var utils_1 = __webpack_require__(7);
+	/** Region  */
+	var Region = (function (_super) {
+	    __extends(Region, _super);
 	    /**
-	     * LayoutView
-	     * @param {Object} options options
-	     * @constructor LayoutView
-	     * @extends TemplateView
+	     * Regions manage a view
+	     * @param {Object} options
+	     * @param {HTMLElement} options.el  A Html element
+	     * @constructor Region
+	     * @extends BaseObject
+	     * @inheritdoc
 	     */
-	    function LayoutView(options) {
-	        // Set region manager
-	        this._regionManager = new region_manager_1.RegionManager();
-	        utils_1.utils.proxy(this, this._regionManager, ['removeRegion', 'removeRegions']);
-	        this._regions = this.getOption('regions', options || {});
-	        _super.call(this, options);
+	    function Region(options) {
+	        this.options = options;
+	        this._el = this.getOption('el');
+	        _super.call(this);
 	    }
-	    Object.defineProperty(LayoutView.prototype, "regions", {
+	    Object.defineProperty(Region.prototype, "view", {
 	        get: function () {
-	            return this._regionManager.regions;
+	            return this._view;
+	        },
+	        set: function (view) {
+	            this.show(view);
 	        },
 	        enumerable: true,
 	        configurable: true
 	    });
-	    LayoutView.prototype.render = function (options) {
-	        this.triggerMethod('before:render');
-	        _super.prototype.render.call(this, { silent: true });
-	        this.addRegion(this._regions || {});
-	        this.triggerMethod('render');
+	    Object.defineProperty(Region.prototype, "el", {
+	        get: function () {
+	            return this._el;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    /**
+	     * Build region from a definition
+	     * @param {Object|String|Region} def The description of the region
+	     * @return {Region}
+	     */
+	    Region.buildRegion = function (def, context) {
+	        if (context === void 0) { context = null; }
+	        if (def instanceof Region) {
+	            return def;
+	        }
+	        else if (typeof def === 'string') {
+	            return buildBySelector(def, Region, context);
+	        }
+	        else {
+	            return buildByObject(def, context);
+	        }
+	    };
+	    /**
+	   * Show a view in the region.
+	   * This will destroy or remove any existing views.
+	   * @param  {View} view    The view to Show
+	   * @return {Region}       this for chaining.
+	   */
+	    Region.prototype.show = function (view, options) {
+	        var diff = view !== this._view;
+	        if (diff) {
+	            // Remove any containing views
+	            this.empty();
+	            // If the view is destroyed be others
+	            view.once('destroy', this.empty, this);
+	            view.render();
+	            utils_1.utils.triggerMethodOn(view, 'before:show');
+	            this._attachHtml(view);
+	            utils_1.utils.triggerMethodOn(view, 'show');
+	            this._view = view;
+	        }
 	        return this;
 	    };
 	    /**
-	     * Add one or more regions to the view
-	     * @param {string|RegionMap} name
-	     * @param {Object|string|HTMLElement} def
+	     * Destroy the region, this will remove any views, but not the containing element
+	     * @return {Region} this for chaining
 	     */
-	    LayoutView.prototype.addRegion = function (name, def) {
-	        var regions = {};
-	        if (typeof name === 'string') {
-	            if (def == null)
-	                throw new Error('add region');
-	            regions[name] = def;
-	        }
-	        else {
-	            regions = name;
-	        }
-	        for (var k in regions) {
-	            var region = region_1.Region.buildRegion(regions[k], this.el);
-	            this._regionManager.addRegion(k, region);
-	        }
+	    Region.prototype.destroy = function () {
+	        this.empty();
+	        _super.prototype.destroy.call(this);
 	    };
 	    /**
-	     * Delete one or more regions from the the layoutview
-	     * @param {string|Array<string>} name
+	     * Empty the region. This will destroy any existing view.
+	     * @return {Region} this for chaining;
 	     */
-	    LayoutView.prototype.removeRegion = function (name) {
-	        this._regionManager.removeRegion(name);
+	    Region.prototype.empty = function () {
+	        if (!this._view)
+	            return;
+	        var view = this._view;
+	        view.off('destroy', this.empty, this);
+	        this.trigger('before:empty', view);
+	        this._destroyView();
+	        this.trigger('empty', view);
+	        delete this._view;
+	        return this;
 	    };
-	    LayoutView.prototype.destroy = function () {
-	        _super.prototype.destroy.call(this);
-	        this._regionManager.destroy();
+	    /**
+	     * Attach the view element to the regions element
+	     * @param {View} view
+	     * @private
+	     *
+	     */
+	    Region.prototype._attachHtml = function (view) {
+	        this._el.innerHTML = '';
+	        this._el.appendChild(view.el);
 	    };
-	    return LayoutView;
-	})(templateview_1.TemplateView);
-	exports.LayoutView = LayoutView;
+	    Region.prototype._destroyView = function () {
+	        var view = this._view;
+	        if ((view.destroy && typeof view.destroy === 'function') && !view.isDestroyed) {
+	            view.destroy();
+	        }
+	        else if (view.remove && typeof view.remove === 'function') {
+	            view.remove();
+	        }
+	        this._el.innerHTML = '';
+	    };
+	    return Region;
+	})(object_1.BaseObject);
+	exports.Region = Region;
+	function buildByObject(object, context) {
+	    if (object === void 0) { object = {}; }
+	    if (!object.selector)
+	        throw new Error('No selector specified: ' + object);
+	    return buildBySelector(object.selector, object.regionClass || Region, context);
+	}
+	function buildBySelector(selector, Klass, context) {
+	    if (Klass === void 0) { Klass = Region; }
+	    context = context || document;
+	    var el = context.querySelector(selector);
+	    if (!el)
+	        throw new Error('selector must exist in the dom');
+	    return new Klass({
+	        el: el
+	    });
+	}
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -1567,8 +1661,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var templateview_1 = __webpack_require__(6);
-	var utils_1 = __webpack_require__(5);
+	var templateview_1 = __webpack_require__(2);
+	var utils_1 = __webpack_require__(7);
 	var DataView = (function (_super) {
 	    __extends(DataView, _super);
 	    /**
@@ -1693,7 +1787,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -1702,9 +1796,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var data_view_1 = __webpack_require__(10);
-	var utils_1 = __webpack_require__(5);
-	var events_1 = __webpack_require__(4);
+	var data_view_1 = __webpack_require__(11);
+	var utils_1 = __webpack_require__(7);
+	var events_1 = __webpack_require__(6);
+	var debug_1 = __webpack_require__(8);
+	var debug = debug_1.logger('collectionview');
 	var Buffer = (function () {
 	    function Buffer() {
 	        this.children = [];
@@ -1776,6 +1872,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    CollectionView.prototype.renderChildView = function (view, index) {
 	        this.triggerMethod('before:render:child', view);
+	        debug('%s render child: %s', this.cid, view.cid);
 	        view.render();
 	        this._attachHTML(view, index);
 	        this.triggerMethod('render:child', view);
@@ -1841,6 +1938,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    CollectionView.prototype._appendChild = function (view, index) {
 	        this._updateIndexes(view, true, index);
 	        this._proxyChildViewEvents(view);
+	        debug('%s append child %s at index: %s', this.cid, view.cid, index);
 	        this.children.push(view);
 	        this.hideEmptyView();
 	        this.renderChildView(view, index);
@@ -1855,6 +1953,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 	    CollectionView.prototype._attachHTML = function (view, index) {
 	        if (this._buffer) {
+	            debug("%s attach to buffer: %s", this.cid, view.cid);
 	            this._buffer.append(view);
 	        }
 	        else {
@@ -1997,7 +2096,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -2006,8 +2105,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var utils_1 = __webpack_require__(5);
-	var object_1 = __webpack_require__(3);
+	var utils_1 = __webpack_require__(7);
+	var object_1 = __webpack_require__(5);
 	var Model = (function (_super) {
 	    __extends(Model, _super);
 	    function Model(attributes, options) {
@@ -2160,7 +2259,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -2169,9 +2268,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    __.prototype = b.prototype;
 	    d.prototype = new __();
 	};
-	var object_1 = __webpack_require__(3);
-	var utils_1 = __webpack_require__(5);
-	var model_1 = __webpack_require__(12);
+	var object_1 = __webpack_require__(5);
+	var utils_1 = __webpack_require__(7);
+	var model_1 = __webpack_require__(13);
 	var setOptions = { add: true, remove: true, merge: true };
 	var addOptions = { add: true, remove: false };
 	var Collection = (function (_super) {
@@ -2445,23 +2544,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.remove(model, options);
 	        utils_1.utils.call(this.trigger, this, utils_1.utils.slice(arguments));
 	    };
+	    Collection.prototype.destroy = function () {
+	        var _this = this;
+	        this.models.forEach(function (m) {
+	            if (typeof m.destroy === 'function' &&
+	                m.collection == _this)
+	                m.destroy();
+	        });
+	        _super.prototype.destroy.call(this);
+	    };
 	    return Collection;
 	})(object_1.BaseObject);
 	exports.Collection = Collection;
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var utils_1 = __webpack_require__(5);
+	var utils_1 = __webpack_require__(7);
 	function attributes(attrs) {
 	    return function (target) {
 	        utils_1.utils.extend(target.prototype, attrs);

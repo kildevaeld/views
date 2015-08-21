@@ -14,3 +14,4 @@ export * from './model';
 export * from './collection';
 export * from './types';
 export * from './annotations';
+export * from './debug';

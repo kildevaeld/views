@@ -226,6 +226,11 @@ export module utils {
     return Array.prototype.slice.call(array)
   }
 
+  export function flatten(arr) {
+    return arr.reduce(function (flat, toFlatten) {
+      return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+    }, []);
+  }
 
 
   export function equal (a: any, b: any): boolean {
@@ -373,6 +378,7 @@ export module utils {
     reject: (error:Error) => void
     done: (error:Error, result:T) => void
   }
+  
   export function deferred<T>(fn?, ctx?, ...args: any[]): Deferred<T>|Promise<T> {
     let ret: any = {};
     ret.promise = new Promise(function(resolve, reject) {
@@ -404,7 +410,7 @@ export module utils {
     return defer.promise;
   };
 
-
+  
 }
 
 

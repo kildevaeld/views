@@ -2,6 +2,11 @@ import {DataView,DataViewOptions} from './data-view'
 import {IDataView, IModel,ICollection} from './types'
 import {utils,extend} from './utils'
 import {EventEmitter} from './events'
+import {logger} from './debug'
+
+const debug = logger('collectionview')
+
+
 export interface CollectionViewOptions extends DataViewOptions {
 	childView?: IDataView
 	childViewContainer?: string
@@ -85,6 +90,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 	renderCollection () {
 		this.destroyChildren()
 		if (this.collection.length != 0) {
+      
 			this.hideEmptyView()
 			this._startBuffering()
 			this._renderCollection()
@@ -113,7 +119,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 
 	renderChildView(view, index) {
 		this.triggerMethod('before:render:child', view);
-
+    debug('%s render child: %s',this.cid, view.cid);
     view.render();
 
     this._attachHTML(view, index);
@@ -197,13 +203,13 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 		this._updateIndexes(view, true, index);
     
     this._proxyChildViewEvents(view);
-
+    debug('%s append child %s at index: %s', this.cid, (<any>view).cid, index)
     this.children.push(view);
 
     this.hideEmptyView();
 
     this.renderChildView(view, index);
-
+    
     this.triggerMethod('add:child', view);
 	}
 
@@ -216,6 +222,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
    */
 	private _attachHTML (view:IDataView, index: number) {
 		if (this._buffer) {
+      debug("%s attach to buffer: %s", this.cid, (<any>view).cid)
       this._buffer.append(view)
     } else {
       //if (this._isShown) {

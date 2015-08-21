@@ -1,6 +1,8 @@
 
 import * as views from './view'
 import {Silenceable} from './types'
+import {logger} from './debug'
+const debug = logger('templateview')
 
 export interface TemplateFunction {
   (locals:Object): string
@@ -51,10 +53,12 @@ export class TemplateView<T extends HTMLElement> extends views.View<T> {
     let template = this.getOption('template')
     
     if (typeof template === 'function') {
+      debug('%s render template function', this.cid);
       template = template.call(this, data)
     } 
     
     if (template && typeof template === 'string') {
+        debug('%s attach template: %s', this.cid, template);
        this.attachTemplate(template)
     }
     

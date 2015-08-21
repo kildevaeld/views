@@ -74,16 +74,14 @@ export class Region extends BaseObject {
       // If the view is destroyed be others
       view.once('destroy', this.empty, this);
 
-      view.once('render', () => {
-        utils.triggerMethodOn(view, 'show');
-      });
-
       view.render();
 
       utils.triggerMethodOn(view, 'before:show');
 
       this._attachHtml(view);
 
+      utils.triggerMethodOn(view, 'show');
+      
       this._view = view;
 
     }

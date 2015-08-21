@@ -56,4 +56,5 @@ export declare class Collection<U extends IModel> extends BaseObject implements 
     private _addReference(model, options?);
     private _reset();
     private _onModelEvent(event, model, collection, options);
+    destroy(): void;
 }

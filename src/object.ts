@@ -1,6 +1,8 @@
 import {EventEmitter} from './events'
 import {utils, extend} from './utils';
+import {logger} from './debug';
 
+const debug = logger('object');
 /** Base object */
 export class BaseObject extends EventEmitter {
 
@@ -39,6 +41,7 @@ export class BaseObject extends EventEmitter {
 
     this.triggerMethod('destroy')
 
+    debug("%s destroy", this);
     if (typeof Object.freeze) {
       Object.freeze(this)
     }

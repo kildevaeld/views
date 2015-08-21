@@ -1,7 +1,9 @@
 import {BaseObject} from './object';
 import {html, utils} from './utils'
 import * as events from './events'
+import {logger} from './debug'
 
+const debug = logger('baseview');
 const paddedLt = /^\s*</;
 const unbubblebles = 'focus blur change'.split(' ');
 
@@ -145,7 +147,7 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
     };
     /*jshint bitwise: false*/
     let useCap = !!~unbubblebles.indexOf(eventName) && selector != null;
-
+    debug('%s delegate event %s ',this.cid, eventName);
     html.addEventListener(this.el, eventName, handler, useCap);
     this._domEvents.push({eventName: eventName, handler: handler, listener: listener, selector: selector});
     return handler;
@@ -249,6 +251,7 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
         var attrs = utils.extend({}, utils.result(this, 'attributes'));
         if (this.id) attrs.id = utils.result(this, 'id');
         if (this.className) attrs['class'] = utils.result(this, 'className');
+        debug('%s created element: %s', this.cid, utils.result(this, 'tagName')||'div');
         this.setElement(this._createElement(utils.result(this, 'tagName')||'div'));
         this._setAttributes(attrs);
       } else {
