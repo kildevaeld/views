@@ -1,3 +1,4 @@
+import * as types from './types'
 
 var ElementProto: any = (typeof Element !== 'undefined' && Element.prototype) || {};
 
@@ -153,11 +154,11 @@ const noop = function() { }
 let idCounter = 0
 
 
-
 /** @module utils */
 export module utils {
 
-
+  export const Promise: types.PromiseConstructor = (<any>window).Promise;
+  
   export function camelcase(input) {
 	   return input.toLowerCase().replace(/-(.)/g, function(match, group1) {
 		    return group1.toUpperCase();
@@ -237,7 +238,7 @@ export module utils {
     });
   }
 
-  export function bind(method: Function, context: any, ...args: any[]): Function {
+  export function bind<T extends Function>(method: T, context: any, ...args: any[]): T {
     if (typeof method !== 'function') throw new Error('method not at function')
 
     if (nativeBind != null) return nativeBind.call(method, context, ...args)
@@ -254,7 +255,7 @@ export module utils {
     fnoop.prototype = this.prototype
     fBound.prototype = new fnoop()
 
-    return fBound
+    return <any>fBound
   }
 
   export function call(fn: Function, ctx: any, args: any[] = []): any {
@@ -498,7 +499,7 @@ export module utils {
           return errors.length ? reject(flatten(errors)) : resolve(results);
 
         iterator(array[i++]).then(function(r) { 
-          results.push(r);next(null, r); }, next);
+          results.push(r); next(null, r); }, next);
       }
 
       next(null);

@@ -1,3 +1,4 @@
+import * as types from './types';
 export declare function extend(protoProps: Object, staticProps?: Object): any;
 export declare module html {
     function matches(elm: any, selector: any): boolean;
@@ -11,6 +12,7 @@ export declare module html {
 }
 /** @module utils */
 export declare module utils {
+    const Promise: types.PromiseConstructor;
     function camelcase(input: any): any;
     /** Generate an unique id with an optional prefix
      * @param {string} prefix
@@ -26,7 +28,7 @@ export declare module utils {
     function values<T>(obj: Object): T[];
     function find<T>(array: T[], callback: (item: T, index?: number) => boolean, ctx?: any): T;
     function proxy(from: any, to: any, fns: any): void;
-    function bind(method: Function, context: any, ...args: any[]): Function;
+    function bind<T extends Function>(method: T, context: any, ...args: any[]): T;
     function call(fn: Function, ctx: any, args?: any[]): any;
     function slice(array: any): any;
     function flatten(arr: any): any;
@@ -43,7 +45,7 @@ export declare module utils {
      * @return {Promise}
      * @api private
      */
-    function thunkToPromise(fn: any): Promise<{}>;
+    function thunkToPromise(fn: any): types.Promise<{}>;
     /**
      * Convert an array of "yieldables" to a promise.
      * Uses `Promise.all()` internally.
@@ -52,7 +54,7 @@ export declare module utils {
      * @return {Promise}
      * @api private
      */
-    function arrayToPromise(obj: any): Promise<{}[]>;
+    function arrayToPromise(obj: any): types.Promise<{}[]>;
     /**
      * Convert an object of "yieldables" to a promise.
      * Uses `Promise.all()` internally.
@@ -61,7 +63,7 @@ export declare module utils {
      * @return {Promise}
      * @api private
      */
-    function objectToPromise(obj: any): Promise<any>;
+    function objectToPromise(obj: any): types.Promise<any>;
     interface Deferred<T> {
         promise: Promise<T>;
         resolve: (result: T) => void;

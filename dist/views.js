@@ -947,6 +947,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/** @module utils */
 	var utils;
 	(function (utils) {
+	    utils.Promise = window.Promise;
 	    function camelcase(input) {
 	        return input.toLowerCase().replace(/-(.)/g, function (match, group1) {
 	            return group1.toUpperCase();
@@ -1164,7 +1165,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (isObject(obj)) {
 	            return objectToPromise.call(this, obj);
 	        }
-	        return Promise.resolve(obj);
+	        return utils.Promise.resolve(obj);
 	    }
 	    utils.toPromise = toPromise;
 	    /**
@@ -1177,7 +1178,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function thunkToPromise(fn) {
 	        /* jshint validthis:true */
 	        var ctx = this;
-	        return new Promise(function (resolve, reject) {
+	        return new utils.Promise(function (resolve, reject) {
 	            fn.call(ctx, function (err, res) {
 	                if (err)
 	                    return reject(err);
@@ -1198,7 +1199,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    function arrayToPromise(obj) {
 	        /* jshint validthis:true */
-	        return Promise.all(obj.map(toPromise, this));
+	        return utils.Promise.all(obj.map(toPromise, this));
 	    }
 	    utils.arrayToPromise = arrayToPromise;
 	    /**
@@ -1222,7 +1223,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            else
 	                results[key] = obj[key];
 	        }
-	        return Promise.all(promises).then(function () {
+	        return utils.Promise.all(promises).then(function () {
 	            return results;
 	        });
 	        function defer(promise, key) {
@@ -1240,7 +1241,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            args[_i - 2] = arguments[_i];
 	        }
 	        var ret = {};
-	        ret.promise = new Promise(function (resolve, reject) {
+	        ret.promise = new utils.Promise(function (resolve, reject) {
 	            ret.resolve = resolve;
 	            ret.reject = reject;
 	            ret.done = function (err, result) { if (err)
@@ -1294,7 +1295,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    utils.eachAsync = eachAsync;
 	    function mapAsync(array, iterator, context, accumulate) {
 	        if (accumulate === void 0) { accumulate = false; }
-	        return new Promise(function (resolve, reject) {
+	        return new utils.Promise(function (resolve, reject) {
 	            var i = 0, len = array.length, errors = [], results = [];
 	            function next(err, result) {
 	                if (err && !accumulate)

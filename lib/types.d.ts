@@ -27,6 +27,13 @@ export interface Thenable<R> {
     then<U>(onFulfilled?: (value: R) => U | Thenable<U>, onRejected?: (error: any) => U | Thenable<U>): Thenable<U>;
     then<U>(onFulfilled?: (value: R) => U | Thenable<U>, onRejected?: (error: any) => void): Thenable<U>;
 }
+export interface PromiseConstructor {
+    new <R>(callback: (resolve: (value?: R | Thenable<R>) => void, reject: (error?: any) => void) => void): Promise<R>;
+    resolve<R>(value?: R | Thenable<R>): Promise<R>;
+    reject(error: any): Promise<any>;
+    all<R>(promises: (R | Thenable<R>)[]): Promise<R[]>;
+    race<R>(promises: (R | Thenable<R>)[]): Promise<R>;
+}
 export interface Promise<R> extends Thenable<R> {
     /**
      * If you call resolve in the body of the callback passed to the constructor,
