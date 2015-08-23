@@ -158,7 +158,7 @@ let idCounter = 0
 export module utils {
 
   export const Promise: types.PromiseConstructor = (<any>window).Promise;
-  
+
   export function camelcase(input) {
 	   return input.toLowerCase().replace(/-(.)/g, function(match, group1) {
 		    return group1.toUpperCase();
@@ -486,7 +486,7 @@ export module utils {
     .then(function () { return void 0; })
 
   }
-  
+
   export function mapAsync<T, U>(array: T[], iterator: (value: T) => Promise<U>, context?: any, accumulate = false): Promise<U[]> {
 
     return new Promise<U[]>(function(resolve, reject) {
@@ -498,8 +498,15 @@ export module utils {
         if (i === len)
           return errors.length ? reject(flatten(errors)) : resolve(results);
 
-        iterator(array[i++]).then(function(r) { 
-          results.push(r); next(null, r); }, next);
+        let ret = iterator.call(context, array[i++]);
+
+        if (isPromise(ret)) {
+          ret.then(function (r) { results.push(r); next(null, r); }, next);
+        } else if (ret instanceof Error) {
+          next(ret);
+        } else {
+          next(null);
+        }
       }
 
       next(null);
