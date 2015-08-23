@@ -6,7 +6,7 @@ export interface IModel extends IEventEmitter {
     uid: string;
     id?: string;
     get(key: string): any;
-    set(key: string, value: any): any;
+    set(key: string | Object, value?: any): any;
     toJSON?: () => any;
     hasChanged(attr?: any): boolean;
 }

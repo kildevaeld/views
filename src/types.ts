@@ -7,14 +7,14 @@ export interface IModel extends IEventEmitter {
 	uid: string
 	id?:string
 	get(key: string)
-	set(key: string, value: any): any
+	set(key: string|Object, value?: any): any
 	toJSON?: () => any
 	hasChanged (attr?): boolean
 }
 
 export interface ICollection extends IEventEmitter {
 	length: number
-	indexOf: (item:IModel) => number 
+	indexOf: (item:IModel) => number
 	forEach(fn:(item:IModel, index?:number) => any)
 	push(item:IModel): any
 }
