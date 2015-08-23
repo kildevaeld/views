@@ -56,7 +56,7 @@ const animationEndEvent = (function animationEnd() {
   return null // explicit for ie8 (  ._.)
 })();
 
-export function extend(protoProps: Object, staticProps?: Object): any {
+export function extend<T>(protoProps: Object, staticProps?: Object): T {
   var parent = this;
   var child;
 

@@ -18,7 +18,7 @@ export declare class Model extends BaseObject implements IModel {
     private _pending;
     id: any;
     constructor(attributes?: Object, options?: ModelOptions);
-    set(key: string | Object, val: any, options?: ModelSetOpions): Model;
+    set(key: string | Object, val?: any, options?: ModelSetOpions): Model;
     get(key: any): any;
     unset(key: any, options: ModelSetOpions): void;
     has(attr: any): boolean;

@@ -43,7 +43,7 @@ export class Model extends BaseObject implements IModel {
 
   }
 
-  set (key:string|Object, val:any, options:ModelSetOpions={}) {
+  set (key:string|Object, val?:any, options:ModelSetOpions={}) {
     var attr, attrs:any = {}, unset, changes, silent, changing, prev, current;
     if (key == null) return this;
 

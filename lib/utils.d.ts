@@ -1,5 +1,5 @@
 import * as types from './types';
-export declare function extend(protoProps: Object, staticProps?: Object): any;
+export declare function extend<T>(protoProps: Object, staticProps?: Object): T;
 export declare module html {
     function matches(elm: any, selector: any): boolean;
     function addEventListener(elm: Element, eventName: string, listener: any, useCap?: boolean): void;
