@@ -90,7 +90,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 	renderCollection () {
 		this.destroyChildren()
 		if (this.collection.length != 0) {
-      
+
 			this.hideEmptyView()
 			this._startBuffering()
 			this._renderCollection()
@@ -201,7 +201,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
    */
 	private _appendChild (view: IDataView, index: number) {
 		this._updateIndexes(view, true, index);
-    
+
     this._proxyChildViewEvents(view);
     debug('%s append child %s at index: %s', this.cid, (<any>view).cid, index)
     this.children.push(view);
@@ -209,7 +209,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
     this.hideEmptyView();
 
     this.renderChildView(view, index);
-    
+
     this.triggerMethod('add:child', view);
 	}
 
@@ -260,9 +260,9 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 	private _updateIndexes (view:IDataView, increment:boolean, index?:number) {
     if (!this.sort)
       return;
-      
-    if (increment) (<any>view)._index = index;  
-    
+
+    if (increment) (<any>view)._index = index;
+
 		this.children.forEach(function(lView) {
 			if ((<any>lView)._index >= (<any>view)._index) {
 				increment ? (<any>lView)._index++ : (<any>lView)._index--;
@@ -311,7 +311,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 				return (<any>view)._index === index + 1;
 			})
     }
-    
+
     if (currentView) {
       this._container.insertBefore(childView.el, currentView.el);
       return true;
@@ -354,7 +354,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
   private _onCollectionAdd (model) {
     let view = this.getChildView(model)
     let index = this.collection.indexOf(model);
-    
+
     this._appendChild(view, index)
   }
 
@@ -382,7 +382,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
       });
       return !view || (<any>view)._index !== index;
     });
-    
+
     if (orderChanged)
       this.render()
 	}

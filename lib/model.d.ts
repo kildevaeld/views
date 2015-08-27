@@ -3,7 +3,7 @@ import { ICollection, IModel } from './types';
 export interface ModelOptions {
     collection?: ICollection;
 }
-export interface ModelSetOpions {
+export interface ModelSetOptions {
     unset?: boolean;
     silent?: boolean;
 }
@@ -18,9 +18,9 @@ export declare class Model extends BaseObject implements IModel {
     private _pending;
     id: any;
     constructor(attributes?: Object, options?: ModelOptions);
-    set(key: string | Object, val?: any, options?: ModelSetOpions): Model;
+    set(key: string | Object, val?: any, options?: ModelSetOptions): Model;
     get(key: any): any;
-    unset(key: any, options: ModelSetOpions): void;
+    unset(key: any, options: ModelSetOptions): void;
     has(attr: any): boolean;
     hasChanged(attr?: any): boolean;
     clear(options?: any): Model;

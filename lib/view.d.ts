@@ -17,13 +17,13 @@ export declare class View<T extends HTMLElement> extends base.BaseView<T> {
     };
     private _ui;
     private _options;
-    delegateEvents(events?: any): View<T>;
     /**
      * View
      * @param {ViewOptions} options
      * @extends BaseView
      */
     constructor(options?: ViewOptions);
+    delegateEvents(events?: any): View<T>;
     undelegateEvents(): any;
     /**
      * Bind ui elements

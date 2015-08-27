@@ -26,10 +26,10 @@ function coerce(val) {
 }
 
 export function logger (namespace:string) {
-	return function (...args:any[]) {
-    
+	let fn = function (...args:any[]) {
+
     if (!_debug) return;
- 
+
 
     args[0] = coerce(args[0]);
 
@@ -55,16 +55,18 @@ export function logger (namespace:string) {
       }
       return match;
     });
-    
-    args = formatArgs(namespace, args); 
-   
+
+    args = formatArgs(namespace, args);
+
     utils.call(_log,null, args);
 	}
-} 
+
+  return fn;
+}
 
 function formatArgs (namespace:string, args:any[]) {
   //var args = arguments;
-  
+
   args[0] = '[views:' + namespace + '] ' + args[0]
 
   return args;

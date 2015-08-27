@@ -35,7 +35,7 @@ const transitionEndEvent = (function transitionEnd() {
   }
 
   return null // explicit for ie8 (  ._.)
-})();
+});
 
 const animationEndEvent = (function animationEnd() {
   var el = document.createElement('bootstrap')
@@ -54,7 +54,7 @@ const animationEndEvent = (function animationEnd() {
   }
 
   return null // explicit for ie8 (  ._.)
-})();
+});
 
 export function extend<T>(protoProps: Object, staticProps?: Object): T {
   var parent = this;
@@ -132,20 +132,27 @@ export module html {
     }
   }
 
+  var _events = {
+    animationEnd: null,
+    transitionEnd: null
+  };
+
   export function transitionEnd(elm: Element, fn: (event: TransitionEvent) => void, ctx?: any, duration?: number) {
+    var event = _events.transitionEnd || (_events.transitionEnd = transitionEndEvent());
     var callback = function(e) {
-      removeEventListener(elm, transitionEndEvent, callback);
+      removeEventListener(elm, event, callback);
       fn.call(ctx, e);
     };
-    addEventListener(elm, transitionEndEvent, callback);
+    addEventListener(elm, event, callback);
   }
 
   export function animationEnd(elm: Element, fn: (event: AnimationEvent) => void, ctx?: any, duration?: number) {
+    var event = _events.animationEnd || (_events.animationEnd = animationEndEvent());
     var callback = function(e) {
-      removeEventListener(elm, animationEndEvent, callback);
+      removeEventListener(elm, event, callback);
       fn.call(ctx, e);
     };
-    addEventListener(elm, animationEndEvent, callback);
+    addEventListener(elm, event, callback);
   }
 }
 
@@ -156,8 +163,8 @@ let idCounter = 0
 
 /** @module utils */
 export module utils {
-
-  export const Promise: types.PromiseConstructor = (<any>window).Promise;
+  
+  export const Promise: types.PromiseConstructor = (<any>global).Promise;
 
   export function camelcase(input) {
 	   return input.toLowerCase().replace(/-(.)/g, function(match, group1) {

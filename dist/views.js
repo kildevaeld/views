@@ -804,7 +804,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 7 */
 /***/ function(module, exports) {
 
-	var ElementProto = (typeof Element !== 'undefined' && Element.prototype) || {};
+	/* WEBPACK VAR INJECTION */(function(global) {var ElementProto = (typeof Element !== 'undefined' && Element.prototype) || {};
 	var matchesSelector = ElementProto.matches ||
 	    ElementProto.webkitMatchesSelector ||
 	    ElementProto.mozMatchesSelector ||
@@ -833,7 +833,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 	    return null; // explicit for ie8 (  ._.)
-	})();
+	});
 	var animationEndEvent = (function animationEnd() {
 	    var el = document.createElement('bootstrap');
 	    var transEndEventNames = {
@@ -848,7 +848,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 	    return null; // explicit for ie8 (  ._.)
-	})();
+	});
 	function extend(protoProps, staticProps) {
 	    var parent = this;
 	    var child;
@@ -924,20 +924,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 	    html.selectionStart = selectionStart;
+	    var _events = {
+	        animationEnd: null,
+	        transitionEnd: null
+	    };
 	    function transitionEnd(elm, fn, ctx, duration) {
+	        var event = _events.transitionEnd || (_events.transitionEnd = transitionEndEvent());
 	        var callback = function (e) {
-	            removeEventListener(elm, transitionEndEvent, callback);
+	            removeEventListener(elm, event, callback);
 	            fn.call(ctx, e);
 	        };
-	        addEventListener(elm, transitionEndEvent, callback);
+	        addEventListener(elm, event, callback);
 	    }
 	    html.transitionEnd = transitionEnd;
 	    function animationEnd(elm, fn, ctx, duration) {
+	        var event = _events.animationEnd || (_events.animationEnd = animationEndEvent());
 	        var callback = function (e) {
-	            removeEventListener(elm, animationEndEvent, callback);
+	            removeEventListener(elm, event, callback);
 	            fn.call(ctx, e);
 	        };
-	        addEventListener(elm, animationEndEvent, callback);
+	        addEventListener(elm, event, callback);
 	    }
 	    html.animationEnd = animationEnd;
 	})(html = exports.html || (exports.html = {}));
@@ -947,7 +953,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/** @module utils */
 	var utils;
 	(function (utils) {
-	    utils.Promise = window.Promise;
+	    utils.Promise = global.Promise;
 	    function camelcase(input) {
 	        return input.toLowerCase().replace(/-(.)/g, function (match, group1) {
 	            return group1.toUpperCase();
@@ -1419,7 +1425,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return result;
 	}
 	;
-
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
 /* 8 */
@@ -1449,7 +1456,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return val;
 	}
 	function logger(namespace) {
-	    return function () {
+	    var fn = function () {
 	        var args = [];
 	        for (var _i = 0; _i < arguments.length; _i++) {
 	            args[_i - 0] = arguments[_i];
@@ -1481,6 +1488,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        args = formatArgs(namespace, args);
 	        utils_1.utils.call(_log, null, args);
 	    };
+	    return fn;
 	}
 	exports.logger = logger;
 	function formatArgs(namespace, args) {

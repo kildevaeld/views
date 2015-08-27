@@ -114,7 +114,7 @@ export class Model extends BaseObject implements IModel {
     return this._attributes[key];
   }
 
-  unset (key, options: ModelSetOpions) {
+  unset (key, options: ModelSetOptions) {
     this.set(key, void 0, utils.extend({}, options, {unset: true}));
   }
 
@@ -170,9 +170,9 @@ export class Model extends BaseObject implements IModel {
   toJSON () {
     return JSON.parse(JSON.stringify(this._attributes));
   }
-  
+
   clone (): IModel {
-    return new ((<any>this).constructor)(this._attributes); 
+    return new ((<any>this).constructor)(this._attributes);
   }
 
 }

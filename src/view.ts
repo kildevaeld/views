@@ -39,6 +39,17 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
   private _ui: {[key:string]: string}
   private _options: ViewOptions
 
+  /**
+   * View
+   * @param {ViewOptions} options
+   * @extends BaseView
+   */
+  constructor (options?: ViewOptions) {
+    this._options = options
+    super(options)
+  }
+
+
   delegateEvents (events?:any) {
     
     this._bindUIElements()
@@ -54,16 +65,6 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
 
     return this
 
-  }
-
-  /**
-   * View
-   * @param {ViewOptions} options
-   * @extends BaseView
-   */
-  constructor (options?: ViewOptions) {
-    this._options = options
-    super(options)
   }
 
   undelegateEvents (): any {
@@ -165,7 +166,6 @@ export class View<T extends HTMLElement> extends base.BaseView<T> {
         if (e.preventDefault && options.preventDefault) {
           e.preventDefault();
         }
-
         if (e.stopPropagation && options.stopPropagation) {
           e.stopPropagation();
         }
