@@ -1,5 +1,6 @@
 import {DataView,DataViewOptions} from './data-view'
 import {IDataView, IModel,ICollection} from './types'
+import {IView} from './baseview'
 import {utils,extend} from './utils'
 import {EventEmitter} from './events'
 import {logger} from './debug'
@@ -9,6 +10,7 @@ const debug = logger('collectionview')
 
 export interface CollectionViewOptions extends DataViewOptions {
 	childView?: IDataView
+  emptyView?: IView
 	childViewContainer?: string
   childViewOptions?: DataViewOptions
   sort?:boolean
@@ -26,6 +28,8 @@ class Buffer {
 export class CollectionView<T extends HTMLElement> extends DataView<T> {
 
 	public childView: IDataView
+  public emptyView: IView
+  private _emptyView: IView
 
 	private _container: HTMLElement
 	private _buffer: Buffer
@@ -128,10 +132,24 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 	}
 
 	showEmptyView () {
+    let EmptyView = this.getOption('emptyView');
+
+    if (EmptyView == null) return
+
+    let view = new EmptyView();
+
+    this._emptyView = view
+
+    this._container.appendChild(view.render().el);
 
 	}
 
 	hideEmptyView () {
+    if (!this._emptyView) return
+
+    this._emptyView.destroy();
+    this._emptyView.remove();
+    this._emptyView = void 0
 
 	}
 

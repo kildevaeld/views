@@ -1980,8 +1980,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.triggerMethod('render:child', view);
 	    };
 	    CollectionView.prototype.showEmptyView = function () {
+	        var EmptyView = this.getOption('emptyView');
+	        if (EmptyView == null)
+	            return;
+	        var view = new EmptyView();
+	        this._emptyView = view;
+	        this._container.appendChild(view.render().el);
 	    };
 	    CollectionView.prototype.hideEmptyView = function () {
+	        if (!this._emptyView)
+	            return;
+	        this._emptyView.destroy();
+	        this._emptyView.remove();
+	        this._emptyView = void 0;
 	    };
 	    CollectionView.prototype.destroyChildren = function () {
 	        if (this._container) {

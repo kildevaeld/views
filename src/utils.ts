@@ -163,7 +163,7 @@ let idCounter = 0
 
 /** @module utils */
 export module utils {
-  
+
   export const Promise: types.PromiseConstructor = (<any>global).Promise;
 
   export function camelcase(input) {

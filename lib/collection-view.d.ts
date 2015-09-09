@@ -1,13 +1,17 @@
 import { DataView, DataViewOptions } from './data-view';
 import { IDataView, IModel } from './types';
+import { IView } from './baseview';
 export interface CollectionViewOptions extends DataViewOptions {
     childView?: IDataView;
+    emptyView?: IView;
     childViewContainer?: string;
     childViewOptions?: DataViewOptions;
     sort?: boolean;
 }
 export declare class CollectionView<T extends HTMLElement> extends DataView<T> {
     childView: IDataView;
+    emptyView: IView;
+    private _emptyView;
     private _container;
     private _buffer;
     /** Child views associated with the view
