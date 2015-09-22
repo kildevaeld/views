@@ -1,8 +1,7 @@
 
 import * as base from './baseview'
-import {utils} from './utils'
 import {logger} from './debug'
-
+import * as utils from 'utilities';
 const kUIRegExp = /@ui.([a-zA-Z_\-\$#]+)/i
 const debug = logger('view');
 

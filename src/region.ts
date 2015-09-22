@@ -3,7 +3,7 @@
 
 import {BaseObject} from './object'
 import {IView} from './baseview'
-import {utils} from './utils'
+import {triggerMethodOn} from 'utilities'
 
 export interface RegionOptions {
   el: HTMLElement
@@ -76,11 +76,11 @@ export class Region extends BaseObject {
 
       view.render();
 
-      utils.triggerMethodOn(view, 'before:show');
+      triggerMethodOn(view, 'before:show');
 
       this._attachHtml(view);
 
-      utils.triggerMethodOn(view, 'show');
+      triggerMethodOn(view, 'show');
       
       this._view = view;
 

@@ -1,5 +1,6 @@
 import { TemplateView, TemplateViewOptions } from './templateview';
-import { IModel, ICollection, IDataView } from './types';
+import { IModel, ICollection } from 'collection';
+import { IDataView } from 'types';
 export interface DataViewOptions extends TemplateViewOptions {
     model?: IModel;
     collection?: ICollection;

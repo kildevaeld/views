@@ -1,8 +1,10 @@
 import {DataView,DataViewOptions} from './data-view'
-import {IDataView, IModel,ICollection} from './types'
+import {IModel,ICollection} from 'collection'
 import {IView} from './baseview'
-import {utils,extend} from './utils'
-import {EventEmitter} from './events'
+import {IDataView} from './types'
+import {extend, slice, callFunc, find} from 'utilities'
+import {EventEmitter} from 'eventsjs'
+
 import {logger} from './debug'
 
 const debug = logger('collectionview')
@@ -115,7 +117,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 		let View = this.getOption('childView') || DataView,
       options = this.getOption('childViewOptions') || {};
 
-    return new View(utils.extend({
+    return new View(extend({
       model: model
     }, options));
 
@@ -265,12 +267,12 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
     let prefix = this.getOption('prefix') || 'childview';
 
     this.listenTo(view, 'all', function() {
-      let args = utils.slice(arguments);
+      let args = slice(arguments);
 
       args[0] = prefix + ':' + args[0];
       args.splice(1, 0, view);
 
-      utils.call(this.triggerMethod, this, args);
+      callFunc(this.triggerMethod, this, args);
     });
 
   }
@@ -325,7 +327,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
     let findPosition = this.sort && (index < this.children.length - 1);
     if (findPosition) {
       // Find the view after this one
-      currentView = utils.find(this.children, (view) => {
+      currentView = find(this.children, (view) => {
 				return (<any>view)._index === index + 1;
 			})
     }
@@ -382,7 +384,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
    * @private
    */
   private _onCollectionRemove (model) {
-    let view = utils.find(this.children, function(view) {
+    let view = find(this.children, function(view) {
       return view.model === model;
     });
 
@@ -395,7 +397,7 @@ export class CollectionView<T extends HTMLElement> extends DataView<T> {
 	 */
 	private _onCollectionSort () {
     let orderChanged = (<any>this.collection).find((model, index) => {
-      let view = utils.find(this.children, function (view) {
+      let view = find(this.children, function (view) {
         return view.model === model;
       });
       return !view || (<any>view)._index !== index;

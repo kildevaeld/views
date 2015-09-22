@@ -1,8 +1,7 @@
-import { EventEmitter } from './events';
-import { extend } from './utils';
+import { EventEmitter } from 'eventsjs';
 /** Base object */
 export declare class BaseObject extends EventEmitter {
-    static extend: typeof extend;
+    static extend: <T>(proto: any, stat?: any) => T;
     private _isDestroyed;
     /**
      * Object

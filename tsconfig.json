@@ -21,9 +21,7 @@
     "files": [
         "./src/baseview.ts",
         "./src/collection-view.ts",
-        "./src/collection.ts",
-        "./src/data-view.ts",
-        "./src/events.ts",
+        "./src/data-view.ts", 
         "./src/index.ts",
         "./src/layout-view.ts",
         "./src/model.ts",
@@ -32,7 +30,6 @@
         "./src/region.ts",
         "./src/templateview.ts",
         "./src/types.ts",
-        "./src/utils.ts",
         "./src/view.ts"
     ]
 }

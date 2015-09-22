@@ -1,7 +1,6 @@
 'use strict';
 
-const Model = require('../lib/model').Model,
-  BaseObject = require('../lib/object').BaseObject;
+const Model = require('collection').Model;
 
 describe('Model', function () {
 
@@ -10,8 +9,7 @@ describe('Model', function () {
     it('should instantiate', function () {
       let model = new Model();
       expect(model).not.toBe(null);
-      expect(model).toEqual(jasmine.any(BaseObject));
-
+      
     });
 
     it('should instantiate with values', function () {

@@ -1,4 +1,4 @@
-import {utils} from './utils';
+import {callFunc} from 'utilities';
 
 function _log () {
 	// this hackery is required for IE8/9, where
@@ -58,7 +58,7 @@ export function logger (namespace:string) {
 
     args = formatArgs(namespace, args);
 
-    utils.call(_log,null, args);
+    callFunc(_log,null, args);
 	}
 
   return fn;

@@ -2,7 +2,7 @@
 
 import {BaseObject} from './object'
 import {Region} from './region'
-import {utils} from './utils'
+import * as utils from 'utilities'
 
 export type RegionMap = {[key: string]: Region}
 
@@ -83,7 +83,7 @@ export class RegionManager extends BaseObject {
    * Remove all regions from the manager
    */
   removeRegions () {
-    utils.call(this.removeRegion, this, Object.keys(this._regions))
+    utils.callFunc(this.removeRegion, this, Object.keys(this._regions))
   }
 
   /**

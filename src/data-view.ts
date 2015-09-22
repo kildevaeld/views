@@ -1,7 +1,9 @@
 import {TemplateView, TemplateViewOptions} from './templateview'
-import {IModel, ICollection, IDataView} from './types'
+import {IModel, ICollection, } from 'collection'
+import {IDataView} from 'types'
 import {normalizeUIKeys} from './view'
-import {utils} from './utils'
+import {extend, bind} from 'utilities'
+
 
 export interface DataViewOptions extends TemplateViewOptions {
   model?: IModel
@@ -107,7 +109,7 @@ export class DataView<T extends HTMLElement> extends TemplateView<T> implements 
       let out = {}, k, f;
 
       for (k in ev) {
-        f = utils.bind(ev[k], this);
+        f = bind(ev[k], this);
         this[item].on(k,f);
         out[item+":"+k] = f;
       }
@@ -115,7 +117,7 @@ export class DataView<T extends HTMLElement> extends TemplateView<T> implements 
       return out;
     };
 
-    utils.extend(this._dataEvents,
+    extend(this._dataEvents,
       fn('model',model),
       fn('collection',collection));
 

@@ -1,12 +1,16 @@
-import {EventEmitter} from './events'
-import {utils, extend} from './utils';
+/// <reference path="typings" />
+
+import {EventEmitter} from 'eventsjs'
+import {inherits, callFunc, slice, triggerMethodOn, getOption} from 'utilities';
 import {logger} from './debug';
 
 const debug = logger('object');
 /** Base object */
 export class BaseObject extends EventEmitter {
 
-  static extend = extend
+  static extend = function <T>(proto:any,stat?:any): T {
+    return inherits(this, proto, stat);
+  } 
 
   private _isDestroyed: boolean = false
   /**
@@ -17,7 +21,7 @@ export class BaseObject extends EventEmitter {
     super()
 
     if (typeof (<any>this).initialize === 'function') {
-      utils.call((<any>this).initialize, this, utils.slice(arguments))
+      callFunc((<any>this).initialize, this, slice(arguments))
     }
 
   }
@@ -50,7 +54,7 @@ export class BaseObject extends EventEmitter {
   }
 
   triggerMethod (eventName: string, ...args: any[]): any {
-    utils.triggerMethodOn(this, eventName, args)
+    triggerMethodOn(this, eventName, args)
     return this
   }
 
@@ -66,6 +70,6 @@ export class BaseObject extends EventEmitter {
 
     args.push(this)
 
-    return utils.getOption(prop, args)
+    return getOption(prop, args)
   }
 }

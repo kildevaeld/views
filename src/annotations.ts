@@ -1,9 +1,9 @@
-import {utils} from './utils'
+import {extend} from 'utilities'
 import {RegionMap} from './region-manager'
 
 export function attributes(attrs:Object): ClassDecorator {
 	return function <T extends Function>(target:T) {
-		utils.extend(target.prototype, attrs)
+		extend(target.prototype, attrs)
 	}
 }
 export function events(events:{[key:string]: string|Function}): ClassDecorator {

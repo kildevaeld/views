@@ -1,6 +1,7 @@
 import { DataView, DataViewOptions } from './data-view';
-import { IDataView, IModel } from './types';
+import { IModel } from 'collection';
 import { IView } from './baseview';
+import { IDataView } from './types';
 export interface CollectionViewOptions extends DataViewOptions {
     childView?: IDataView;
     emptyView?: IView;

@@ -1,5 +1,5 @@
 import { BaseObject } from './object';
-import * as events from './events';
+import { IEventEmitter } from 'eventsjs';
 export declare type EventsMap = {
     [key: string]: Function | string;
 };
@@ -10,7 +10,7 @@ export interface Destroyable {
     destroy(): any;
     isDestroyed: boolean;
 }
-export interface IView extends events.IEventEmitter, Destroyable {
+export interface IView extends IEventEmitter, Destroyable {
     el: HTMLElement;
     render(options?: any): any;
     remove(): any;

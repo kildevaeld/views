@@ -1,7 +1,9 @@
+/// <reference path="typings" />
+
 import {BaseObject} from './object';
-import {html, utils} from './utils'
-import * as events from './events'
-import {logger} from './debug'
+import * as utils from 'utilities';
+import {EventEmitter, IEventEmitter} from 'eventsjs';
+import {logger} from './debug';
 
 const debug = logger('baseview');
 const paddedLt = /^\s*</;
@@ -15,7 +17,7 @@ export interface Destroyable {
   isDestroyed: boolean
 }
 
-export interface IView extends events.IEventEmitter, Destroyable {
+export interface IView extends IEventEmitter, Destroyable {
   el: HTMLElement
   render(options?:any)
   remove()
@@ -114,7 +116,7 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
     if (this.el) {
       for (var i = 0, len = this._domEvents.length; i < len; i++) {
         var item = this._domEvents[i];
-        html.removeEventListener(this.el, item.eventName, item.handler);
+        utils.removeEventListener(this.el, item.eventName, item.handler);
       }
       this._domEvents.length = 0;
     }
@@ -135,7 +137,7 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
       if (e.delegateTarget) return;
 
       for (; node && node != root; node = node.parentNode) {
-        if (html.matches(node, selector)) {
+        if (utils.matches(node, selector)) {
 
           e.delegateTarget = node;
           listener(e);
@@ -148,7 +150,7 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
     /*jshint bitwise: false*/
     let useCap = !!~unbubblebles.indexOf(eventName) && selector != null;
     debug('%s delegate event %s ',this.cid, eventName);
-    html.addEventListener(this.el, eventName, handler, useCap);
+    utils.addEventListener(this.el, eventName, handler, useCap);
     this._domEvents.push({eventName: eventName, handler: handler, listener: listener, selector: selector});
     return handler;
   }
@@ -170,7 +172,7 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
 
         if (!match) continue;
 
-        html.removeEventListener(this.el, item.eventName, item.handler);
+        utils.removeEventListener(this.el, item.eventName, item.handler);
         this._domEvents.splice(utils.indexOf(handlers, item), 1);
       }
     }
