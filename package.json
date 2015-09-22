@@ -35,5 +35,8 @@
   },
   "typescript": {
     "definition": "views.d.ts"
+  },
+  "typings": {
+    "views": "views.d.ts"
   }
 }
