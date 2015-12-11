@@ -31,5 +31,5 @@ export declare class EventEmitter implements IEventEmitter {
     trigger(eventName: string, ...args: any[]): any;
     listenTo(obj: IEventEmitter, event: string, fn: EventHandler, ctx?: any, once?: boolean): any;
     listenToOnce(obj: IEventEmitter, event: string, fn: EventHandler, ctx?: any): any;
-    stopListening(obj?: IEventEmitter, event?: string, callback?: EventHandler): EventEmitter;
+    stopListening(obj?: IEventEmitter, event?: string, callback?: EventHandler): this;
 }

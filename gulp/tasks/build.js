@@ -3,7 +3,7 @@
 const gulp = require('gulp'),
 			$ = require('gulp-load-plugins')(),
       merge = require('merge2');
-			
+
 
 gulp.task('build', function () {
 
@@ -20,7 +20,8 @@ gulp.task('build', function () {
     "noLib": false,
     "preserveConstEnums": true,
     "suppressImplicitAnyIndexErrors": true,
-    declarationFiles: true
+    declarationFiles: true,
+    typescript: require('typescript')
   }));
 
   let js = result.js
@@ -48,7 +49,3 @@ gulp.task('build:bower', ['build'], function () {
   .pipe(gulp.dest('./dist'));
 });
 
-gulp.task('definition', ['build', 'build:bower'], function () {
-  return gulp.src('./templates/views.d.ts')
-  .pipe(gulp.dest('./'));
-});

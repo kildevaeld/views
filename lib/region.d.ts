@@ -31,7 +31,7 @@ export declare class Region extends BaseObject {
    * @param  {View} view    The view to Show
    * @return {Region}       this for chaining.
    */
-    show(view: IView, options?: any): Region;
+    show(view: IView, options?: any): this;
     /**
      * Destroy the region, this will remove any views, but not the containing element
      * @return {Region} this for chaining
@@ -41,7 +41,7 @@ export declare class Region extends BaseObject {
      * Empty the region. This will destroy any existing view.
      * @return {Region} this for chaining;
      */
-    empty(): Region;
+    empty(): this;
     /**
      * Attach the view element to the regions element
      * @param {View} view

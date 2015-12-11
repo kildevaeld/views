@@ -48,9 +48,9 @@ export declare class BaseView<T extends HTMLElement> extends BaseObject implemen
     /**
      * Undelegate events
      */
-    undelegateEvents(): BaseView<T>;
+    undelegateEvents(): this;
     delegate(eventName: string, selector?: string | Function, listener?: Function): (e: any) => void;
-    undelegate(eventName: string, selector?: string | Function, listener?: Function): BaseView<T>;
+    undelegate(eventName: string, selector?: string | Function, listener?: Function): this;
     render(options: any): any;
     /**
      * Append the view to a HTMLElement
@@ -71,7 +71,7 @@ export declare class BaseView<T extends HTMLElement> extends BaseObject implemen
      */
     $(selector: string | HTMLElement): NodeList | HTMLElement;
     setElement(elm: T): void;
-    remove(): BaseView<T>;
+    remove(): this;
     private _createElement(tagName);
     private _ensureElement();
     private _removeElement();

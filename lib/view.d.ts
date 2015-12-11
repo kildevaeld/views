@@ -23,7 +23,7 @@ export declare class View<T extends HTMLElement> extends base.BaseView<T> {
      * @extends BaseView
      */
     constructor(options?: ViewOptions);
-    delegateEvents(events?: any): View<T>;
+    delegateEvents(events?: any): this;
     undelegateEvents(): any;
     /**
      * Bind ui elements

@@ -1,12 +1,12 @@
 {
   "name": "views",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
     "test": "$SHELL run_tests.sh"
   },
-  "author":"Rasmus Kildevæld <rasmuskildevaeld@gmail.com>",
+  "author": "Rasmus Kildevæld <rasmuskildevaeld@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^5.8.21",
@@ -29,15 +29,12 @@
     "merge2": "^0.3.6",
     "requiredir": "^1.0.7",
     "ts-loader": "^0.4.7",
-    "typescript": "^1.5.3",
+    "typescript": "^1.8.0-dev.20151211",
     "typescript-loader": "^1.1.3",
     "webpack": "^1.10.5"
   },
-  "typescript": {
-    "definition": "views.d.ts"
-  },
   "typings": {
-    "views": "views.d.ts"
+    "views": "lib/index.d.ts"
   },
   "dependencies": {
     "eventsjs": "git+https://github.com/kildevaeld/eventsjs.git",

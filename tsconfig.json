@@ -1,5 +1,4 @@
 {
-    "version": "1.5.3",
     "compilerOptions": {
         "target": "es5",
         "isolatedModules": false,
@@ -21,7 +20,7 @@
     "files": [
         "./src/baseview.ts",
         "./src/collection-view.ts",
-        "./src/data-view.ts", 
+        "./src/data-view.ts",
         "./src/index.ts",
         "./src/layout-view.ts",
         "./src/model.ts",

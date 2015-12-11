@@ -10,7 +10,7 @@ export declare class DataView<T extends HTMLElement> extends TemplateView<T> imp
     private _collection;
     private _dataEvents;
     model: IModel;
-    collection: ICollection;
+    collection: any;
     /**
      * DataView
      * @param {DataViewOptions} options
@@ -21,7 +21,7 @@ export declare class DataView<T extends HTMLElement> extends TemplateView<T> imp
     setCollection(collection: ICollection): void;
     getTemplateData(): any;
     delegateEvents(events?: any): any;
-    undelegateEvents(): DataView<T>;
+    undelegateEvents(): this;
     private _delegateDataEvents(model, collection);
     private _undelegateDataEvents();
     private _filterEvents(obj);

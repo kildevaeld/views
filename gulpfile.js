@@ -48,7 +48,6 @@ gulp.task('docs', function (done) {
 gulp.task('default', [
   'build',
   'build:bower',
-  'definition',
   'test',
   'test:integration',
   //'docs',
