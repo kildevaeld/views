@@ -9,7 +9,7 @@ export interface TemplateFunction {
     (locals: any): string;
 }
 
-export interface RenderOptions extends Silenceable {}
+export interface RenderOptions extends Silenceable { }
 
 export interface ViewOptions {
     model?: IModel;
@@ -19,8 +19,8 @@ export interface ViewOptions {
 
 export class View<T extends HTMLElement> extends BaseView<T> implements IDataView {
 
-    private _model: IModel
-    private _collection: ICollection
+    private _model: IModel;
+    private _collection: ICollection;
     private _dataEvents: any;
 
     public template: string | TemplateFunction;
@@ -65,16 +65,16 @@ export class View<T extends HTMLElement> extends BaseView<T> implements IDataVie
     public setModel(model: IModel) {
         if (this._model === model) return this;
 
-        this.triggerMethod('before:model', this._model, model)
+        this.triggerMethod('before:model', this._model, model);
 
         if (this._model) {
-            this.stopListening(this._model)
+            this.stopListening(this._model);
         }
 
-        this._model = model
+        this._model = model;
 
         this.triggerMethod('model', model);
-        
+
         return this;
     }
 
@@ -90,7 +90,7 @@ export class View<T extends HTMLElement> extends BaseView<T> implements IDataVie
         this._collection = collection;
 
         this.triggerMethod('collection', collection);
-        
+
         return this;
     }
 
@@ -99,23 +99,22 @@ export class View<T extends HTMLElement> extends BaseView<T> implements IDataVie
             typeof this.model.toJSON === 'function' ?
                 this.model.toJSON() : this.model : {};
     }
-    
-    public render (options:RenderOptions={}): any {
-    
-        if (!options.silent) 
-            this.triggerMethod('before:render')
-    
-        this.renderTemplate(this.getTemplateData())
+
+    public render(options: RenderOptions = {}): any {
 
         if (!options.silent)
-            this.triggerMethod('render')
+            this.triggerMethod('before:render');
 
-        return this
+        this.renderTemplate(this.getTemplateData());
+
+        if (!options.silent)
+            this.triggerMethod('render');
+
+        return this;
     }
 
     public delegateEvents(events?: any): any {
         events = events || result(this, 'events');
-        //events = normalizeUIKeys(events)
 
         let {c, e, m} = this._filterEvents(events);
 
@@ -132,40 +131,36 @@ export class View<T extends HTMLElement> extends BaseView<T> implements IDataVie
     }
 
     protected renderTemplate(data: Object) {
-        let template = this.getOption('template')
+        let template = this.getOption('template');
 
         if (typeof template === 'function') {
             debug('%s render template function', this.cid);
-            template = template.call(this, data)
+            template = template.call(this, data);
         }
 
         if (template && typeof template === 'string') {
             debug('%s attach template: %s', this.cid, template);
-            this.attachTemplate(template)
+            this.attachTemplate(template);
         }
 
     }
 
     protected attachTemplate(template: string) {
-        this.undelegateEvents()
-        this.el.innerHTML = template
-        this.delegateEvents()
+        this.undelegateEvents();
+        this.el.innerHTML = template;
+        this.delegateEvents();
     }
 
     private _delegateDataEvents(model: any, collection: any) {
-
         this._dataEvents = {};
         let fn = (item, ev) => {
-
             if (!this[item]) return {};
             let out = {}, k, f;
-
             for (k in ev) {
                 f = bind(ev[k], this);
                 this[item].on(k, f);
                 out[item + ":" + k] = f;
             }
-
             return out;
         };
 
@@ -184,11 +179,9 @@ export class View<T extends HTMLElement> extends BaseView<T> implements IDataVie
             if (!this[item]) continue;
 
             this[item].off(ev, v);
-            //this.stopListening(this[item],ev, v);
         }
-        console.log(this)
-        //this._dataEvents = void 0;
-        //delete this._dataEvents;
+        
+        delete this._dataEvents;
     }
 
     private _filterEvents(obj: any) {

@@ -1,12 +1,8 @@
+const kUIRegExp = /@ui.([a-zA-Z_\-\$#]+)/i;
 
-
-const kUIRegExp = /@ui.([a-zA-Z_\-\$#]+)/i
-
-
-export function normalizeUIKeys (obj:any, uimap:{[key:string]:string}): any {
+export function normalizeUIKeys (obj:any, uimap: { [ key: string ]: string }): any {
   /*jshint -W030 */
     let o = {}, k, v, ms, sel, ui;
-
     for (k in obj) {
       v = obj[k];
       if ((ms = kUIRegExp.exec(k)) !== null) {
@@ -17,6 +13,5 @@ export function normalizeUIKeys (obj:any, uimap:{[key:string]:string}): any {
       }
       o[k] = v;
     }
-
     return o;
 }

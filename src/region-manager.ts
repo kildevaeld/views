@@ -7,14 +7,14 @@ import * as utils from 'utilities'
 export type RegionMap = { [key: string]: Region }
 
 export class RegionManager extends BaseObject {
-    private _regions: RegionMap = {}
+    private _regions: RegionMap = {};
 
     /**
      * Regions
      * @type {string:Region}
      */
     public get regions() {
-        return this._regions
+        return this._regions;
     }
 
     /** Region manager
@@ -30,7 +30,6 @@ export class RegionManager extends BaseObject {
       * @param {Object} regions
       */
     addRegions(regions: RegionMap) {
-
         let def, out = {}, keys = Object.keys(regions);
         keys.forEach(function(k) {
             def = regions[k];
@@ -45,12 +44,9 @@ export class RegionManager extends BaseObject {
      * @param {String|Object|Region|HTMLElement} def The region to associate with the name and the RegionManager
      */
     addRegion(name, def) {
-
         let region = Region.buildRegion(def);
         this._setRegion(name, region);
-
         return region;
-
     }
 
     /**
@@ -58,7 +54,6 @@ export class RegionManager extends BaseObject {
      * @param {...name} name A array of region names
      */
     removeRegion(names: string[] | string) {
-        //let names = utils.slice(arguments)
         if (typeof names === 'string') { names = [<string>names] }
         (<Array<string>>names).forEach(function(name) {
             if (utils.has(this.regions, name)) {
@@ -68,7 +63,6 @@ export class RegionManager extends BaseObject {
 
             }
         }, this);
-
     }
     /**
      * Destroy the regionmanager
@@ -76,14 +70,13 @@ export class RegionManager extends BaseObject {
     destroy() {
         this.removeRegions();
         super.destroy();
-
     }
 
     /**
      * Remove all regions from the manager
      */
     removeRegions() {
-        utils.callFunc(this.removeRegion, this, Object.keys(this._regions))
+        utils.callFunc(this.removeRegion, this, Object.keys(this._regions));
     }
 
     /**
@@ -91,7 +84,7 @@ export class RegionManager extends BaseObject {
      */
     _setRegion(name, region) {
         if (this._regions[name]) {
-            this._regions[name].destroy()
+            this._regions[name].destroy();
         }
         this._regions[name] = region;
     }

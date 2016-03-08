@@ -1,9 +1,9 @@
 /* global BaseClass */
 /* jshint latedef:nofunc */
 
-import {BaseObject} from './object'
-import {IView} from './baseview'
-import {triggerMethodOn} from 'utilities'
+import {BaseObject} from './object';
+import {IView} from './baseview';
+import {triggerMethodOn} from 'utilities';
 
 export interface RegionOptions {
     el: HTMLElement;
@@ -16,15 +16,15 @@ export class Region extends BaseObject {
     public options: RegionOptions;
 
     public get view(): IView {
-        return this._view
+        return this._view;
     }
 
     public set view(view: IView) {
-        this.show(view)
+        this.show(view);
     }
 
     public get el(): HTMLElement {
-        return this._el
+        return this._el;
     }
 
     /**
@@ -52,7 +52,7 @@ export class Region extends BaseObject {
      */
     constructor(options: RegionOptions) {
         super();
-        this.options = options
+        this.options = options;
         this._el = this.getOption('el');
 
     }
@@ -94,7 +94,7 @@ export class Region extends BaseObject {
      */
     destroy() {
         this.empty();
-        super.destroy()
+        super.destroy();
     }
 
     /**
@@ -139,7 +139,7 @@ export class Region extends BaseObject {
             view.remove();
         }
 
-        this._el.innerHTML = ''
+        this._el.innerHTML = '';
 
     }
 }
@@ -152,10 +152,10 @@ function buildByObject(object: any = {}, context?: HTMLElement) {
 }
 
 function buildBySelector(selector: string, Klass: any = Region, context?: HTMLElement) {
-    context = context || <any>document
-    var el = context.querySelector(selector)
+    context = context || <any>document;
+    var el = context.querySelector(selector);
 
-    if (!el) throw new Error('selector must exist in the dom')
+    if (!el) throw new Error('selector must exist in the dom');
 
     return new Klass({
         el: el

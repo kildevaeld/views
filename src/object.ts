@@ -53,22 +53,22 @@ export class BaseObject extends EventEmitter {
   }
 
   triggerMethod (eventName: string, ...args: any[]): any {
-    triggerMethodOn(this, eventName, args)
-    return this
+    triggerMethodOn(this, eventName, args);
+    return this;
   }
 
   getOption (prop: string, ...args: Object[]): any {
 
     if ((<any>this).options) {
-      args.push((<any>this).options)
+      args.push((<any>this).options);
     }
 
     if ((<any>this)._options) {
-      args.push((<any>this)._options)
+      args.push((<any>this)._options);
     }
 
-    args.push(this)
+    args.push(this);
 
-    return getOption(prop, args)
+    return getOption(prop, args);
   }
 }

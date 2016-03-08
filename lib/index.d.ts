@@ -8,4 +8,3 @@ export * from './collection-view';
 export * from './types';
 export * from './annotations';
 export * from './debug';
-export { Collection, ICollection, IModel, Model } from 'collection';
