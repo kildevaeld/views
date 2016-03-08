@@ -84,6 +84,7 @@ export declare abstract class BaseView<T extends HTMLElement> extends BaseObject
     $(selector: string | HTMLElement): NodeList | HTMLElement;
     setElement(elm: T): void;
     remove(): this;
+    destroy(): any;
     /**
      * Bind ui elements
      * @private

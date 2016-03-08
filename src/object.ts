@@ -49,7 +49,7 @@ export class BaseObject extends EventEmitter {
       Object.freeze(this)
     }
 
-    return this
+    return this;
   }
 
   triggerMethod (eventName: string, ...args: any[]): any {

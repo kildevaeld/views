@@ -179,8 +179,7 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
         if (typeof view.destroy === 'function') {
             view.destroy();
 
-        }
-        if (typeof view.remove === 'function') {
+        } else if (typeof view.remove === 'function') {
             view.remove();
         }
 
@@ -191,7 +190,7 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
             this.showEmptyView();
         }
 
-        this._updateIndexes(view, false)
+        this._updateIndexes(view, false);
     }
 
 	/**

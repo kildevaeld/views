@@ -1598,6 +1598,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._removeElement();
 	        return this;
 	    };
+	    BaseView.prototype.destroy = function () {
+	        if (this.isDestroyed)
+	            return;
+	        this.remove();
+	        _super.prototype.destroy.call(this);
+	        return this;
+	    };
 	    // PRIVATES
 	    /**
 	     * Bind ui elements
@@ -2385,7 +2392,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (typeof view.destroy === 'function') {
 	            view.destroy();
 	        }
-	        if (typeof view.remove === 'function') {
+	        else if (typeof view.remove === 'function') {
 	            view.remove();
 	        }
 	        this.stopListening(view);

@@ -269,6 +269,12 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
         return this;
     }
 
+    destroy (): any {
+        if (this.isDestroyed) return;
+        this.remove();
+        super.destroy();
+        return this;
+    }
 
     // PRIVATES
 
