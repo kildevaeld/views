@@ -19,7 +19,7 @@ export interface ViewOptions {
 
 export class View<T extends HTMLElement> extends BaseView<T> implements IDataView {
 
-    private _model: IModel;
+    protected _model: IModel;
     private _collection: ICollection;
     private _dataEvents: any;
 

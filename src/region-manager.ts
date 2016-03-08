@@ -76,13 +76,14 @@ export class RegionManager extends BaseObject {
      * Remove all regions from the manager
      */
     removeRegions() {
+        
         utils.callFunc(this.removeRegion, this, Object.keys(this._regions));
     }
 
     /**
      * @private
      */
-    _setRegion(name, region) {
+    private _setRegion(name, region) {
         if (this._regions[name]) {
             this._regions[name].destroy();
         }
@@ -92,7 +93,7 @@ export class RegionManager extends BaseObject {
     /**
      * @private
      */
-    _unsetRegion(name) {
+    private _unsetRegion(name) {
         delete this._regions[name];
     }
 }
