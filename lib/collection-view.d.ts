@@ -1,20 +1,21 @@
-import { DataView, DataViewOptions } from './data-view';
-import { IModel } from 'collection';
+import { View, ViewOptions } from './view';
+import { IModel, ICollection } from 'collection';
 import { IView } from './baseview';
 import { IDataView } from './types';
-export interface CollectionViewOptions extends DataViewOptions {
+export interface CollectionViewOptions extends ViewOptions {
     childView?: IDataView;
     emptyView?: IView;
     childViewContainer?: string;
-    childViewOptions?: DataViewOptions;
+    childViewOptions?: ViewOptions;
     sort?: boolean;
 }
-export declare class CollectionView<T extends HTMLElement> extends DataView<T> {
+export declare class CollectionView<T extends HTMLElement> extends View<T> {
     childView: IDataView;
     emptyView: IView;
     private _emptyView;
     private _container;
     private _buffer;
+    protected _options: CollectionViewOptions;
     /** Child views associated with the view
      * @property {Array<IDataView>} children
      */
@@ -37,7 +38,7 @@ export declare class CollectionView<T extends HTMLElement> extends DataView<T> {
     /**
      * @protected
      */
-    setCollection(collection: any): void;
+    setCollection(collection: ICollection): this;
     renderCollection(): void;
     /**
    * Returns a new instance of this.childView with attached model.

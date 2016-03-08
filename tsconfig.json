@@ -20,15 +20,15 @@
     "files": [
         "./src/baseview.ts",
         "./src/collection-view.ts",
-        "./src/data-view.ts",
+        "./src/view.ts",
         "./src/index.ts",
         "./src/layout-view.ts",
-        "./src/model.ts",
+       "./src/debug.ts",
+       "./src/util.ts",
         "./src/object.ts",
         "./src/region-manager.ts",
         "./src/region.ts",
-        "./src/templateview.ts",
-        "./src/types.ts",
-        "./src/view.ts"
+        "./src/annotations.ts",
+        "./src/types.ts"
     ]
 }

@@ -1,5 +1,3 @@
-/// <reference path="typings" />
-
 
 import {IView} from './baseview'
 import {IModel, ICollection} from 'collection'

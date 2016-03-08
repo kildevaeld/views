@@ -1,7 +1,6 @@
-/// <reference path="typings" />
 
 import {EventEmitter} from 'eventsjs'
-import {inherits, callFunc, slice, triggerMethodOn, getOption} from 'utilities';
+import {inherits, slice, triggerMethodOn, getOption} from 'utilities';
 import {logger} from './debug';
 
 const debug = logger('object');
@@ -18,11 +17,11 @@ export class BaseObject extends EventEmitter {
    * @extends EventEmitter
    */
   constructor (args?:any) {
-    super()
+    super();
 
-    if (typeof (<any>this).initialize === 'function') {
+    /*if (typeof (<any>this).initialize === 'function') {
       callFunc((<any>this).initialize, this, slice(arguments))
-    }
+    }*/
 
   }
 

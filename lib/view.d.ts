@@ -1,51 +1,38 @@
-import * as base from './baseview';
-export declare function normalizeUIKeys(obj: any, uimap: {
-    [key: string]: string;
-}): any;
-export declare type UIMap = {
-    [key: string]: HTMLElement;
-};
-export interface ViewOptions extends base.BaseViewOptions {
-    ui?: {
-        [key: string]: string;
-    } | Function;
+import { BaseView } from './baseview';
+import { IModel, ICollection } from 'collection';
+import { IDataView, Silenceable } from './types';
+export interface TemplateFunction {
+    (locals: any): string;
 }
-export declare class View<T extends HTMLElement> extends base.BaseView<T> {
-    ui: UIMap;
-    triggers: {
-        [key: string]: string;
-    };
-    private _ui;
-    private _options;
+export interface RenderOptions extends Silenceable {
+}
+export interface ViewOptions {
+    model?: IModel;
+    collection?: ICollection;
+    template?: string | TemplateFunction;
+}
+export declare class View<T extends HTMLElement> extends BaseView<T> implements IDataView {
+    private _model;
+    private _collection;
+    private _dataEvents;
+    template: string | TemplateFunction;
+    model: IModel;
+    collection: ICollection;
     /**
-     * View
-     * @param {ViewOptions} options
-     * @extends BaseView
+     * DataView
+     * @param {DataViewOptions} options
+     * @extends TemplateView
      */
     constructor(options?: ViewOptions);
-    delegateEvents(events?: any): this;
-    undelegateEvents(): any;
-    /**
-     * Bind ui elements
-     * @private
-     */
-    _bindUIElements(): void;
-    /**
-     * Unbind ui elements
-     * @private
-     */
-    _unbindUIElements(): void;
-    /**
-     * Configure triggers
-     * @return {Object} events object
-     * @private
-     */
-    _configureTriggers(): {};
-    /**
-     * builder trigger function
-     * @param  {Object|String} triggerDef Trigger definition
-     * @return {Function}
-     * @private
-     */
-    _buildViewTrigger(triggerDef: any): (e: any) => void;
+    setModel(model: IModel): this;
+    setCollection(collection: ICollection): this;
+    getTemplateData(): any;
+    render(options?: RenderOptions): any;
+    delegateEvents(events?: any): any;
+    undelegateEvents(): this;
+    protected renderTemplate(data: Object): void;
+    protected attachTemplate(template: string): void;
+    private _delegateDataEvents(model, collection);
+    private _undelegateDataEvents();
+    private _filterEvents(obj);
 }

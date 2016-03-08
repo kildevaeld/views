@@ -1,10 +1,10 @@
 /*global View, RegionManager, Region*/
-import {TemplateView} from './templateview'
+import {View} from './view'
 import {RegionManager, RegionMap} from './region-manager'
 import {proxy} from 'utilities';
 import {Region} from './region'
 
-export class LayoutView<T extends HTMLElement> extends TemplateView<T> {
+export class LayoutView<T extends HTMLElement> extends View<T> {
 	private _regions: any
 	private _regionManager: RegionManager
 
@@ -19,14 +19,14 @@ export class LayoutView<T extends HTMLElement> extends TemplateView<T> {
 	 * @extends TemplateView
 	 */
 	constructor(options) {
-
+        super(options);
 		// Set region manager
 		this._regionManager = new RegionManager();
 		proxy(this, this._regionManager, ['removeRegion', 'removeRegions']);
 
 		this._regions = this.getOption('regions', options||{});
 
-		super(options);
+		
 
 	}
 	

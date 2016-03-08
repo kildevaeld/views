@@ -1,6 +1,6 @@
-import { TemplateView } from './templateview';
+import { View } from './view';
 import { RegionMap } from './region-manager';
-export declare class LayoutView<T extends HTMLElement> extends TemplateView<T> {
+export declare class LayoutView<T extends HTMLElement> extends View<T> {
     private _regions;
     private _regionManager;
     regions: RegionMap;

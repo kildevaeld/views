@@ -16,7 +16,7 @@ var collection = [{
 
 var Region = views.region,
   CollectionView = views.CollectionView,
-  TemplateView = views.TemplateView;
+  View = views.View;
 
 function setupHTMLFixtures() {
   setFixtures('<div id="region"></div>');
@@ -64,7 +64,7 @@ describe('Collection View', function () {
     it('should render childView', function (done) {
       var view = new CollectionView({
         collection: collection,
-        childView: TemplateView.extend({
+        childView: View.extend({
           template: function (data) {
             return data.title;
           }
@@ -117,7 +117,7 @@ describe('Collection View', function () {
       var showSpy = jasmine.createSpy('beforeShow');
       var view = new CollectionView({
         collection: collection,
-        childView: TemplateView.extend({
+        childView: View.extend({
           template: function (data) {
             return data.title;
           },
@@ -146,7 +146,7 @@ describe('Collection View', function () {
     it('should emit render:collection', function () {
       var view = new CollectionView({
         collection: collection,
-        childView: TemplateView.extend({
+        childView: View.extend({
           template: function (data) {
             return data.title;
           }
@@ -164,7 +164,7 @@ describe('Collection View', function () {
     it('should proxy childview events', function (done) {
       var view = new CollectionView({
         collection: collection,
-        childView: TemplateView.extend({
+        childView: View.extend({
           template: function (data) {
             return data.title;
           },

@@ -1,9 +1,9 @@
-/// <reference path="typings" />
 
 import {BaseObject} from './object';
 import * as utils from 'utilities';
 import {EventEmitter, IEventEmitter} from 'eventsjs';
 import {logger} from './debug';
+import {normalizeUIKeys} from './util'
 
 const debug = logger('baseview');
 const paddedLt = /^\s*</;
@@ -13,48 +13,58 @@ export type EventsMap = {[key:string]: Function|string}
 export type StringMap = {[key: string]: string}
 
 export interface Destroyable {
-  destroy(): any
-  isDestroyed: boolean
+  destroy(): any;
+  isDestroyed: boolean;
 }
 
 export interface IView extends IEventEmitter, Destroyable {
-  el: HTMLElement
-  render(options?:any)
-  remove()
+  el: HTMLElement;
+  render(options?:any): this;
+  remove();
 }
 
+export type UIMap = { [key:string]: HTMLElement };
+
+
 export interface BaseViewOptions {
-  el?: HTMLElement
-  id?: string
-  attributes?: StringMap
-  className?:string
-  tagName?:string
-  events?: EventsMap
+  el?: HTMLElement;
+  id?: string;
+  attributes?: StringMap;
+  className?:string;
+  tagName?:string;
+  events?: EventsMap;
+  ui?: {[key:string]: string}|Function;
 }
 
 let viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events'];
 
-export class BaseView<T extends HTMLElement> extends BaseObject implements IView {
+export abstract class BaseView<T extends HTMLElement> extends BaseObject implements IView {
 
   static find(selector: string, context: HTMLElement): NodeList {
-    return context.querySelectorAll(selector)
+    return context.querySelectorAll(selector);
   }
 
-  tagName: string
-  className: string
-  id: string
+  public tagName: string;
+  public className: string;
+  public id: string;
 
-  private _cid: string
+  private _cid: string;
   get cid(): string  {
-    return this._cid
+    return this._cid;
   }
 
 
-  el: T
-  events: EventsMap 
-  attributes: StringMap
+  public el: T;
+  public events: EventsMap;
+  public attributes: StringMap;
   
-  private _domEvents: any[]
+  public ui: UIMap;
+  public triggers: {[key: string]: string};
+
+  private _ui: {[key:string]: string};
+  protected _options: BaseViewOptions;
+  
+  private _domEvents: any[];
 
   /**
    * BaseView
@@ -62,7 +72,9 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
    * @extends BaseObject
    */
   constructor (options: BaseViewOptions = {}) {
-
+    
+    super();
+    
     this._cid = utils.uniqueId('view')
 
     utils.extend(this, utils.pick(options, viewOptions))
@@ -75,7 +87,6 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
       this.delegateEvents();
     }
 
-    super(options)
 
   }
 
@@ -84,8 +95,19 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
    * @param {EventsMap} events
    */
   delegateEvents (events?: EventsMap): any {
+      
+    this._bindUIElements();
 
-    if (!(events || (events = utils.result(this, 'events')))) return this;
+    events = events ||  utils.result(this, 'events');
+    events = normalizeUIKeys(events, this._ui);
+
+    let triggers = this._configureTriggers();
+
+    events = utils.extend({}, events, triggers);
+    debug('%s delegate events %j', this.cid, events);
+    
+    if (!events) return this;
+    //if (!(events || (events = utils.result(this, 'events')))) return this;
     this.undelegateEvents();
 
     let dels = []
@@ -113,6 +135,9 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
    * Undelegate events
    */
   undelegateEvents () {
+    this._unbindUIElements();
+    debug('%s undelegate events', this.cid);
+      
     if (this.el) {
       for (var i = 0, len = this._domEvents.length; i < len; i++) {
         var item = this._domEvents[i];
@@ -180,7 +205,7 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
   }
 
   render (options:any): any {
-    return this
+    return this;
   }
 
   /**
@@ -191,14 +216,14 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
   public appendTo(elm:HTMLElement|string): any {
     
     if (elm instanceof HTMLElement) {
-      elm.appendChild(this.el)  
+      elm.appendChild(this.el);  
     } else {
-      let el = document.querySelector(<string>elm)
-      el ? el.appendChild(this.el) : void 0
+      let el = document.querySelector(<string>elm);
+      el ? el.appendChild(this.el) : void 0;
     }
     
     
-    return this
+    return this;
   }
 
   /**
@@ -218,30 +243,139 @@ export class BaseView<T extends HTMLElement> extends BaseObject implements IView
     } else {
       this.el.appendChild(elm)
     }
-    return this
+    return this;
   }
 
   /**
    * Convience for view.el.querySelectorAll()
    * @param {string|HTMLElement} selector
    */
-  $ (selector: string|HTMLElement): NodeList|HTMLElement {
+  $(selector: string|HTMLElement): NodeList|HTMLElement {
     if (selector instanceof HTMLElement) {
-      return selector
+      return selector;
     } else {
         return BaseView.find(<string>selector, this.el)
     }
   }
 
-  setElement (elm: T) {
-    this.undelegateEvents()
-    this._setElement(elm)
-    this.delegateEvents()
+  setElement(elm: T) {
+    this.undelegateEvents();
+    this._setElement(elm);
+    this.delegateEvents();
   }
 
   remove () {
     this._removeElement();
     return this;
+  }
+  
+  
+  // PRIVATES
+  
+  /**
+   * Bind ui elements
+   * @private
+   */
+  private _bindUIElements() {
+
+    let ui = this.getOption('ui') //this.options.ui||this.ui
+    if (!ui) return;
+
+    if (!this._ui) {
+      this._ui = ui;
+    }
+
+    ui = utils.result(this, '_ui');
+
+    this.ui = {};
+    
+    Object.keys(ui).forEach( (k) => {
+      let elm: any = this.$(ui[k]);
+      if (elm && elm.length) {
+        // unwrap if it's a nodelist.
+        if (elm instanceof NodeList) {
+          elm = elm[0];
+        }
+        debug('added ui element %s %s',k,ui[k]);
+        this.ui[k] = elm;
+      } else {
+        console.warn('view ',this.cid,': ui element not found ',k,ui[k]);
+      }
+    });
+
+  }
+
+  /**
+   * Unbind ui elements
+   * @private
+   */
+  private _unbindUIElements () {
+    
+  }
+
+  /**
+   * Configure triggers
+   * @return {Object} events object
+   * @private
+   */
+  private _configureTriggers() {
+
+    let triggers = this.getOption('triggers')||{}
+
+    if (typeof triggers === 'function') {
+      triggers = triggers.call(this)
+    }
+
+    // Allow `triggers` to be configured as a function
+    triggers = normalizeUIKeys(triggers, this._ui);
+
+    // Configure the triggers, prevent default
+    // action and stop propagation of DOM events
+    let events = {}, val, key;
+    for (key in triggers) {
+      val = triggers[key];
+      debug('added trigger %s %s',key, val)
+      events[key] = this._buildViewTrigger(val);
+    }
+
+    return events;
+
+  }
+
+  /**
+   * builder trigger function
+   * @param  {Object|String} triggerDef Trigger definition
+   * @return {Function}
+   * @private
+   */
+  private _buildViewTrigger(triggerDef) {
+
+    if (typeof triggerDef === 'string')
+      triggerDef = { event: triggerDef }
+
+    let options = utils.extend({
+      preventDefault: true,
+      stopPropagation: true
+    }, triggerDef);
+
+    return function(e) {
+
+      if (e) {
+        if (e.preventDefault && options.preventDefault) {
+          e.preventDefault();
+        }
+        if (e.stopPropagation && options.stopPropagation) {
+          e.stopPropagation();
+        }
+      }
+
+      this.triggerMethod(options.event, {
+        view: this,
+        model: this.model,
+        collection: this.collection
+      });
+
+    };
   }
 
   private _createElement (tagName: string): T {

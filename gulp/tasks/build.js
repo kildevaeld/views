@@ -5,9 +5,13 @@ const gulp = require('gulp'),
       merge = require('merge2');
 
 
+const project = $.typescript.createProject('./tsconfig.json', {
+    typescript: require('typescript')
+});
+
 gulp.task('build', function () {
 
-  let result = gulp.src('./src/**/*.ts')
+  /*let result = gulp.src('./src/*ts')
   .pipe($.typescript({
     "target": "ES5",
     "module": "commonjs",
@@ -22,7 +26,10 @@ gulp.task('build', function () {
     "suppressImplicitAnyIndexErrors": true,
     declarationFiles: true,
     typescript: require('typescript')
-  }));
+  }));*/
+  
+  let result = project.src()
+  .pipe($.typescript(project));
 
   let js = result.js
   .pipe(gulp.dest('./lib'));

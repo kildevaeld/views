@@ -1,181 +1,210 @@
-
-import * as base from './baseview'
-import {logger} from './debug'
-import * as utils from 'utilities';
-const kUIRegExp = /@ui.([a-zA-Z_\-\$#]+)/i
+import {BaseView} from './baseview';
+import {IModel, ICollection} from 'collection';
+import {IDataView, Silenceable} from './types';
+import {extend, bind, callFunc, result, pick} from 'utilities';
+import {logger} from './debug';
 const debug = logger('view');
 
-
-export function normalizeUIKeys (obj:any, uimap:{[key:string]:string}): any {
-  /*jshint -W030 */
-    let o = {}, k, v, ms, sel, ui;
-
-    for (k in obj) {
-      v = obj[k];
-      if ((ms = kUIRegExp.exec(k)) !== null) {
-        ui = ms[1], sel = uimap[ui];
-        if (sel != null) {
-          k = k.replace(ms[0], sel);
-        }
-      }
-      o[k] = v;
-    }
-
-    return o;
+export interface TemplateFunction {
+    (locals: any): string;
 }
 
-export type UIMap = { [key:string]: HTMLElement }
+export interface RenderOptions extends Silenceable {}
 
-export interface ViewOptions extends base.BaseViewOptions {
-  ui?: {[key:string]: string}|Function
+export interface ViewOptions {
+    model?: IModel;
+    collection?: ICollection;
+    template?: string | TemplateFunction;
 }
 
-export class View<T extends HTMLElement> extends base.BaseView<T> {
+export class View<T extends HTMLElement> extends BaseView<T> implements IDataView {
 
-  ui: UIMap
-  triggers: {[key: string]: string}
+    private _model: IModel
+    private _collection: ICollection
+    private _dataEvents: any;
 
-  private _ui: {[key:string]: string}
-  private _options: ViewOptions
+    public template: string | TemplateFunction;
 
-  /**
-   * View
-   * @param {ViewOptions} options
-   * @extends BaseView
-   */
-  constructor (options?: ViewOptions) {
-    this._options = options
-    super(options)
-  }
+    public get model(): IModel { return this._model; }
 
-
-  delegateEvents (events?:any) {
-    
-    this._bindUIElements()
-
-    events = events || this.events;
-    events = normalizeUIKeys(events, this._ui)
-
-    let triggers = this._configureTriggers()
-
-    events = utils.extend({}, events, triggers)
-    debug('%s delegate events %j', this.cid, events);
-    super.delegateEvents(events)
-
-    return this
-
-  }
-
-  undelegateEvents (): any {
-    this._unbindUIElements()
-    debug('%s undelegate events', this.cid);
-    super.undelegateEvents()
-    return this
-  }
-
-  /**
-   * Bind ui elements
-   * @private
-   */
-  _bindUIElements() {
-
-    let ui = this.getOption('ui') //this.options.ui||this.ui
-    if (!ui) return;
-
-    if (!this._ui) {
-      this._ui = ui;
+    public set model(model) {
+        this.setModel(model);
     }
 
-    ui = utils.result(this, '_ui');
+    public get collection() { return this._collection; }
 
-    this.ui = {};
-    
-    Object.keys(ui).forEach( (k) => {
-      let elm: any = this.$(ui[k]);
-      if (elm && elm.length) {
-        // unwrap if it's a nodelist.
-        if (elm instanceof NodeList) {
-          elm = elm[0]
-        }
-        debug('added ui element %s %s',k,ui[k]);
-        this.ui[k] = elm;
-      } else {
-        console.warn('view ',this.cid,': ui element not found ',k,ui[k]);
-      }
-    });
-
-  }
-
-  /**
-   * Unbind ui elements
-   * @private
-   */
-  _unbindUIElements () {
-    
-  }
-
-  /**
-   * Configure triggers
-   * @return {Object} events object
-   * @private
-   */
-  _configureTriggers() {
-
-    let triggers = this.getOption('triggers')||{}
-
-    if (typeof triggers === 'function') {
-      triggers = triggers.call(this)
+    public set collection(collection) {
+        this.setCollection(collection);
     }
 
-    // Allow `triggers` to be configured as a function
-    triggers = normalizeUIKeys(triggers, this._ui);
 
-    // Configure the triggers, prevent default
-    // action and stop propagation of DOM events
-    let events = {}, val, key;
-    for (key in triggers) {
-      val = triggers[key];
-      debug('added trigger %s %s',key, val)
-      events[key] = this._buildViewTrigger(val);
+    /**
+     * DataView
+     * @param {DataViewOptions} options
+     * @extends TemplateView
+     */
+    constructor(options: ViewOptions = {}) {
+        super(options);
+
+        extend(this, pick(options, ['model', 'collection', 'template']));
+        /*if (options.model) {
+            this.model = options.model
+        }
+        if (options.collection) {
+            this.collection = options.collection
+        }
+        
+        if (options && options.template) {
+            this.template = options.template
+        }*/
+
+
+
     }
 
-    return events;
+    public setModel(model: IModel) {
+        if (this._model === model) return this;
 
-  }
+        this.triggerMethod('before:model', this._model, model)
 
-  /**
-   * builder trigger function
-   * @param  {Object|String} triggerDef Trigger definition
-   * @return {Function}
-   * @private
-   */
-  _buildViewTrigger(triggerDef) {
-
-    if (typeof triggerDef === 'string')
-      triggerDef = { event: triggerDef }
-
-    let options = utils.extend({
-      preventDefault: true,
-      stopPropagation: true
-    }, triggerDef);
-
-    return function(e) {
-
-      if (e) {
-        if (e.preventDefault && options.preventDefault) {
-          e.preventDefault();
+        if (this._model) {
+            this.stopListening(this._model)
         }
-        if (e.stopPropagation && options.stopPropagation) {
-          e.stopPropagation();
+
+        this._model = model
+
+        this.triggerMethod('model', model);
+        
+        return this;
+    }
+
+    public setCollection(collection: ICollection) {
+        if (this._collection === collection) return this;
+
+        this.triggerMethod('before:collection', this._collection, collection);
+
+        if (this._collection) {
+            this.stopListening(this._collection);
         }
-      }
 
-      this.triggerMethod(options.event, {
-        view: this,
-        model: this.model,
-        collection: this.collection
-      });
+        this._collection = collection;
 
-    };
-  }
+        this.triggerMethod('collection', collection);
+        
+        return this;
+    }
+
+    public getTemplateData(): any {
+        return this.model ?
+            typeof this.model.toJSON === 'function' ?
+                this.model.toJSON() : this.model : {};
+    }
+    
+    public render (options:RenderOptions={}): any {
+    
+        if (!options.silent) 
+            this.triggerMethod('before:render')
+    
+        this.renderTemplate(this.getTemplateData())
+
+        if (!options.silent)
+            this.triggerMethod('render')
+
+        return this
+    }
+
+    public delegateEvents(events?: any): any {
+        events = events || result(this, 'events');
+        //events = normalizeUIKeys(events)
+
+        let {c, e, m} = this._filterEvents(events);
+
+        super.delegateEvents(<any>e);
+        this._delegateDataEvents(m, c);
+
+        return this;
+    }
+
+    public undelegateEvents() {
+        this._undelegateDataEvents();
+        super.undelegateEvents();
+        return this;
+    }
+
+    protected renderTemplate(data: Object) {
+        let template = this.getOption('template')
+
+        if (typeof template === 'function') {
+            debug('%s render template function', this.cid);
+            template = template.call(this, data)
+        }
+
+        if (template && typeof template === 'string') {
+            debug('%s attach template: %s', this.cid, template);
+            this.attachTemplate(template)
+        }
+
+    }
+
+    protected attachTemplate(template: string) {
+        this.undelegateEvents()
+        this.el.innerHTML = template
+        this.delegateEvents()
+    }
+
+    private _delegateDataEvents(model: any, collection: any) {
+
+        this._dataEvents = {};
+        let fn = (item, ev) => {
+
+            if (!this[item]) return {};
+            let out = {}, k, f;
+
+            for (k in ev) {
+                f = bind(ev[k], this);
+                this[item].on(k, f);
+                out[item + ":" + k] = f;
+            }
+
+            return out;
+        };
+
+        extend(this._dataEvents,
+            fn('model', model),
+            fn('collection', collection));
+
+    }
+
+    private _undelegateDataEvents() {
+        if (!this._dataEvents) return;
+        let k, v;
+        for (k in this._dataEvents) {
+            v = this._dataEvents[k];
+            let [item, ev] = k.split(':');
+            if (!this[item]) continue;
+
+            this[item].off(ev, v);
+            //this.stopListening(this[item],ev, v);
+        }
+        console.log(this)
+        //this._dataEvents = void 0;
+        //delete this._dataEvents;
+    }
+
+    private _filterEvents(obj: any) {
+        /*jshint -W030 */
+        let c = {}, m = {}, e = {}, k, v;
+        for (k in obj) {
+            let [ev, t] = k.split(' ');
+            ev = ev.trim(), t = t ? t.trim() : "", v = obj[k];
+            if (t === 'collection') {
+                c[ev] = v;
+            } else if (t === 'model') {
+                m[ev] = v;
+            } else {
+                e[k] = v;
+            }
+        }
+        return { c, m, e };
+    }
 }

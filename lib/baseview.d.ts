@@ -12,9 +12,12 @@ export interface Destroyable {
 }
 export interface IView extends IEventEmitter, Destroyable {
     el: HTMLElement;
-    render(options?: any): any;
+    render(options?: any): this;
     remove(): any;
 }
+export declare type UIMap = {
+    [key: string]: HTMLElement;
+};
 export interface BaseViewOptions {
     el?: HTMLElement;
     id?: string;
@@ -22,8 +25,11 @@ export interface BaseViewOptions {
     className?: string;
     tagName?: string;
     events?: EventsMap;
+    ui?: {
+        [key: string]: string;
+    } | Function;
 }
-export declare class BaseView<T extends HTMLElement> extends BaseObject implements IView {
+export declare abstract class BaseView<T extends HTMLElement> extends BaseObject implements IView {
     static find(selector: string, context: HTMLElement): NodeList;
     tagName: string;
     className: string;
@@ -33,6 +39,12 @@ export declare class BaseView<T extends HTMLElement> extends BaseObject implemen
     el: T;
     events: EventsMap;
     attributes: StringMap;
+    ui: UIMap;
+    triggers: {
+        [key: string]: string;
+    };
+    private _ui;
+    protected _options: BaseViewOptions;
     private _domEvents;
     /**
      * BaseView
@@ -72,6 +84,29 @@ export declare class BaseView<T extends HTMLElement> extends BaseObject implemen
     $(selector: string | HTMLElement): NodeList | HTMLElement;
     setElement(elm: T): void;
     remove(): this;
+    /**
+     * Bind ui elements
+     * @private
+     */
+    private _bindUIElements();
+    /**
+     * Unbind ui elements
+     * @private
+     */
+    private _unbindUIElements();
+    /**
+     * Configure triggers
+     * @return {Object} events object
+     * @private
+     */
+    private _configureTriggers();
+    /**
+     * builder trigger function
+     * @param  {Object|String} triggerDef Trigger definition
+     * @return {Function}
+     * @private
+     */
+    private _buildViewTrigger(triggerDef);
     private _createElement(tagName);
     private _ensureElement();
     private _removeElement();
