@@ -1,14 +1,12 @@
+declare var require: any;
+const debug = require('debug')('views:collectionview');
+
 import {View, ViewOptions} from './view'
 import {IModel, ICollection} from 'collection'
 import {IView} from './baseview'
 import {IDataView} from './types'
 import {extend, slice, callFunc, find} from 'utilities'
-import {EventEmitter} from 'eventsjs'
-
-import {logger} from './debug'
-
-const debug = logger('collectionview')
-
+import {EventEmitter, isEventEmitter} from 'eventsjs'
 
 export interface CollectionViewOptions extends ViewOptions {
     childView?: IDataView;
@@ -291,7 +289,6 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
         
         this.children.forEach(function(lView) {
             if ((<any>lView)._index >= (<any>view)._index) {
-                console.log(lView);
                 increment ? (<any>lView)._index++ : (<any>lView)._index--;
             }
         });
@@ -360,7 +357,7 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
 	 * @private
 	 */
     private _delegateCollectionEvents() {
-        if (this.collection && this.collection instanceof EventEmitter) {
+        if (this.collection && isEventEmitter(this.collection)) {
 
             this.listenTo(this.collection, 'add', this._onCollectionAdd);
             this.listenTo(this.collection, 'remove', this._onCollectionRemove);

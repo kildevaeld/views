@@ -23,7 +23,7 @@
         "./src/view.ts",
         "./src/index.ts",
         "./src/layout-view.ts",
-       "./src/debug.ts",
+      
        "./src/util.ts",
         "./src/object.ts",
         "./src/region-manager.ts",

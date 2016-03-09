@@ -1,3 +1,4 @@
+import { IView } from './baseview';
 export * from './object';
 export * from './baseview';
 export * from './region';
@@ -7,4 +8,5 @@ export * from './view';
 export * from './collection-view';
 export * from './types';
 export * from './annotations';
-export * from './debug';
+export declare function debug(debug: boolean): void;
+export declare function isView(a: any): a is IView;

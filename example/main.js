@@ -1,8 +1,7 @@
 /* global views */
 'use strict';
-views.debug(false)
-console.log(views)
-let Collection = views.Collection.extend({
+views.debug(true)
+let Collection = window.collection.Collection.extend({
 	comparator: 'title'
 })
 let collection = new Collection([{title:'title9', id:1},{title:'title2', id:2}]);

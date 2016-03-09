@@ -1,11 +1,11 @@
+declare var require: any;
+const debug = require('debug')('views:baseview');
 
 import {BaseObject} from './object';
 import * as utils from 'utilities';
 import {EventEmitter, IEventEmitter} from 'eventsjs';
-import {logger} from './debug';
 import {normalizeUIKeys} from './util'
 
-const debug = logger('baseview');
 const paddedLt = /^\s*</;
 const unbubblebles = 'focus blur change'.split(' ');
 
@@ -305,7 +305,7 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
                 debug('added ui element %s %s', k, ui[k]);
                 this.ui[k] = elm;
             } else {
-                console.warn('view ', this.cid, ': ui element not found ', k, ui[k]);
+                debug('view ', this.cid, ': ui element not found ', k, ui[k]);
             }
         });
 

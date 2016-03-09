@@ -1,9 +1,11 @@
+declare var require: any;
+const debug = require('debug')('views:view');
+
 import {BaseView} from './baseview';
 import {IModel, ICollection} from 'collection';
 import {IDataView, Silenceable} from './types';
 import {extend, bind, callFunc, result, pick} from 'utilities';
-import {logger} from './debug';
-const debug = logger('view');
+
 
 export interface TemplateFunction {
     (locals: any): string;
