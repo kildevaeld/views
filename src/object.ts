@@ -9,7 +9,7 @@ export class BaseObject extends EventEmitter {
 
   static extend = function <T>(proto:any,stat?:any): T {
     return inherits(this, proto, stat);
-  } 
+  }
 
   private _isDestroyed: boolean = false
   /**
@@ -46,7 +46,7 @@ export class BaseObject extends EventEmitter {
 
     debug("%s destroy", this);
     if (typeof Object.freeze) {
-      Object.freeze(this)
+      //Object.freeze(this)
     }
 
     return this;

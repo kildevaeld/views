@@ -12,7 +12,7 @@ export interface ViewOptions {
     template?: string | TemplateFunction;
 }
 export declare class View<T extends HTMLElement> extends BaseView<T> implements IDataView {
-    private _model;
+    protected _model: IModel;
     private _collection;
     private _dataEvents;
     template: string | TemplateFunction;

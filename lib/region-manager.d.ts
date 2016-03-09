@@ -43,9 +43,9 @@ export declare class RegionManager extends BaseObject {
     /**
      * @private
      */
-    _setRegion(name: any, region: any): void;
+    private _setRegion(name, region);
     /**
      * @private
      */
-    _unsetRegion(name: any): void;
+    private _unsetRegion(name);
 }

@@ -119,7 +119,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.triggerMethod('destroy');
 	        debug("%s destroy", this);
 	        if (typeof Object.freeze) {
-	            Object.freeze(this);
 	        }
 	        return this;
 	    };
