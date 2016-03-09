@@ -18,6 +18,7 @@ let view = new views.CollectionView({
 
 var count = 2
 function add (collection,index) {
+    
 	collection.add({title: 'title' + (++count), id: count}, {at:index})
 	//console.log(collection.toJSON())
 }
@@ -41,5 +42,7 @@ setTimeout(function () {
 
 setTimeout(function () {
 	add(collection, 0)
+    
+    collection.sort();
 	
 }, 2000);
