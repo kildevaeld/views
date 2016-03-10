@@ -1,7 +1,7 @@
 declare var require: any;
 const debug = require('debug')('views:view');
 
-import {BaseView} from './baseview';
+import {BaseView, BaseViewOptions} from './baseview';
 import {IModel, ICollection} from 'collection';
 import {IDataView, Silenceable} from './types';
 import {extend, bind, callFunc, result, pick} from 'utilities';
@@ -13,7 +13,7 @@ export interface TemplateFunction {
 
 export interface RenderOptions extends Silenceable { }
 
-export interface ViewOptions {
+export interface ViewOptions extends BaseViewOptions {
     model?: IModel;
     collection?: ICollection;
     template?: string | TemplateFunction;
@@ -55,7 +55,7 @@ export class View<T extends HTMLElement> extends BaseView<T> implements IDataVie
         if (options.collection) {
             this.collection = options.collection
         }
-        
+
         if (options && options.template) {
             this.template = options.template
         }*/
@@ -182,7 +182,7 @@ export class View<T extends HTMLElement> extends BaseView<T> implements IDataVie
 
             this[item].off(ev, v);
         }
-        
+
         delete this._dataEvents;
     }
 

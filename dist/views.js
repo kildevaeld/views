@@ -2659,7 +2659,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (options.collection) {
 	            this.collection = options.collection
 	        }
-	        
+	
 	        if (options && options.template) {
 	            this.template = options.template
 	        }*/

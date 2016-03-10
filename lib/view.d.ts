@@ -1,4 +1,4 @@
-import { BaseView } from './baseview';
+import { BaseView, BaseViewOptions } from './baseview';
 import { IModel, ICollection } from 'collection';
 import { IDataView, Silenceable } from './types';
 export interface TemplateFunction {
@@ -6,7 +6,7 @@ export interface TemplateFunction {
 }
 export interface RenderOptions extends Silenceable {
 }
-export interface ViewOptions {
+export interface ViewOptions extends BaseViewOptions {
     model?: IModel;
     collection?: ICollection;
     template?: string | TemplateFunction;
