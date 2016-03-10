@@ -2850,6 +2850,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (this.collection && this.collection.length) {
 	            this.renderCollection();
 	        }
+	        else {
+	            this.showEmptyView();
+	        }
 	        return this;
 	    };
 	    /**

@@ -70,7 +70,7 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
    *
    */
     render(options?: any): any {
-       
+
         this.destroyChildren();
         this._destroyContainer();
 
@@ -81,6 +81,8 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
         if (this.collection && this.collection.length) {
 
             this.renderCollection();
+        } else {
+          this.showEmptyView();
         }
 
 
@@ -121,7 +123,7 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
         let ViewClass = this.getOption('childView') || View,
             options = this.getOption('childViewOptions') || {};
 
-        
+
         return new ViewClass(extend({
             model: model
         }, options));
@@ -286,7 +288,7 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
             return;
 
         if (increment) (<any>view)._index = index;
-        
+
         this.children.forEach(function(lView) {
             if ((<any>lView)._index >= (<any>view)._index) {
                 increment ? (<any>lView)._index++ : (<any>lView)._index--;

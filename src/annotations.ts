@@ -18,3 +18,4 @@ export function triggers(triggers: { [key: string]: string }): ClassDecorator {
     }
 }
 
+
