@@ -2684,9 +2684,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (this._model === model)
 	            return this;
 	        this.triggerMethod('before:model', this._model, model);
-	        if (this._model) {
+	        if (this.model) {
+	            debug('stop listening on model uid: %s', this.model.uid);
 	            this.stopListening(this._model);
 	        }
+	        debug('viewId %s set model uid: %s', this.cid, model.uid);
 	        this._model = model;
 	        this.triggerMethod('model', model);
 	        return this;
@@ -2696,6 +2698,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return this;
 	        this.triggerMethod('before:collection', this._collection, collection);
 	        if (this._collection) {
+	            debug('viewId %s: stop listening on collection uid: %s', this.cid);
 	            this.stopListening(this._collection);
 	        }
 	        this._collection = collection;
