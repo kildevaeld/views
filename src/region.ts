@@ -144,14 +144,14 @@ export class Region extends BaseObject {
     }
 }
 
-function buildByObject(object: any = {}, context?: HTMLElement) {
+function buildByObject(object: any = {}, context?: HTMLElement): Region {
     if (!object.selector)
         throw new Error('No selector specified: ' + object);
 
     return buildBySelector(object.selector, object.regionClass || Region, context);
 }
 
-function buildBySelector(selector: string, Klass: any = Region, context?: HTMLElement) {
+function buildBySelector(selector: string, Klass: any = Region, context?: HTMLElement): Region {
     context = context || <any>document;
     var el = context.querySelector(selector);
 

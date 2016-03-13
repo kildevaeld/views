@@ -74,7 +74,7 @@ export class View<T extends HTMLElement> extends BaseView<T> implements IDataVie
             this.stopListening(this._model);
         }
 
-        debug('viewId %s set model uid: %s', this.cid, model.uid);
+        debug('%s set model uid: %s', this, model.uid);
         this._model = model;
 
         this.triggerMethod('model', model);
@@ -88,7 +88,7 @@ export class View<T extends HTMLElement> extends BaseView<T> implements IDataVie
         this.triggerMethod('before:collection', this._collection, collection);
 
         if (this._collection) {
-            debug('viewId %s: stop listening on collection uid: %s',this.cid);
+            debug('%s stop listening on collection',this);
             this.stopListening(this._collection);
         }
 
@@ -141,12 +141,12 @@ export class View<T extends HTMLElement> extends BaseView<T> implements IDataVie
         let template = this.getOption('template');
 
         if (typeof template === 'function') {
-            debug('%s render template function', this.cid);
+            debug('%s render template function', this);
             template = template.call(this, data);
         }
 
         if (template && typeof template === 'string') {
-            debug('%s attach template: %s', this.cid, template);
+            debug('%s attach template: %s', this, template);
             this.attachTemplate(template);
         }
 

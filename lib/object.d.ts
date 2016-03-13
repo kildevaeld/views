@@ -2,6 +2,7 @@ import { EventEmitter } from 'eventsjs';
 /** Base object */
 export declare class BaseObject extends EventEmitter {
     static extend: <T>(proto: any, stat?: any) => T;
+    name: string;
     private _isDestroyed;
     /**
      * Object

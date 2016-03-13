@@ -8,10 +8,12 @@ import {logger} from './debug';
 
 /** Base object */
 export class BaseObject extends EventEmitter {
-
+  
   static extend = function <T>(proto:any,stat?:any): T {
     return inherits(this, proto, stat);
   }
+  
+  name: string;
 
   private _isDestroyed: boolean = false
   /**
@@ -20,11 +22,6 @@ export class BaseObject extends EventEmitter {
    */
   constructor (args?:any) {
     super();
-
-    /*if (typeof (<any>this).initialize === 'function') {
-      callFunc((<any>this).initialize, this, slice(arguments))
-    }*/
-
   }
 
   /**

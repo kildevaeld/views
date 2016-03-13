@@ -9,6 +9,8 @@ export * from './collection-view'
 export * from './types'
 export * from './annotations'
 
+export const Version: string = '$VERISON$'
+
 export function debug (debug:boolean) {
     
     if (window.localStorage) {

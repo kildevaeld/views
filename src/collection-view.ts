@@ -132,7 +132,7 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
 
     renderChildView(view, index) {
         this.triggerMethod('before:render:child', view);
-        debug('%s render child: %s', this.cid, view.cid);
+        debug('%s render child: %s', this, view);
         view.render();
 
         this._attachHTML(view, index);
@@ -177,11 +177,11 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
         if (!view) return;
 
         if (typeof view.destroy === 'function') {
-            debug('destroy child view: %s', view);
+            debug('%s destroy child view: %s', this, view);
             view.destroy();
 
         } else if (typeof view.remove === 'function') {
-            debug('remove child view: %s', view);
+            debug('%s remove child view: %s', this, view);
             view.remove();
         }
 
@@ -231,7 +231,7 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
         this._updateIndexes(view, true, index);
 
         this._proxyChildViewEvents(view);
-        debug('%s append child %s at index: %s', this.cid, (<any>view).cid, index)
+        debug('%s append child %s at index: %s', this, view, index)
         this.children.push(view);
 
         this.hideEmptyView();
@@ -250,7 +250,7 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
    */
     private _attachHTML(view: IDataView, index: number) {
         if (this._buffer) {
-            debug("%s attach to buffer: %s", this.cid, (<any>view).cid)
+            debug("%s attach to buffer: %s", this, view)
             this._buffer.append(view)
         } else {
             //if (this._isShown) {
@@ -307,6 +307,7 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
     }
 
     private _initContainer() {
+        debug("%s init container", this);
         var container = this.getOption('childViewContainer');
         if (container) {
             container = this.$(container)[0];
@@ -340,6 +341,7 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
         }
 
         if (currentView) {
+            debug('%s insert child %s before: %s', this, childView, currentView);
             this._container.insertBefore(childView.el, currentView.el);
             return true;
         }
@@ -352,6 +354,7 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
 	 * @private
 	 */
     _insertAfter(childView: IDataView) {
+        debug('%s insert child %s ', this, childView);
         this._container.appendChild(childView.el);
     }
 

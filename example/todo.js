@@ -11,25 +11,16 @@ let view = new views.CollectionView({
 	collection: collection,
 	childViewOptions: {
 		template: function (data) {
-			return data.title + " - id:" + data.id
+			return `
+                <span><${data.title}</span> <button>done</button>
+            `
 		},
 		triggers: {
-			'click': 'click'
+			'click button': 'click'
 		}
 	}
 });
 
-var count = 2
-function add (collection,index) {
-    
-	collection.add({title: 'title' + (++count), id: count}, {at:index})
-	//console.log(collection.toJSON())
-}
-
-function remove (collection,model) {
-	collection.remove(model)
-	//console.log(collection.toJSON())
-}
 
 view.render().appendTo('body')
 

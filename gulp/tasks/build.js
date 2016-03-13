@@ -2,8 +2,11 @@
 
 const gulp = require('gulp'),
 			$ = require('gulp-load-plugins')(),
-      merge = require('merge2');
+      merge = require('merge2'),
+      replace = require('gulp-replace');
 
+
+const pkgjson = require(process.cwd() + '/package.json')
 
 const project = $.typescript.createProject('./tsconfig.json', {
     typescript: require('typescript')
@@ -11,27 +14,12 @@ const project = $.typescript.createProject('./tsconfig.json', {
 
 gulp.task('build', function () {
 
-  /*let result = gulp.src('./src/*ts')
-  .pipe($.typescript({
-    "target": "ES5",
-    "module": "commonjs",
-    "isolatedModules": false,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "declaration": true,
-    "noImplicitAny": false,
-    "removeComments": false,
-    "noLib": false,
-    "preserveConstEnums": true,
-    "suppressImplicitAnyIndexErrors": true,
-    declarationFiles: true,
-    typescript: require('typescript')
-  }));*/
   
   let result = project.src()
   .pipe($.typescript(project));
-
+  
   let js = result.js
+  .pipe(replace('$VERISON$', pkgjson.version))
   .pipe(gulp.dest('./lib'));
 
   let dts = result.dts.pipe(gulp.dest('./lib'));

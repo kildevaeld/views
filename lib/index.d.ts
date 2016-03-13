@@ -8,5 +8,6 @@ export * from './view';
 export * from './collection-view';
 export * from './types';
 export * from './annotations';
+export declare const Version: string;
 export declare function debug(debug: boolean): void;
 export declare function isView(a: any): a is IView;

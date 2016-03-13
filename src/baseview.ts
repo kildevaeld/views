@@ -85,7 +85,7 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
         if (this.el == null) {
             this._ensureElement()
         } else {
-            this.delegateEvents();
+            //this.delegateEvents();
         }
 
 
@@ -105,7 +105,7 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
         let triggers = this._configureTriggers();
 
         events = utils.extend({}, events, triggers);
-        debug('%s delegate events %j', this.cid, events);
+        debug('%s delegate events %j', this, events);
 
         if (!events) return this;
         //if (!(events || (events = utils.result(this, 'events')))) return this;
@@ -137,7 +137,7 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
      */
     undelegateEvents() {
         this._unbindUIElements();
-        debug('%s undelegate events', this.cid);
+        debug('%s undelegate events', this);
 
         if (this.el) {
             for (var i = 0, len = this._domEvents.length; i < len; i++) {
@@ -175,7 +175,7 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
         };
         /*jshint bitwise: false*/
         let useCap = !!~unbubblebles.indexOf(eventName) && selector != null;
-        debug('%s delegate event %s ', this.cid, eventName);
+        debug('%s delegate event %s ', this, eventName);
         utils.addEventListener(this.el, eventName, handler, useCap);
         this._domEvents.push({ eventName: eventName, handler: handler, listener: listener, selector: selector });
         return handler;
@@ -303,10 +303,10 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
                 if (elm instanceof NodeList) {
                     elm = elm[0];
                 }
-                debug('added ui element %s %s', k, ui[k]);
+                debug('%s added ui element %s %s', this, k, ui[k]);
                 this.ui[k] = elm;
             } else {
-                debug('view ', this.cid, ': ui element not found ', k, ui[k]);
+                debug('%s ui element not found ', this, k, ui[k]);
             }
         });
 
@@ -341,7 +341,7 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
         let events = {}, val, key;
         for (key in triggers) {
             val = triggers[key];
-            debug('added trigger %s %s', key, val)
+            debug('%s added trigger %s %s', this, key, val)
             events[key] = this._buildViewTrigger(val);
         }
 
@@ -394,7 +394,7 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
             var attrs = utils.extend({}, utils.result(this, 'attributes'));
             if (this.id) attrs.id = utils.result(this, 'id');
             if (this.className) attrs['class'] = utils.result(this, 'className');
-            debug('%s created element: %s', this.cid, utils.result(this, 'tagName') || 'div');
+            debug('%s created element: %s', this, utils.result(this, 'tagName') || 'div');
             this.setElement(this._createElement(utils.result(this, 'tagName') || 'div'));
             this._setAttributes(attrs);
         } else {
@@ -425,6 +425,10 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
         for (var attr in attrs) {
             attr in this.el ? this.el[attr] = attrs[attr] : this.el.setAttribute(attr, attrs[attr]);
         }
+    }
+    
+    toString (): string {
+        return `[${this.name||'View'}: ${this.cid}]`;
     }
 
 }

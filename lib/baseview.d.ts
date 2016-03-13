@@ -114,4 +114,5 @@ export declare abstract class BaseView<T extends HTMLElement> extends BaseObject
     private _removeElement();
     private _setElement(element);
     private _setAttributes(attrs);
+    toString(): string;
 }
