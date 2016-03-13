@@ -96,7 +96,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var util_1 = __webpack_require__(16);
 	var paddedLt = /^\s*</;
 	var unbubblebles = 'focus blur change'.split(' ');
-	var viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events'];
+	var viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events', 'triggers'];
 	var BaseView = (function (_super) {
 	    __extends(BaseView, _super);
 	    /**
@@ -1113,10 +1113,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var _i = 1; _i < arguments.length; _i++) {
 	            args[_i - 1] = arguments[_i];
 	        }
-	        var events = (this._listeners || (this._listeners = {}))[eventName] || (this._listeners[eventName] = [])
-	            .concat(this._listeners['all'] || []);
+	        //let events = (this._listeners|| (this._listeners = {}))[eventName]||(this._listeners[eventName]=[])
+	        //.concat(this._listeners['all']||[])
+	        this._listeners = this._listeners || {};
+	        var events = (this._listeners[eventName] || []).concat(this._listeners['all'] || []);
 	        if (EventEmitter.debugCallback)
-	            EventEmitter.debugCallback(this.constructor.name, this.name, eventName, args);
+	            EventEmitter.debugCallback(this.constructor.name, this.name, eventName, args, events);
 	        var event, a, len = events.length, index;
 	        var calls = [];
 	        for (var i = 0, ii = events.length; i < ii; i++) {
@@ -2925,9 +2927,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!view)
 	            return;
 	        if (typeof view.destroy === 'function') {
+	            debug('destroy child view: %s', view);
 	            view.destroy();
 	        }
 	        else if (typeof view.remove === 'function') {
+	            debug('remove child view: %s', view);
 	            view.remove();
 	        }
 	        this.stopListening(view);

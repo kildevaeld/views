@@ -177,9 +177,11 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
         if (!view) return;
 
         if (typeof view.destroy === 'function') {
+            debug('destroy child view: %s', view);
             view.destroy();
 
         } else if (typeof view.remove === 'function') {
+            debug('remove child view: %s', view);
             view.remove();
         }
 
@@ -271,15 +273,14 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
    */
     private _proxyChildViewEvents(view) {
         let prefix = this.getOption('prefix') || 'childview';
-
+       
         this.listenTo(view, 'all', function() {
             let args = slice(arguments);
-
             args[0] = prefix + ':' + args[0];
             args.splice(1, 0, view);
-
             callFunc(this.triggerMethod, this, args);
         });
+
 
     }
 

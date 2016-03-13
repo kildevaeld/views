@@ -33,10 +33,11 @@ export interface BaseViewOptions {
     className?: string;
     tagName?: string;
     events?: EventsMap;
+    triggers?: StringMap;
     ui?: { [key: string]: string } | Function;
 }
 
-let viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events'];
+let viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events', 'triggers'];
 
 export abstract class BaseView<T extends HTMLElement> extends BaseObject implements IView {
 

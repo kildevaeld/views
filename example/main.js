@@ -1,6 +1,6 @@
 /* global views */
 'use strict';
-views.debug(true)
+views.debug(false)
 let Collection = window.collection.Collection.extend({
 	comparator: 'title'
 })
@@ -12,6 +12,9 @@ let view = new views.CollectionView({
 	childViewOptions: {
 		template: function (data) {
 			return data.title + " - id:" + data.id
+		},
+		triggers: {
+			'click': 'click'
 		}
 	}
 });
@@ -46,3 +49,7 @@ setTimeout(function () {
     collection.sort();
 	
 }, 2000);
+
+view.on('childview:click', function () {
+	console.log('I DID click', arguments[0])
+})

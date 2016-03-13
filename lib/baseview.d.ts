@@ -25,6 +25,7 @@ export interface BaseViewOptions {
     className?: string;
     tagName?: string;
     events?: EventsMap;
+    triggers?: StringMap;
     ui?: {
         [key: string]: string;
     } | Function;

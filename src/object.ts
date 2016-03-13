@@ -5,6 +5,7 @@ import {EventEmitter} from 'eventsjs'
 import {inherits, slice, triggerMethodOn, getOption} from 'utilities';
 import {logger} from './debug';
 
+
 /** Base object */
 export class BaseObject extends EventEmitter {
 
