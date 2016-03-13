@@ -97,7 +97,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var util_1 = __webpack_require__(16);
 	var paddedLt = /^\s*</;
 	var unbubblebles = 'focus blur change'.split(' ');
-	var viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events', 'triggers'];
+	var viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events', 'triggers', 'ui'];
 	var BaseView = (function (_super) {
 	    __extends(BaseView, _super);
 	    /**
@@ -2655,16 +2655,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (options === void 0) { options = {}; }
 	        _super.call(this, options);
 	        utilities_1.extend(this, utilities_1.pick(options, ['model', 'collection', 'template']));
-	        /*if (options.model) {
-	            this.model = options.model
-	        }
-	        if (options.collection) {
-	            this.collection = options.collection
-	        }
-	
-	        if (options && options.template) {
-	            this.template = options.template
-	        }*/
 	    }
 	    Object.defineProperty(View.prototype, "model", {
 	        get: function () { return this._model; },
@@ -2833,7 +2823,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * @param {DataViewOptions} options
 	   */
 	    function CollectionView(options) {
-	        //this._options = options||{}
 	        _super.call(this, options);
 	        this._options = options || {};
 	        this.children = [];
@@ -2935,7 +2924,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            view.remove();
 	        }
 	        this.stopListening(view);
-	        //this.children.delete(view);
 	        this.children.splice(this.children.indexOf(view), 1);
 	        if (this.children.length === 0) {
 	            this.showEmptyView();
@@ -3026,9 +3014,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	    };
 	    CollectionView.prototype._startBuffering = function () {
+	        debug("%s initializing buffer", this);
 	        this._buffer = new Buffer();
 	    };
 	    CollectionView.prototype._stopBuffering = function () {
+	        debug('%s appending buffer to container', this);
 	        this._container.appendChild(this._buffer.buffer);
 	        delete this._buffer;
 	    };
@@ -3098,6 +3088,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    CollectionView.prototype._onCollectionAdd = function (model) {
+	        debug('%s received add event from collection %s', this, this.collection);
 	        var view = this.getChildView(model);
 	        var index = this.collection.indexOf(model);
 	        this._appendChild(view, index);
@@ -3108,6 +3099,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @private
 	     */
 	    CollectionView.prototype._onCollectionRemove = function (model) {
+	        debug('%s received remove event from collection %s', this, this.collection);
 	        var view = utilities_1.find(this.children, function (view) {
 	            return view.model === model;
 	        });
@@ -3119,6 +3111,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    CollectionView.prototype._onCollectionSort = function () {
 	        var _this = this;
+	        debug('%s received sort event from collection %s', this, this.collection);
 	        var orderChanged = this.collection.find(function (model, index) {
 	            var view = utilities_1.find(_this.children, function (view) {
 	                return view.model === model;

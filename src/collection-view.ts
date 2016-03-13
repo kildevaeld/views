@@ -34,8 +34,6 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
     private _container: HTMLElement;
     private _buffer: Buffer;
     protected _options: CollectionViewOptions;
-    //private _options: CollectionViewOptions
-
 
     /** Child views associated with the view
      * @property {Array<IDataView>} children
@@ -52,7 +50,7 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
    * @param {DataViewOptions} options
    */
     constructor(options?: CollectionViewOptions) {
-        //this._options = options||{}
+       
         super(options);
         this._options = options||{}
         this.children = [];
@@ -186,7 +184,7 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
         }
 
         this.stopListening(view);
-        //this.children.delete(view);
+        
         this.children.splice(this.children.indexOf(view), 1)
         if (this.children.length === 0) {
             this.showEmptyView();
@@ -298,10 +296,12 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
     }
 
     private _startBuffering() {
+        debug("%s initializing buffer", this);
         this._buffer = new Buffer()
     }
 
     private _stopBuffering() {
+        debug('%s appending buffer to container', this);
         this._container.appendChild(this._buffer.buffer)
         delete this._buffer
     }
@@ -382,6 +382,7 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
      * @private
      */
     private _onCollectionAdd(model) {
+        debug('%s received add event from collection %s', this, this.collection);
         let view = this.getChildView(model)
         let index = this.collection.indexOf(model);
 
@@ -394,6 +395,7 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
      * @private
      */
     private _onCollectionRemove(model) {
+        debug('%s received remove event from collection %s', this, this.collection);
         let view = find(this.children, function(view) {
             return view.model === model;
         });
@@ -406,6 +408,7 @@ export class CollectionView<T extends HTMLElement> extends View<T> {
 	 * @private
 	 */
     private _onCollectionSort() {
+        debug('%s received sort event from collection %s', this, this.collection);
         let orderChanged = (<any>this.collection).find((model, index) => {
             let view = find(this.children, function(view) {
                 return view.model === model;

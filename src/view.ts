@@ -49,19 +49,7 @@ export class View<T extends HTMLElement> extends BaseView<T> implements IDataVie
         super(options);
 
         extend(this, pick(options, ['model', 'collection', 'template']));
-        /*if (options.model) {
-            this.model = options.model
-        }
-        if (options.collection) {
-            this.collection = options.collection
-        }
-
-        if (options && options.template) {
-            this.template = options.template
-        }*/
-
-
-
+        
     }
 
     public setModel(model: IModel) {

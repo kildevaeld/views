@@ -37,7 +37,7 @@ export interface BaseViewOptions {
     ui?: { [key: string]: string } | Function;
 }
 
-let viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events', 'triggers'];
+let viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events', 'triggers', 'ui'];
 
 export abstract class BaseView<T extends HTMLElement> extends BaseObject implements IView {
 
