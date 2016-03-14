@@ -107,7 +107,7 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
 
         if (!events) return this;
         //if (!(events || (events = utils.result(this, 'events')))) return this;
-        this.undelegateEvents();
+        //this.undelegateEvents();
 
         let dels = []
         for (let key in events) {
@@ -204,6 +204,8 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
     }
 
     render(options: any): any {
+        this.undelegateEvents();
+        this.delegateEvents();
         return this;
     }
 

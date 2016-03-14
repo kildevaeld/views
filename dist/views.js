@@ -67,7 +67,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	__export(__webpack_require__(20));
 	__export(__webpack_require__(21));
 	__export(__webpack_require__(22));
-	exports.Version = '0.2.9';
+	exports.Version = '0.2.11';
 	function debug(debug) {
 	    if (window.localStorage) {
 	        window.localStorage['debug'] = debug ? "views:*" : '';
@@ -140,7 +140,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!events)
 	            return this;
 	        //if (!(events || (events = utils.result(this, 'events')))) return this;
-	        this.undelegateEvents();
+	        //this.undelegateEvents();
 	        var dels = [];
 	        for (var key in events) {
 	            var method = events[key];
@@ -224,6 +224,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return this;
 	    };
 	    BaseView.prototype.render = function (options) {
+	        this.undelegateEvents();
+	        this.delegateEvents();
 	        return this;
 	    };
 	    /**
@@ -2297,14 +2299,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* global BaseClass */
-	/* jshint latedef:nofunc */
 	"use strict";
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
+	var debug = __webpack_require__(2)('views:region');
 	var object_1 = __webpack_require__(5);
 	var utilities_1 = __webpack_require__(7);
 	/** Region  */
@@ -2370,8 +2371,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.empty();
 	            // If the view is destroyed be others
 	            view.once('destroy', this.empty, this);
+	            debug('%s render view %s', this, view);
 	            view.render();
 	            utilities_1.triggerMethodOn(view, 'before:show');
+	            debug('%s attaching view: %s', this, view);
 	            this._attachHtml(view);
 	            utilities_1.triggerMethodOn(view, 'show');
 	            this._view = view;
@@ -2700,13 +2703,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    View.prototype.render = function (options) {
 	        if (options === void 0) { options = {}; }
-	        this.undelegateEvents();
+	        debug('%s render', this);
 	        if (!options.silent)
 	            this.triggerMethod('before:render');
+	        this.undelegateEvents();
 	        this.renderTemplate(this.getTemplateData());
+	        this.delegateEvents();
 	        if (!options.silent)
 	            this.triggerMethod('render');
-	        this.delegateEvents();
 	        return this;
 	    };
 	    View.prototype.delegateEvents = function (events) {

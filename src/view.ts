@@ -97,17 +97,21 @@ export class View<T extends HTMLElement> extends BaseView<T> implements IDataVie
 
     public render(options: RenderOptions = {}): any {
         
-        this.undelegateEvents();
+        debug('%s render', this);
         
         if (!options.silent)
             this.triggerMethod('before:render');
 
+        this.undelegateEvents();
+        
         this.renderTemplate(this.getTemplateData());
+        
+        this.delegateEvents();
 
         if (!options.silent)
             this.triggerMethod('render');
             
-        this.delegateEvents();
+        
 
         return this;
     }

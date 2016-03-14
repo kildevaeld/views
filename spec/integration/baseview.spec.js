@@ -38,6 +38,8 @@ describe('BaseView', function () {
       }
     }));
     
+    console.log(view)
+    
     region.show(view);
     $(view.el).click();
     

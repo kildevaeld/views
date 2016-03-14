@@ -1,9 +1,10 @@
-/* global BaseClass */
-/* jshint latedef:nofunc */
+declare var require: any;
+const debug = require('debug')('views:region');
 
 import {BaseObject} from './object';
 import {IView} from './baseview';
 import {triggerMethodOn} from 'utilities';
+
 
 export interface RegionOptions {
     el: HTMLElement;
@@ -72,11 +73,12 @@ export class Region extends BaseObject {
             this.empty();
             // If the view is destroyed be others
             view.once('destroy', this.empty, this);
-
+            debug('%s render view %s', this, view);
             view.render();
 
             triggerMethodOn(view, 'before:show');
 
+            debug('%s attaching view: %s', this, view);
             this._attachHtml(view);
 
             triggerMethodOn(view, 'show');
