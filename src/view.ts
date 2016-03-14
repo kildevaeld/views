@@ -96,7 +96,9 @@ export class View<T extends HTMLElement> extends BaseView<T> implements IDataVie
     }
 
     public render(options: RenderOptions = {}): any {
-
+        
+        this.undelegateEvents();
+        
         if (!options.silent)
             this.triggerMethod('before:render');
 
@@ -104,6 +106,8 @@ export class View<T extends HTMLElement> extends BaseView<T> implements IDataVie
 
         if (!options.silent)
             this.triggerMethod('render');
+            
+        this.delegateEvents();
 
         return this;
     }
@@ -141,9 +145,9 @@ export class View<T extends HTMLElement> extends BaseView<T> implements IDataVie
     }
 
     protected attachTemplate(template: string) {
-        this.undelegateEvents();
+        //this.undelegateEvents();
         this.el.innerHTML = template;
-        this.delegateEvents();
+        //this.delegateEvents();
     }
 
     private _delegateDataEvents(model: any, collection: any) {

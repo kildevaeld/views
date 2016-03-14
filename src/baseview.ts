@@ -84,8 +84,6 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
 
         if (this.el == null) {
             this._ensureElement()
-        } else {
-            //this.delegateEvents();
         }
 
 
@@ -260,9 +258,9 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
     }
 
     setElement(elm: T) {
-        this.undelegateEvents();
+        //this.undelegateEvents();
         this._setElement(elm);
-        this.delegateEvents();
+        //this.delegateEvents();
     }
 
     remove() {
@@ -428,6 +426,7 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
     }
     
     toString (): string {
+        
         return `[${this.name||'View'}: ${this.cid}]`;
     }
 

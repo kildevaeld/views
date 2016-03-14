@@ -31,6 +31,20 @@ function remove (collection,model) {
 	//console.log(collection.toJSON())
 }
 
+var header = new views.View({
+    template: function (data) {
+        return '<h1>' + data.title + '</h1>';
+    },
+    model: {title: 'hello'},
+    events: {
+        'click': function () {
+            this.el.style.backgroundColor = 'red';
+        }   
+    }
+})
+
+header.render().appendTo('body');
+
 view.render().appendTo('body')
 
 setTimeout(function () {
@@ -53,6 +67,9 @@ setTimeout(function () {
 view.on('childview:click', function () {
 	console.log('I DID click', arguments[0])
 });
+
+
+
 
 
 document.querySelector('#add-btn').addEventListener('click', function () {

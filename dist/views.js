@@ -114,8 +114,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (this.el == null) {
 	            this._ensureElement();
 	        }
-	        else {
-	        }
 	    }
 	    BaseView.find = function (selector, context) {
 	        return context.querySelectorAll(selector);
@@ -277,9 +275,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    };
 	    BaseView.prototype.setElement = function (elm) {
-	        this.undelegateEvents();
+	        //this.undelegateEvents();
 	        this._setElement(elm);
-	        this.delegateEvents();
+	        //this.delegateEvents();
 	    };
 	    BaseView.prototype.remove = function () {
 	        this._removeElement();
@@ -1113,12 +1111,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var _i = 1; _i < arguments.length; _i++) {
 	            args[_i - 1] = arguments[_i];
 	        }
-	        //let events = (this._listeners|| (this._listeners = {}))[eventName]||(this._listeners[eventName]=[])
-	        //.concat(this._listeners['all']||[])
-	        this._listeners = this._listeners || {};
-	        var events = (this._listeners[eventName] || []).concat(this._listeners['all'] || []);
+	        var events = (this._listeners || (this._listeners = {}))[eventName] || (this._listeners[eventName] = [])
+	            .concat(this._listeners['all'] || []);
 	        if (EventEmitter.debugCallback)
-	            EventEmitter.debugCallback(this.constructor.name, this.name, eventName, args, events);
+	            EventEmitter.debugCallback(this.constructor.name, this.name, eventName, args);
 	        var event, a, len = events.length, index;
 	        var calls = [];
 	        for (var i = 0, ii = events.length; i < ii; i++) {
@@ -2704,11 +2700,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    View.prototype.render = function (options) {
 	        if (options === void 0) { options = {}; }
+	        this.undelegateEvents();
 	        if (!options.silent)
 	            this.triggerMethod('before:render');
 	        this.renderTemplate(this.getTemplateData());
 	        if (!options.silent)
 	            this.triggerMethod('render');
+	        this.delegateEvents();
 	        return this;
 	    };
 	    View.prototype.delegateEvents = function (events) {
@@ -2735,9 +2733,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    };
 	    View.prototype.attachTemplate = function (template) {
-	        this.undelegateEvents();
+	        //this.undelegateEvents();
 	        this.el.innerHTML = template;
-	        this.delegateEvents();
+	        //this.delegateEvents();
 	    };
 	    View.prototype._delegateDataEvents = function (model, collection) {
 	        var _this = this;
