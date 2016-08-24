@@ -403,10 +403,10 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
             if (this.id) attrs.id = utils.result(this, 'id');
             if (this.className) attrs['class'] = utils.result(this, 'className');
             debug('%s created element: %s', this, utils.result(this, 'tagName') || 'div');
-            this.setElement(this._createElement(utils.result(this, 'tagName') || 'div'));
+            this.setElement(this._createElement(utils.result(this, 'tagName') || 'div'), false);
             this._setAttributes(attrs);
         } else {
-            this.setElement(utils.result(this, 'el'));
+            this.setElement(utils.result(this, 'el'), false);
         }
     }
 
