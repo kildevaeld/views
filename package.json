@@ -40,5 +40,13 @@
     "eventsjs": "git+https://github.com/kildevaeld/eventsjs.git",
     "utilities": "git+https://github.com/kildevaeld/utilitiesjs.git",
     "orange": "git+https://github.com/kildevaeld/orange.git"
+  },
+  "jspm": {
+    "registry": "github",
+    "format": "cjs",
+    "dependencies": {
+      "eventsjs": "github:kildevaeld/eventsjs",
+      "orange": "github:kildevaeld/orange"
+    }
   }
 }
