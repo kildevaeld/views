@@ -39,6 +39,10 @@ gulp.task('build:bower', ['build'], function () {
       library: "views",
       libraryTarget: "umd",
       filename: 'views.js'
+    },
+    externals: {
+      orange: "orange",
+      eventsjs: "eventsjs"
     }
   }))
   .pipe(gulp.dest('./dist'));

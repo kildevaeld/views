@@ -1,5 +1,7 @@
 declare var require: any;
-const debug = require('debug')('views:baseview');
+
+import * as Debug from 'debug';
+const debug = Debug('views:baseview');
 
 import {BaseObject} from './object';
 import * as utils from 'orange';

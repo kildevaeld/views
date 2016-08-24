@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es6",
+        "target": "es5",
         "isolatedModules": false,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
@@ -16,7 +16,7 @@
         "module": "commonjs"
     },
     "files": [
-
+        "typings/index.d.ts",
         "./src/baseview.ts",
         "./src/collection-view.ts",
         "./src/view.ts",

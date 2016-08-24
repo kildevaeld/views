@@ -1,5 +1,5 @@
-declare var require: any;
-const debug = require('debug')('views:collectionview');
+import * as Debug from 'debug';
+const debug = Debug('views:collectionview');
 
 import {View, ViewOptions} from './view'
 import {IModel, ICollection} from 'collection'

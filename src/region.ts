@@ -1,5 +1,5 @@
-declare var require: any;
-const debug = require('debug')('views:region');
+import * as Debug from 'debug';
+const debug = Debug('views:region');
 
 import {BaseObject} from './object';
 import {IView} from './baseview';

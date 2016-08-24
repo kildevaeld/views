@@ -3,9 +3,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", './object', 'orange', './util'], function (require, exports, object_1, utils, util_1) {
+define(["require", "exports", 'debug', './object', 'orange', './util'], function (require, exports, Debug, object_1, utils, util_1) {
     "use strict";
-    var debug = require('debug')('views:baseview');
+    var debug = Debug('views:baseview');
     var paddedLt = /^\s*</;
     var unbubblebles = 'focus blur change'.split(' ');
     var viewOptions = ['el', 'id', 'attributes', 'className', 'tagName', 'events', 'triggers', 'ui'];

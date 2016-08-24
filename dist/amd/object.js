@@ -3,9 +3,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'eventsjs', 'orange'], function (require, exports, eventsjs_1, orange_1) {
+define(["require", "exports", 'debug', 'eventsjs', 'orange'], function (require, exports, Debug, eventsjs_1, orange_1) {
     "use strict";
-    var debug = require('debug')('views:object');
+    var debug = Debug('views:object');
     /** Base object */
     var BaseObject = (function (_super) {
         __extends(BaseObject, _super);

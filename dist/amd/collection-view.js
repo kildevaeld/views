@@ -3,9 +3,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", './view', 'orange', 'eventsjs'], function (require, exports, view_1, orange_1, eventsjs_1) {
+define(["require", "exports", 'debug', './view', 'orange', 'eventsjs'], function (require, exports, Debug, view_1, orange_1, eventsjs_1) {
     "use strict";
-    var debug = require('debug')('views:collectionview');
+    var debug = Debug('views:collectionview');
     var Buffer = (function () {
         function Buffer() {
             this.children = [];

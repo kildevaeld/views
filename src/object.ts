@@ -1,5 +1,6 @@
 declare var require: any;
-const debug = require('debug')('views:object');
+import * as Debug from 'debug';
+const debug = Debug('views:object');
 
 import {EventEmitter} from 'eventsjs'
 import {inherits, slice, triggerMethodOn, getOption} from 'orange';
