@@ -2,7 +2,7 @@ declare var require: any;
 const debug = require('debug')('views:baseview');
 
 import {BaseObject} from './object';
-import * as utils from 'orange/browser';
+import * as utils from 'orange';
 import {EventEmitter, IEventEmitter} from 'eventsjs';
 import {normalizeUIKeys} from './util'
 

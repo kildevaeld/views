@@ -44,3 +44,19 @@ gulp.task('build:bower', ['build'], function () {
   .pipe(gulp.dest('./dist'));
 });
 
+gulp.task('build:amd', ['build'], function () {
+
+  const project = $.typescript.createProject('./tsconfig.json', {
+    typescript: require('typescript'),
+    declaration: false,
+    module: 'amd',
+    target: 'es5'
+  });
+
+  let result = project.src()
+  .pipe($.typescript(project));
+  
+  return result.js
+  .pipe(replace('$VERISON$', pkgjson.version))
+  .pipe(gulp.dest('./dist/amd'));
+});

@@ -1,6 +1,6 @@
 {
   "name": "views",
-  "version": "0.2.14",
+  "version": "0.2.15",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -37,16 +37,18 @@
   },
   "typings": "lib/index",
   "dependencies": {
+    "debug": "^2.2.0",
     "eventsjs": "git+https://github.com/kildevaeld/eventsjs.git",
-    "utilities": "git+https://github.com/kildevaeld/utilitiesjs.git",
     "orange": "git+https://github.com/kildevaeld/orange.git"
   },
   "jspm": {
     "registry": "github",
-    "format": "cjs",
+    "main": "dist/amd/index.js",
+    "format": "amd",
     "dependencies": {
       "eventsjs": "github:kildevaeld/eventsjs",
-      "orange": "github:kildevaeld/orange"
+      "orange": "github:kildevaeld/orange",
+      "debug": "npm:debug@2.2.0"
     }
   }
 }

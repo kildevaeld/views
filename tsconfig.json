@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es5",
+        "target": "es6",
         "isolatedModules": false,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
@@ -10,14 +10,13 @@
         "noLib": false,
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": true,
-        "outDir": "./lib"
+        "outDir": "./lib",
+        "rootDir": "src",
+        "moduleResolution": "node",
+        "module": "commonjs"
     },
-    "filesGlob": [
-        "./src/*.ts",
-        "./**/*.tsx",
-        "!./node_modules/**/*"
-    ],
     "files": [
+
         "./src/baseview.ts",
         "./src/collection-view.ts",
         "./src/view.ts",
