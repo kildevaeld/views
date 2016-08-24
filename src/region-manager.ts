@@ -2,7 +2,7 @@
 
 import {BaseObject} from './object'
 import {Region} from './region'
-import * as utils from 'utilities'
+import * as utils from 'orange'
 
 export type RegionMap = { [key: string]: Region }
 

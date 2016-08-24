@@ -1,4 +1,4 @@
-import {extend} from 'utilities';
+import {extend} from 'orange';
 import {RegionMap} from './region-manager';
 
 export function attributes(attrs: Object): ClassDecorator {

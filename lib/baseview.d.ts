@@ -83,7 +83,7 @@ export declare abstract class BaseView<T extends HTMLElement> extends BaseObject
      * @param {string|HTMLElement} selector
      */
     $(selector: string | HTMLElement): NodeList | HTMLElement;
-    setElement(elm: T): void;
+    setElement(elm: T, trigger?: boolean): void;
     remove(): this;
     destroy(): any;
     /**

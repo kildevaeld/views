@@ -5,7 +5,7 @@ import {View, ViewOptions} from './view'
 import {IModel, ICollection} from 'collection'
 import {IView} from './baseview'
 import {IDataView} from './types'
-import {extend, slice, callFunc, find} from 'utilities'
+import {extend, slice, callFunc, find} from 'orange'
 import {EventEmitter, isEventEmitter} from 'eventsjs'
 
 export interface CollectionViewOptions extends ViewOptions {

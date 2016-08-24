@@ -4,7 +4,7 @@ const debug = require('debug')('views:view');
 import {BaseView, BaseViewOptions} from './baseview';
 import {IModel, ICollection} from 'collection';
 import {IDataView, Silenceable} from './types';
-import {extend, bind, callFunc, result, pick} from 'utilities';
+import {extend, bind, callFunc, result, pick} from 'orange';
 
 
 export interface TemplateFunction {

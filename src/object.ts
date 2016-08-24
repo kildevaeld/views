@@ -2,7 +2,7 @@ declare var require: any;
 const debug = require('debug')('views:object');
 
 import {EventEmitter} from 'eventsjs'
-import {inherits, slice, triggerMethodOn, getOption} from 'utilities';
+import {inherits, slice, triggerMethodOn, getOption} from 'orange';
 import {logger} from './debug';
 
 

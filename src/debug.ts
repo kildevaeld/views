@@ -1,4 +1,4 @@
-import {callFunc} from 'utilities';
+import {callFunc} from 'orange';
 
 function _log () {
 	// this hackery is required for IE8/9, where

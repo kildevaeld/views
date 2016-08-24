@@ -2,9 +2,10 @@ declare var require: any;
 const debug = require('debug')('views:baseview');
 
 import {BaseObject} from './object';
-import * as utils from 'utilities';
+import * as utils from 'orange/browser';
 import {EventEmitter, IEventEmitter} from 'eventsjs';
 import {normalizeUIKeys} from './util'
+
 
 const paddedLt = /^\s*</;
 const unbubblebles = 'focus blur change'.split(' ');
@@ -81,6 +82,8 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
         utils.extend(this, utils.pick(options, viewOptions))
 
         this._domEvents = []
+
+        
 
         if (this.el == null) {
             this._ensureElement()
@@ -259,10 +262,15 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
         }
     }
 
-    setElement(elm: T) {
-        //this.undelegateEvents();
+    setElement(elm: T, trigger: boolean = true) {
+        this.triggerMethod('before:set:element');
+        if (trigger)
+            this.undelegateEvents();
+        
         this._setElement(elm);
-        //this.delegateEvents();
+        if (trigger)
+            this.delegateEvents();
+        this.triggerMethod('set:element')
     }
 
     remove() {

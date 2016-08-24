@@ -1,7 +1,7 @@
 /*global View, RegionManager, Region*/
 import {View} from './view';
 import {RegionManager, RegionMap} from './region-manager';
-import {proxy} from 'utilities';
+import {proxy} from 'orange';
 import {Region} from './region';
 
 export class LayoutView<T extends HTMLElement> extends View<T> {

@@ -1,6 +1,6 @@
 {
   "name": "views",
-  "version": "0.2.12",
+  "version": "0.2.14",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -38,6 +38,7 @@
   "typings": "lib/index",
   "dependencies": {
     "eventsjs": "git+https://github.com/kildevaeld/eventsjs.git",
-    "utilities": "git+https://github.com/kildevaeld/utilitiesjs.git"
+    "utilities": "git+https://github.com/kildevaeld/utilitiesjs.git",
+    "orange": "git+https://github.com/kildevaeld/orange.git"
   }
 }

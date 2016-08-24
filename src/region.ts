@@ -3,7 +3,7 @@ const debug = require('debug')('views:region');
 
 import {BaseObject} from './object';
 import {IView} from './baseview';
-import {triggerMethodOn} from 'utilities';
+import {triggerMethodOn} from 'orange';
 
 
 export interface RegionOptions {
