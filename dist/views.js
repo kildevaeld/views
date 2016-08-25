@@ -67,7 +67,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	__export(__webpack_require__(12));
 	__export(__webpack_require__(13));
 	__export(__webpack_require__(14));
-	exports.Version = '0.2.15';
+	exports.Version = '0.3.1';
 	function debug(debug) {
 	    if (window.localStorage) {
 	        window.localStorage['debug'] = debug ? "views:*" : '';
@@ -1445,8 +1445,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            debug('stop listening on model uid: %s', this.model.uid);
 	            this.stopListening(this._model);
 	        }
-	        debug('%s set model uid: %s', this, model.uid);
-	        this._model = model;
+	        if (model != null) {
+	            debug('%s set model uid: %s', this, model.uid);
+	            this._model = model;
+	        }
 	        this.triggerMethod('model', model);
 	        return this;
 	    };

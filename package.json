@@ -1,6 +1,6 @@
 {
   "name": "views",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -46,8 +46,8 @@
     "main": "dist/amd/index.js",
     "format": "amd",
     "dependencies": {
-      "eventsjs": "github:kildevaeld/eventsjs",
-      "orange": "github:kildevaeld/orange",
+      "eventsjs": "github:kildevaeld/eventsjs@master",
+      "orange": "github:kildevaeld/orange@master",
       "debug": "npm:debug@2.2.0"
     }
   }

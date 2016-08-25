@@ -42,8 +42,10 @@ define(["require", "exports", 'debug', './baseview', 'orange'], function (requir
                 debug('stop listening on model uid: %s', this.model.uid);
                 this.stopListening(this._model);
             }
-            debug('%s set model uid: %s', this, model.uid);
-            this._model = model;
+            if (model != null) {
+                debug('%s set model uid: %s', this, model.uid);
+                this._model = model;
+            }
             this.triggerMethod('model', model);
             return this;
         };
