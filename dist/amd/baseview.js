@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define(["require", "exports", 'debug', './object', 'orange/browser', './util'], function (require, exports, Debug, object_1, utils, util_1) {
+define(["require", "exports", 'debug', './object', 'orange', 'orange.dom', './util'], function (require, exports, Debug, object_1, orange_1, orange_dom_1, util_1) {
     "use strict";
     var debug = Debug('views:baseview');
     var paddedLt = /^\s*</;
@@ -19,8 +19,8 @@ define(["require", "exports", 'debug', './object', 'orange/browser', './util'], 
         function BaseView(options) {
             if (options === void 0) { options = {}; }
             _super.call(this);
-            this._cid = utils.uniqueId('view');
-            utils.extend(this, utils.pick(options, viewOptions));
+            this._cid = orange_1.uniqueId('view');
+            orange_1.extend(this, orange_1.pick(options, viewOptions));
             this._domEvents = [];
             if (this.el == null) {
                 this._ensureElement();
@@ -43,14 +43,14 @@ define(["require", "exports", 'debug', './object', 'orange/browser', './util'], 
         BaseView.prototype.delegateEvents = function (events) {
             var _this = this;
             this._bindUIElements();
-            events = events || utils.result(this, 'events');
+            events = events || orange_1.result(this, 'events');
             events = util_1.normalizeUIKeys(events, this._ui);
             var triggers = this._configureTriggers();
-            events = utils.extend({}, events, triggers);
+            events = orange_1.extend({}, events, triggers);
             debug('%s delegate events %j', this, events);
             if (!events)
                 return this;
-            //if (!(events || (events = utils.result(this, 'events')))) return this;
+            //if (!(events || (events = result(this, 'events')))) return this;
             //this.undelegateEvents();
             var dels = [];
             for (var key in events) {
@@ -59,7 +59,7 @@ define(["require", "exports", 'debug', './object', 'orange/browser', './util'], 
                     method = this[method];
                 var match = key.match(/^(\S+)\s*(.*)$/);
                 // Set delegates immediately and defer event on this.el
-                var boundFn = utils.bind(method, this);
+                var boundFn = orange_1.bind(method, this);
                 if (match[2]) {
                     this.delegate(match[1], match[2], boundFn);
                 }
@@ -79,7 +79,7 @@ define(["require", "exports", 'debug', './object', 'orange/browser', './util'], 
             if (this.el) {
                 for (var i = 0, len = this._domEvents.length; i < len; i++) {
                     var item = this._domEvents[i];
-                    utils.removeEventListener(this.el, item.eventName, item.handler);
+                    orange_dom_1.removeEventListener(this.el, item.eventName, item.handler);
                 }
                 this._domEvents.length = 0;
             }
@@ -97,7 +97,7 @@ define(["require", "exports", 'debug', './object', 'orange/browser', './util'], 
                 if (e.delegateTarget)
                     return;
                 for (; node && node != root; node = node.parentNode) {
-                    if (utils.matches(node, selector)) {
+                    if (orange_dom_1.matches(node, selector)) {
                         e.delegateTarget = node;
                         listener(e);
                     }
@@ -110,7 +110,7 @@ define(["require", "exports", 'debug', './object', 'orange/browser', './util'], 
             /*jshint bitwise: false*/
             var useCap = !!~unbubblebles.indexOf(eventName) && selector != null;
             debug('%s delegate event %s ', this, eventName);
-            utils.addEventListener(this.el, eventName, handler, useCap);
+            orange_dom_1.addEventListener(this.el, eventName, handler, useCap);
             this._domEvents.push({ eventName: eventName, handler: handler, listener: listener, selector: selector });
             return handler;
         };
@@ -128,8 +128,8 @@ define(["require", "exports", 'debug', './object', 'orange/browser', './util'], 
                         (selector ? item.selector === selector : true);
                     if (!match)
                         continue;
-                    utils.removeEventListener(this.el, item.eventName, item.handler);
-                    this._domEvents.splice(utils.indexOf(handlers, item), 1);
+                    orange_dom_1.removeEventListener(this.el, item.eventName, item.handler);
+                    this._domEvents.splice(orange_1.indexOf(handlers, item), 1);
                 }
             }
             return this;
@@ -221,7 +221,7 @@ define(["require", "exports", 'debug', './object', 'orange/browser', './util'], 
             if (!this._ui) {
                 this._ui = ui;
             }
-            ui = utils.result(this, '_ui');
+            ui = orange_1.result(this, '_ui');
             this.ui = {};
             Object.keys(ui).forEach(function (k) {
                 var elm = _this.$(ui[k]);
@@ -275,7 +275,7 @@ define(["require", "exports", 'debug', './object', 'orange/browser', './util'], 
         BaseView.prototype._buildViewTrigger = function (triggerDef) {
             if (typeof triggerDef === 'string')
                 triggerDef = { event: triggerDef };
-            var options = utils.extend({
+            var options = orange_1.extend({
                 preventDefault: true,
                 stopPropagation: true
             }, triggerDef);
@@ -300,17 +300,17 @@ define(["require", "exports", 'debug', './object', 'orange/browser', './util'], 
         };
         BaseView.prototype._ensureElement = function () {
             if (!this.el) {
-                var attrs = utils.extend({}, utils.result(this, 'attributes'));
+                var attrs = orange_1.extend({}, orange_1.result(this, 'attributes'));
                 if (this.id)
-                    attrs.id = utils.result(this, 'id');
+                    attrs.id = orange_1.result(this, 'id');
                 if (this.className)
-                    attrs['class'] = utils.result(this, 'className');
-                debug('%s created element: %s', this, utils.result(this, 'tagName') || 'div');
-                this.setElement(this._createElement(utils.result(this, 'tagName') || 'div'), false);
+                    attrs['class'] = orange_1.result(this, 'className');
+                debug('%s created element: %s', this, orange_1.result(this, 'tagName') || 'div');
+                this.setElement(this._createElement(orange_1.result(this, 'tagName') || 'div'), false);
                 this._setAttributes(attrs);
             }
             else {
-                this.setElement(utils.result(this, 'el'), false);
+                this.setElement(orange_1.result(this, 'el'), false);
             }
         };
         BaseView.prototype._removeElement = function () {

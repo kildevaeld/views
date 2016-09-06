@@ -4,7 +4,8 @@ import * as Debug from 'debug';
 const debug = Debug('views:baseview');
 
 import {BaseObject} from './object';
-import * as utils from 'orange/browser';
+import {extend, pick, uniqueId, result, bind, indexOf} from 'orange';
+import {addEventListener, removeEventListener, matches} from 'orange.dom'
 import {EventEmitter, IEventEmitter} from 'eventsjs';
 import {normalizeUIKeys} from './util'
 
@@ -79,9 +80,9 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
 
         super();
 
-        this._cid = utils.uniqueId('view')
+        this._cid = uniqueId('view')
 
-        utils.extend(this, utils.pick(options, viewOptions))
+        extend(this, pick(options, viewOptions))
 
         this._domEvents = []
 
@@ -102,16 +103,16 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
 
         this._bindUIElements();
 
-        events = events || utils.result(this, 'events');
+        events = events || result(this, 'events');
         events = normalizeUIKeys(events, this._ui);
 
         let triggers = this._configureTriggers();
 
-        events = utils.extend({}, events, triggers);
+        events = extend({}, events, triggers);
         debug('%s delegate events %j', this, events);
 
         if (!events) return this;
-        //if (!(events || (events = utils.result(this, 'events')))) return this;
+        //if (!(events || (events = result(this, 'events')))) return this;
         //this.undelegateEvents();
 
         let dels = []
@@ -122,7 +123,7 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
             let match = key.match(/^(\S+)\s*(.*)$/);
 
             // Set delegates immediately and defer event on this.el
-            let boundFn = utils.bind(<Function>method, this);
+            let boundFn = bind(<Function>method, this);
             if (match[2]) {
                 this.delegate(match[1], match[2], boundFn);
             } else {
@@ -145,7 +146,7 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
         if (this.el) {
             for (var i = 0, len = this._domEvents.length; i < len; i++) {
                 var item = this._domEvents[i];
-                utils.removeEventListener(this.el, item.eventName, item.handler);
+                removeEventListener(this.el, item.eventName, item.handler);
             }
             this._domEvents.length = 0;
         }
@@ -166,7 +167,7 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
             if (e.delegateTarget) return;
 
             for (; node && node != root; node = node.parentNode) {
-                if (utils.matches(node, selector)) {
+                if (matches(node, selector)) {
 
                     e.delegateTarget = node;
                     listener(e);
@@ -179,7 +180,7 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
         /*jshint bitwise: false*/
         let useCap = !!~unbubblebles.indexOf(eventName) && selector != null;
         debug('%s delegate event %s ', this, eventName);
-        utils.addEventListener(this.el, eventName, handler, useCap);
+        addEventListener(this.el, eventName, handler, useCap);
         this._domEvents.push({ eventName: eventName, handler: handler, listener: listener, selector: selector });
         return handler;
     }
@@ -201,8 +202,8 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
 
                 if (!match) continue;
 
-                utils.removeEventListener(this.el, item.eventName, item.handler);
-                this._domEvents.splice(utils.indexOf(handlers, item), 1);
+                removeEventListener(this.el, item.eventName, item.handler);
+                this._domEvents.splice(indexOf(handlers, item), 1);
             }
         }
         return this;
@@ -302,7 +303,7 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
             this._ui = ui;
         }
 
-        ui = utils.result(this, '_ui');
+        ui = result(this, '_ui');
 
         this.ui = {};
 
@@ -370,7 +371,7 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
         if (typeof triggerDef === 'string')
             triggerDef = { event: triggerDef }
 
-        let options = utils.extend({
+        let options = extend({
             preventDefault: true,
             stopPropagation: true
         }, triggerDef);
@@ -401,14 +402,14 @@ export abstract class BaseView<T extends HTMLElement> extends BaseObject impleme
 
     private _ensureElement() {
         if (!this.el) {
-            var attrs = utils.extend({}, utils.result(this, 'attributes'));
-            if (this.id) attrs.id = utils.result(this, 'id');
-            if (this.className) attrs['class'] = utils.result(this, 'className');
-            debug('%s created element: %s', this, utils.result(this, 'tagName') || 'div');
-            this.setElement(this._createElement(utils.result(this, 'tagName') || 'div'), false);
+            var attrs = extend({}, result(this, 'attributes'));
+            if (this.id) attrs.id = result(this, 'id');
+            if (this.className) attrs['class'] = result(this, 'className');
+            debug('%s created element: %s', this, result(this, 'tagName') || 'div');
+            this.setElement(this._createElement(result(this, 'tagName') || 'div'), false);
             this._setAttributes(attrs);
         } else {
-            this.setElement(utils.result(this, 'el'), false);
+            this.setElement(result(this, 'el'), false);
         }
     }
 
