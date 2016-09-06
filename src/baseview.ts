@@ -4,7 +4,7 @@ import * as Debug from 'debug';
 const debug = Debug('views:baseview');
 
 import {BaseObject} from './object';
-import * as utils from 'orange';
+import * as utils from 'orange/browser';
 import {EventEmitter, IEventEmitter} from 'eventsjs';
 import {normalizeUIKeys} from './util'
 
