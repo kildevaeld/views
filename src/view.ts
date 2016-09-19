@@ -66,9 +66,8 @@ export class View<T extends HTMLElement> extends BaseView<T> implements IDataVie
         
         if (model != null) {
             debug('%s set model uid: %s', this, model.uid);
-            this._model = model;
         }
-        
+        this._model = model;
 
         this.triggerMethod('model', model);
 

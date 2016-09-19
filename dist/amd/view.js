@@ -44,8 +44,8 @@ define(["require", "exports", 'debug', './baseview', 'orange'], function (requir
             }
             if (model != null) {
                 debug('%s set model uid: %s', this, model.uid);
-                this._model = model;
             }
+            this._model = model;
             this.triggerMethod('model', model);
             return this;
         };

@@ -11,7 +11,7 @@ define(["require", "exports", './baseview', './object', './baseview', './region'
     __export(view_1);
     __export(collection_view_1);
     __export(annotations_1);
-    exports.Version = '0.3.1';
+    exports.Version = '0.3.3';
     function debug(debug) {
         if (window.localStorage) {
             window.localStorage['debug'] = debug ? "views:*" : '';

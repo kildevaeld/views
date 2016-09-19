@@ -67,7 +67,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	__export(__webpack_require__(15));
 	__export(__webpack_require__(16));
 	__export(__webpack_require__(17));
-	exports.Version = '0.3.1';
+	exports.Version = '0.3.3';
 	function debug(debug) {
 	    if (window.localStorage) {
 	        window.localStorage['debug'] = debug ? "views:*" : '';
@@ -1948,8 +1948,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        if (model != null) {
 	            debug('%s set model uid: %s', this, model.uid);
-	            this._model = model;
 	        }
+	        this._model = model;
 	        this.triggerMethod('model', model);
 	        return this;
 	    };
