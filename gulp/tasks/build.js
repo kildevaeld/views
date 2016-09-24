@@ -42,6 +42,11 @@ gulp.task('build:bower', ['build'], function () {
     },
     externals: {
       orange: "orange",
+      'orange.dom': {
+        root: ['orange', 'dom'],
+        commonjs: 'orange.dom',
+        amd: 'orange.dom'
+      },
       eventsjs: "eventsjs"
     }
   }))

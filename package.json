@@ -1,6 +1,6 @@
 {
   "name": "views",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -51,7 +51,7 @@
       "eventsjs": "github:kildevaeld/eventsjs@master",
       "orange": "github:kildevaeld/orange@master",
       "orange.dom": "github:kildevaeld/orange.dom@master",
-      "debug": "npm:debug@2.2.0"
+      "debug": "npm:debug@^2.2.0"
     }
   }
 }
