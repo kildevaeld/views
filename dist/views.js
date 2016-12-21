@@ -67,7 +67,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	__export(__webpack_require__(13));
 	__export(__webpack_require__(14));
 	__export(__webpack_require__(15));
-	exports.Version = '0.3.3';
+	exports.Version = '0.3.4';
 	function debug(debug) {
 	    if (window.localStorage) {
 	        window.localStorage['debug'] = debug ? "views:*" : '';

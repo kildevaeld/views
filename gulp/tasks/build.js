@@ -69,3 +69,23 @@ gulp.task('build:amd', ['build'], function () {
   .pipe(replace('$VERISON$', pkgjson.version))
   .pipe(gulp.dest('./dist/amd'));
 });
+
+gulp.task('build:bundle', ['build'], () => {
+
+    return gulp.src('./lib/index.js')
+  .pipe($.webpack({
+    devtool: "source-map",
+    resolve: {
+        extensions: ['', '.webpack.js', '.web.js', '.ts', '.js']
+    },
+    output: {
+      library: "views",
+      libraryTarget: "umd",
+      filename: 'views.bundle.js'
+    }
+  }))
+  .pipe(gulp.dest('./dist'));
+
+
+
+});
